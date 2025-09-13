@@ -1,0 +1,102 @@
+{
+  // "easycom": {
+  //   "autoscan": true,
+  //   "custom": {
+  //     "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+  //   }
+  // },
+
+  "pages": [{
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false,
+        "navigationBarBackgroundColor": "#3478f6",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/index/config",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false,
+        "navigationBarBackgroundColor": "#3478f6",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/index/display",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false,
+        "navigationBarBackgroundColor": "#3478f6",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/index/more",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false,
+        "navigationBarBackgroundColor": "#3478f6",
+        "navigationBarTextStyle": "white"
+      }
+    }
+  ],
+  "subPackages": [{
+    "root": "pages/more/",
+    "pages": [{
+        "path": "advanced",
+        "style": {
+          "navigationBarTitleText": ""
+        }
+      },
+      {
+        "path": "debug",
+        "style": {
+          "navigationBarTitleText": ""
+        }
+      }
+    ]
+  }],
+  "preloadRule": {
+
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uView",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#FFFFFF"
+  },
+  "tabBar": {
+    "color": "#909399",
+    "selectedColor": "#303133",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [{
+        "pagePath": "pages/index/index",
+        "text": "",
+        "iconPath": "static/tabbar12.png", // 未选中图标
+        "selectedIconPath": "static/tabbar1.png" // 选中图标
+      },
+      {
+        "pagePath": "pages/index/config",
+        "text": "",
+        "iconPath": "static/tabbar2.png",
+        "selectedIconPath": "static/tabbar22.png"
+      },
+      {
+        "pagePath": "pages/index/display",
+        "text": "",
+        "iconPath": "static/tabbar3.png",
+        "selectedIconPath": "static/tabbar32.png"
+      },
+      {
+        "pagePath": "pages/index/more",
+        "text": "",
+        "iconPath": "static/tabbar4.png",
+        "selectedIconPath": "static/tabbar42.png"
+      }
+    ]
+  }
+}
