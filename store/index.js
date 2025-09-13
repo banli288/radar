@@ -26,7 +26,7 @@ const store = new Vuex.Store({
     },
     add_recv_buf(state, arr) {
       state.recv_buf += arr
-      state.time_out = 3
+      state.time_out = 1
     },
     clear_recv_buf(state) {
       state.recv_buf = ''

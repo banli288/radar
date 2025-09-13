@@ -313,13 +313,25 @@ export function getCurrentTimeStr() {
 
 export function hexToAscii(hexStr) {
   let result = ''
-  // 每两个字符表示一个字节（1个ASCII字符）
+
   for (let i = 0; i < hexStr.length; i += 2) {
     let hexByte = hexStr.substr(i, 2)
-    result += String.fromCharCode(parseInt(hexByte, 16))
+    let code = parseInt(hexByte, 16)
+
+    // 只保留 ASCII 范围内的字符（0x20 ~ 0x7E 可见字符，或换行/回车/制表符）
+    if (
+      (code >= 0x20 && code <= 0x7E) || // 可见 ASCII
+      code === 0x0A || code === 0x0D || // 换行 / 回车
+      code === 0x09 // 制表符
+    ) {
+      result += String.fromCharCode(code)
+    }
+    // 其他的直接跳过
   }
+
   return result
 }
+
 
 export function safeCall(tag, fn) {
   return function(...args) {

@@ -441,17 +441,29 @@
             if (res.confirm) {
               that.study_step = 2
               that.send_cmd(radar_tx_data('660A0A04'))
-              uni.showModal({
-                title: that.$t("config.studyCont.text7"),
-                content: that.$t("config.studyCont.text8"),
-                confirmText: that.$t("modal.confirmText1"),
-                cancelText: that.$t("modal.cancelText"),
-                success(res) {
-                  if (res.confirm) {
-                    that.radar_study3()
-                  }
-                }
+              uni.showLoading({
+                title: that.$t("config.studyCont.text7")
               })
+              setTimeout(() => {
+                uni.hideLoading()
+                uni.showModal({
+                  title: that.$t("config.studyCont.text7"),
+                  content: that.$t("config.studyCont.text8"),
+                  confirmText: that.$t("modal.confirmText1"),
+                  cancelText: that.$t("modal.cancelText"),
+                  success(res) {
+                    if (res.confirm) {
+                      uni.showLoading({
+                        title: that.$t("config.studyCont.text7")
+                      })
+                      setTimeout(() => {
+                        uni.hideLoading()
+                        that.radar_study3()
+                      }, 2000)
+                    }
+                  }
+                })
+              }, 2000)
             }
           }
         })

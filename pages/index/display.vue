@@ -121,7 +121,6 @@
 
         if (store.state.time_out > 0) {
           store.commit('sub_time_out');
-        } else {
           recv_buf_tmp = store.state.recv_buf;
           store.commit('clear_recv_buf')
         }
@@ -138,38 +137,11 @@
             this.recv_cnt = 0
             this.recv_text = ""
           }
-          //console.log('<原文:>', hexToAscii(recv_buf_tmp))
         }
-
-        // if(recv_buf_tmp.length){
-        // 	var arr_str = recv_buf_tmp.split(',');
-        // 	var x_val = 0
-        // 	var y_val = 0
-        // 	var x_int = hex2int(arr_str[9] + arr_str[8])
-
-        // 	arr_str.pop()
-        // 	x_val = (x_int < 0x7fff ? x_int : (x_int - 0xffff)) / 100
-        // 	y_val = hex2int(arr_str[11] + arr_str[10]) / 100
-
-        // 	this.res.series[0].data[0] = [x_val, y_val]
-        // 	this.chartData = JSON.parse(JSON.stringify(this.res))
-
-        // 	let time = new Date()
-        // 	let _time = ''
-        // 	for(var i = 0; i < 8; i++) _time += time.toLocaleTimeString()[i]
-
-        // 	if(this.texts.length < 10) this.texts.push('当前时间:' + _time + ',' + '目标坐标:' + x_val + ',' + y_val + '\n')
-        // 	else {
-        // 		for(var i = 0; i < 9; i++) this.texts[i] = this.texts[i + 1]
-        // 		this.texts[9] ='当前时间:' + _time + ',' + '目标坐标:' + x_val + ',' + y_val + '\n'
-        // 	}
-
-        // 	recv_buf_tmp = ''
-        // }
 
         this.timer = setTimeout(() => {
           this.timer_handle()
-        }, 5)
+        }, 10)
       },
       map_init(mode) {
         var cmd = ''

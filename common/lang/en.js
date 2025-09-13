@@ -21,6 +21,7 @@ export default {
     toolInfo: "60GHz Barrier Gate Radar",
     prodInfo: "Version 1.0.0",
     advancedCont: "Operation requires professional guidance. Risk of vehicle damage! Confirm to proceed?",
+    download: "Please Waitting Download"
   },
   display: {
     text1: "Target Points:",
@@ -131,8 +132,12 @@ export default {
     description3: "",
 
     checkbox1: {
-      open: "Enable",
-      close: "Disable"
+      close: "Close",
+      Strong: "Strong",
+      Medium_strong: "Medium-strong",
+      Medium: "Medium",
+      Medium_weak: "Medium-weak",
+      Weak: "Weak(recommend)",
     },
     checkbox2: {
       left: "Left",

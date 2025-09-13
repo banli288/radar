@@ -1,17 +1,18 @@
 <template>
   <view>
     <view class="config1">
-      <view class="config1_unit" v-for="(item, index) in config1" :key="index">
+      <view class="config1_unit" v-for="(item, index) in config1" v-if="index != 1" :key="index">
         <view class="config1_unit_v1" style="width: 50%;">
           <view :style="dynamicFontStyle" class="name_size">{{item.name}}</view>
           <view :style="dynamicFontStyle" class="dis_size">{{item.description}}</view>
         </view>
-        <view>
-          <uni-data-checkbox :localdata="item.checkbox" mode="tag" v-model="cfg1_value[index]"></uni-data-checkbox>
+        <view class="ld_content">
+          <uni-data-select class="unselect" :localdata="item.checkbox" mode="tag" v-model="cfg1_value[index]"
+            :clear="false"></uni-data-select>
         </view>
       </view>
     </view>
-    <view class="config2">
+    <view class=" config2">
       <view class="config2_unit" v-for="(item, index) in config2" :key="index">
         <view v-if="item.name === $t('aconfig2.items.radarSensitivity.name')" class='ldlmd'>
           <view :style="dynamicFontStyle" class="name_size">{{item.name}}</view>
@@ -71,7 +72,7 @@
   export default {
     data() {
       return {
-        cfg1_value: [0, 0, 0],
+        cfg1_value: [5, 0, 0],
 
         timer: null,
         cmd_id: 0, //0-空闲 1-都参数 2-写参数 3-重启 4-恢复出厂
@@ -97,12 +98,24 @@
             description: this.$t("aconfig.description1"),
             value: 0,
             checkbox: [{
-                text: this.$t("aconfig.checkbox1.open"),
-                value: 1
-              },
-              {
                 text: this.$t("aconfig.checkbox1.close"),
                 value: 0
+              },
+              {
+                text: this.$t("aconfig.checkbox1.Strong"),
+                value: 1
+              }, {
+                text: this.$t("aconfig.checkbox1.Medium_strong"),
+                value: 2
+              }, {
+                text: this.$t("aconfig.checkbox1.Medium"),
+                value: 3
+              }, {
+                text: this.$t("aconfig.checkbox1.Medium_weak"),
+                value: 4
+              }, {
+                text: this.$t("aconfig.checkbox1.Weak"),
+                value: 5
               },
             ],
           },
@@ -136,10 +149,10 @@
                 text: this.$t("aconfig.checkbox3.close"),
                 value: 1
               },
-              {
-                text: this.$t("aconfig.checkbox3.disable"),
-                value: 2
-              },
+              // {
+              //   text: this.$t("aconfig.checkbox3.disable"),
+              //   value: 2
+              // },
             ],
           },
         ]
@@ -194,7 +207,7 @@
             unit: this.$t('aconfig2.items.units.meter'),
             value: 0.3,
             step: 0.1,
-            limit: [0.1, 1],
+            limit: [0.0, 1],
           },
           {
             name: this.$t('aconfig2.items.rightNoDetectWidth.name'),
@@ -202,7 +215,7 @@
             unit: this.$t('aconfig2.items.units.meter'),
             value: 0,
             step: 0.1,
-            limit: [0.1, 1],
+            limit: [0.0, 1],
           },
           {
             name: this.$t('aconfig2.items.leftDetectWidth.name'),
@@ -474,12 +487,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: #999999 1px solid;
+      margin-right: 10px;
 
       .config1_unit_v1 {
         display: flex;
         flex-direction: column;
         margin: 10px;
+      }
+
+      .ld_content,
+      .unselect {
+        width: 246rpx;
+        font-size: 6px;
       }
     }
   }

@@ -8,7 +8,7 @@
     <view class="_label">
       <view class="label_item" v-for="(item,index) in pageList" :key="index" @tap="more_opa(index)">
         <view class="label_title">{{item}}</view>
-        <image class="title_icon" src="@/static/右三角.png"></image>
+        <image class="title_icon" src="@/static/threeangle.png"></image>
       </view>
     </view>
   </view>
@@ -86,7 +86,12 @@
         }
       },
       downloadAndOpenPdf() {
-        const fileUrl = 'https://gitee.com/chuan0125/leida/raw/master/%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8C.pdf';
+        let that = this
+        uni.showLoading({
+          title: that.$t("more.download")
+        })
+        const fileUrl =
+          'https://gitee.com/chuan0125/leida/raw/master/MW60%20%E4%BA%A7%E5%93%81%E8%AF%B4%E6%98%8E%E4%B9%A62025-09-12A.pdf';
         uni.downloadFile({
           url: fileUrl,
           success: (res) => {
@@ -101,7 +106,10 @@
               console.error('下载失败，状态码：', res.statusCode);
             }
           },
-          fail: (err) => console.error('下载文件失败：', err)
+          fail: (err) => console.error('下载文件失败：', err),
+          complete: (res) => {
+            uni.hideLoading()
+          }
         });
       }
     }

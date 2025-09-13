@@ -21,6 +21,7 @@ export default {
     toolInfo: "60GHz道闸雷达",
     prodInfo: "版本1.0.0",
     advancedCont: "请在专业人士指导下操作，否则将有砸车风险！，确认要继续操作吗",
+    download: "加载中"
   },
   display: {
     text1: "目标点显示 ：",
@@ -131,8 +132,12 @@ export default {
     description3: "",
 
     checkbox1: {
-      open: "打开",
-      close: "关闭"
+      close: "关闭",
+      Strong: "强区分",
+      Medium_strong: "中强区分",
+      Medium: "中区分",
+      Medium_weak: "中弱区分",
+      Weak: "弱区分(推荐)",
     },
     checkbox2: {
       left: "左",

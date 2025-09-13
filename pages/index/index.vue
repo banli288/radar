@@ -8,7 +8,7 @@
 
     <view class="_row2">
       <view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text2")}}</view>
-      <view :style="dynamicFontStyle" class="_row2_right">R{{product_type}}00</view>
+      <view :style="dynamicFontStyle" class="_row2_right">MW60S</view>
     </view>
     <view class="_row2">
       <view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text3")}}</view>
