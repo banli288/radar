@@ -50,6 +50,13 @@
     },
     onShow() {
       updatePageTitle()
+
+      uni.setKeepScreenOn({
+        keepScreenOn: true,
+        success() {
+          console.log("set_keep_screen_on")
+        }
+      })
     },
     methods: {
       more_opa(index) {

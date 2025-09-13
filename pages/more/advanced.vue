@@ -149,10 +149,10 @@
                 text: this.$t("aconfig.checkbox3.close"),
                 value: 1
               },
-              // {
-              //   text: this.$t("aconfig.checkbox3.disable"),
-              //   value: 2
-              // },
+              {
+                text: this.$t("aconfig.checkbox3.disable"),
+                value: 2
+              },
             ],
           },
         ]
@@ -238,6 +238,13 @@
     },
     onShow() {
       this.timer = setTimeout(this.timer_handle, 100)
+
+      uni.setKeepScreenOn({
+        keepScreenOn: true,
+        success() {
+          console.log("set_keep_screen_on")
+        }
+      })
 
       if (store.state.connect_state == true) {
         uni.showLoading({

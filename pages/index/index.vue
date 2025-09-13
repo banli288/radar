@@ -97,6 +97,12 @@
       clearTimeout(this.timer)
     },
     onShow() {
+      uni.setKeepScreenOn({
+        keepScreenOn: true,
+        success() {
+          console.log("set_keep_screen_on")
+        }
+      })
       this.timer = setTimeout(this.timer_handle, 100)
       updatePageTitle()
 
