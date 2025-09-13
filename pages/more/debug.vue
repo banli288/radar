@@ -120,6 +120,7 @@
           })
           .exec()
       },
+      //将发送文本框内的数据组帧发送出去
       send_btn() {
         let str = this.send_text.replace(" ", "")
         this.recv_add_data(str, this.disSend)
@@ -130,12 +131,15 @@
 
         this.send_cmd(str)
       },
+      //清除发送框
       send_clear() {
         this.send_text = ""
       },
+      //清除接收框
       recv_clear() {
         this.recv_text = ""
       },
+      //接收数据，显示在接收返回框
       recv_add_data(str, dir) {
         let tmp = str
 
@@ -148,6 +152,7 @@
           this.scrollToBottom()
         })
       },
+      //定时任务，轮询接收数据，并显示更新
       timer_handle() {
         this.recv_handle()
         this.recv_handle()
@@ -160,6 +165,7 @@
       tout_handle() {
 
       },
+      //解析任务，根据协议解析通过更新显示到文本框
       recv_handle() {
         let recv_buf_tmp = '';
 
@@ -183,6 +189,7 @@
           }
         }
       },
+      //发送接口
       send_cmd(cmd) {
         var data = {
           deviceId: store.state.device_info.deviceId,

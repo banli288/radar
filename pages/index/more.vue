@@ -59,6 +59,7 @@
       })
     },
     methods: {
+      //点击对应的页面文字进行跳转
       more_opa(index) {
         let that = this
         if (index == 0) {
@@ -68,6 +69,7 @@
             confirmText: this.$t("modal.confirmText"),
             cancelText: this.$t("modal.cancelText"),
             success(res) {
+              //跳转高级设置
               if (res.confirm) {
                 that.$u.route({
                   url: '/pages/more/advanced'
@@ -81,9 +83,11 @@
 
         } else if (index == 3) {
           that.$u.route({
+            //跳转调试页面
             url: '/pages/more/debug'
           })
         } else if (index == 4) {
+          //加载说明书
           this.downloadAndOpenPdf()
         } else if (index == 5) {
 
@@ -97,12 +101,14 @@
         uni.showLoading({
           title: that.$t("more.download")
         })
+        //说明书的网址
         const fileUrl =
           'https://gitee.com/chuan0125/leida/raw/master/MW60%20%E4%BA%A7%E5%93%81%E8%AF%B4%E6%98%8E%E4%B9%A62025-09-12A.pdf';
         uni.downloadFile({
           url: fileUrl,
           success: (res) => {
             if (res.statusCode === 200) {
+              //下载成功后打开
               uni.openDocument({
                 filePath: res.tempFilePath,
                 fileType: 'pdf',

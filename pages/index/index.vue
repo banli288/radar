@@ -87,25 +87,32 @@
       }
     },
     onLoad() {
+      //更新标题栏
       updatePageTitle()
 
+      //更新工具栏
       if (this.$mp.page.route === 'pages/index/index') {
         updateTabBar()
       }
     },
     onUnload() {
+      //离开页面清除定时器
       clearTimeout(this.timer)
     },
     onShow() {
+      //设置不息屏
       uni.setKeepScreenOn({
         keepScreenOn: true,
         success() {
           console.log("set_keep_screen_on")
         }
       })
+
+      //启动定时器任务
       this.timer = setTimeout(this.timer_handle, 100)
       updatePageTitle()
 
+      //更新显示按钮名称
       if (store.state.connect_state == true) {
         this.ble_btn_name = "disconnect"
       } else {
@@ -113,6 +120,7 @@
       }
     },
     onHide() {
+      //离开首页清除定时器并关闭蓝牙发现
       clearTimeout(this.timer)
       uni.stopBluetoothDevicesDiscovery({
         success() {
@@ -121,6 +129,7 @@
       })
     },
     computed: {
+      //动态获取国际化变量，样式
       bleConName() {
         return this.$t(`index.bleBtnName.${this.ble_btn_name}`)
       },
@@ -141,10 +150,13 @@
       },
     },
     methods: {
+      //切换语言
       swLang(lang) {
         changeLanguage(lang)
         this.currentLang = lang
       },
+
+      //刷新蓝牙列表
       ble_list_refresh() {
         this.ble_list = []
         this.ble_name_list = []
@@ -152,6 +164,8 @@
         this.ble_con_state_list = []
         this.btn_press()
       },
+
+      //蓝牙发送接口
       send_cmd(cmd) {
         var data = {
           deviceId: store.state.device_info.deviceId,
@@ -162,9 +176,11 @@
         }
         send_data(data)
       },
+      //定时器任务，查询蓝牙接收数据，并进行协议解析和显示更新
       timer_handle() {
         let recv_buf_tmp = '';
 
+        //根据命令id进行超时判断，例如发送了一条指令A，超时未收到响应弹窗超时
         if (this.cmd_id != 0) {
           if (this.cmd_tout > 1) {
             this.cmd_tout--
@@ -182,6 +198,7 @@
           }
         }
 
+        //判断蓝牙是否接收到了数据
         if (store.state.time_out > 0) {
           store.commit('sub_time_out');
         } else {
@@ -189,21 +206,30 @@
           store.commit('clear_recv_buf')
         }
 
+        //收到数据
         if ((recv_buf_tmp != "") && (recv_buf_tmp != null)) {
+          //根据协议头尾定位数据帧
           let data_mid = extractWithWrapper(recv_buf_tmp, "ab", "5a")
+          //收到了符合协议的数据
           if ((data_mid != "") && (data_mid != null)) {
+            //校验数据并返回有效数据
             let recv_data = radar_recv(data_mid)
 
             console.log('<res:>', recv_data, data_mid)
 
+            //收到的数据单位一定是字节
             if (recv_data.length >= 2 && (recv_data.length % 2 == 0)) {
               let int_arr = hexStringToByteArray(recv_data)
 
+              //这是关闭坐标显示的指令响应，应对链接的设备之前开了坐标显示影响接收其他数据
               if (recv_data == "664f4b") {
+                //关闭坐标显示成功返回，读取版本信息指令
                 this.cmd_id = 2
                 this.cmd_tout = 20
                 this.send_cmd(radar_tx_data('89020201'))
               }
+
+              //收到版本读取指令的响应--版本信息，根据协议解析并赋值页面变量更新显示
               if (int_arr[0] == 0x89) {
                 this.cmd_id = 0
                 this.cmd_tout = 0
@@ -214,22 +240,29 @@
                 this.product_hd = int_arr[7] + int_arr[8] / 10
                 this.product_sf = int_arr[9] + int_arr[10] / 10
 
+                //弹窗提示读取成功--链接成功
                 uni.hideLoading()
                 uni.showToast({
                   title: this.$t("modal.conSuccess")
                 })
 
+                //改变按钮名字
+                this.ble_btn_name = "disconnect"
+
+                //更新蓝牙列表的连接状态
                 this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
               }
             }
           }
         }
 
+        //心跳
         this.systick++
         this.timer = setTimeout(() => {
           this.timer_handle()
         }, 100)
       },
+      //读取版本信息
       read_product() {
         this.send_cmd(radar_tx_data('66010100'))
         this.cmd_id = 1
@@ -239,6 +272,7 @@
       closeDialog() {
         this.showDialog = false
       },
+      //按钮按钮，判断连接状态，执行搜索设备或者断开连接
       btn_press() {
         let that = this
         if (store.state.connect_state == false) {
@@ -267,6 +301,7 @@
           })
         }
       },
+      //搜索蓝牙设备
       ble_search() {
         var that = this
         uni.showLoading({
@@ -282,8 +317,11 @@
                     success() {
                       uni.hideLoading()
                       uni.onBluetoothDeviceFound(function(res) {
+                        //发现新的蓝牙设备
                         if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
+                          //根据名字匹配雷达设备
                           if (res.devices[0].name.indexOf("XHJ") != -1) {
+                            //加入设备列表
                             that.ble_list.push(res.devices[0].deviceId)
                             that.ble_name_list.push(res.devices[0].name)
                             that.ble_rssi_list.push(res.devices[0].RSSI)
@@ -311,6 +349,7 @@
           }
         })
       },
+      //连接设备
       ble_connect(index) {
         let that = this
         let deviceId = this.ble_list[index]
@@ -327,15 +366,20 @@
                     uni.getBLEDeviceServices({
                       deviceId: deviceId,
                       success(res) {
+                        //遍历服务id
                         for (let item of res.services) {
                           if (item.isPrimary) {
                             let serviceId = item.uuid
+                            //找到蓝牙IC的指定服务ID
                             if (item.uuid.indexOf('0000AE3') != -1) {
+                              //获取特征ID
                               uni.getBLEDeviceCharacteristics({
                                 deviceId: deviceId,
                                 serviceId: serviceId,
                                 success(res) {
+                                  //遍历特征ID，目的是查找读写ID
                                   for (let item of res.characteristics) {
+                                    //找到监听ID，直接开启监听
                                     if (item.properties.notify) {
                                       let characteristicId = item.uuid;
                                       uni.notifyBLECharacteristicValueChange({
@@ -346,12 +390,14 @@
                                         success() {
                                           that.showDialog = false
 
+                                          //存储ID信息
                                           let obj = {
                                             deviceId: deviceId,
                                             serviceId: serviceId,
                                             r_characteristicId: characteristicId
                                           }
 
+                                          //遍历查找写ID
                                           for (let item of res.characteristics) {
                                             if (item.properties.write) {
                                               obj.w_characteristicId = item.uuid
@@ -359,12 +405,14 @@
                                               console.log('device_info:', store.state
                                                 .device_info)
 
+                                              //找到写ID，延时500ms通过写ID写入读取版本信息指令
                                               setTimeout(() => {
                                                 that.read_product()
                                               }, 500)
                                             }
                                           }
 
+                                          //注册蓝牙监听事件
                                           uni.onBLECharacteristicValueChange(function(res) {
                                             let tmp = bufferToHex(res.value)
                                             store.commit('add_recv_buf', tmp)

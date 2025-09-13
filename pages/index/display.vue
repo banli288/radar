@@ -32,7 +32,8 @@
     send_data,
     radar_recv,
     radar_tx_data,
-    hexToAscii
+    hexToAscii,
+    extractWithWrapper
   } from "@/tools/send.js"
   export default {
     data() {
@@ -133,16 +134,31 @@
         }
 
         if ((recv_buf_tmp != "") && (recv_buf_tmp != null)) {
-          this.recv_text += hexToAscii(recv_buf_tmp)
-          this.$nextTick(() => {
-            this.scrollToBottom()
-          })
+          let data_mid = extractWithWrapper(recv_buf_tmp, "ab", "5a")
 
-          if (this.recv_cnt < 500) {
-            this.recv_cnt += 1
-          } else {
-            this.recv_cnt = 0
-            this.recv_text = ""
+          //收到了协议内容，必定是开启/关闭坐标指令的响应，直接在text中显示”OK“
+          if ((data_mid != "") && (data_mid != null)) {
+            let recv_data = radar_recv(data_mid)
+
+            console.log('<res>', recv_data, data_mid)
+
+            this.recv_text += "OK\n"
+          }
+          //没过协议，说明是坐标点，直接按照ASCII显示到text中
+          else {
+            this.recv_text += hexToAscii(recv_buf_tmp)
+            //保持数据一直在最新的位置
+            this.$nextTick(() => {
+              this.scrollToBottom()
+            })
+
+            //数据行数太多，防止卡顿进行清空
+            if (this.recv_cnt < 500) {
+              this.recv_cnt += 1
+            } else {
+              this.recv_cnt = 0
+              this.recv_text = ""
+            }
           }
         }
 
@@ -150,6 +166,7 @@
           this.timer_handle()
         }, 10)
       },
+      //开启/关闭坐标显示指令
       map_init(mode) {
         var cmd = ''
 
@@ -165,6 +182,7 @@
           this.send_cmd(radar_tx_data(cmd))
         }
       },
+      //数据发送接口
       send_cmd(cmd) {
         var data = {
           deviceId: store.state.device_info.deviceId,

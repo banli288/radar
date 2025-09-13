@@ -75,6 +75,7 @@
       }
     },
     computed: {
+      //该页面需要动态刷新的变量，根据名字判断对应的意义
       ...mapState(['connect_state']),
       isEnglish() {
         return this.$i18n.locale === 'en'
@@ -193,6 +194,7 @@
         this.clear_tout_id()
         this.clear_tout_cnt()
       },
+      //超时判断，同首页，此处不做详细注释
       run_tout() {
         if (this.cmd_tout_cnt > 1) {
           this.cmd_tout_cnt--
@@ -254,6 +256,7 @@
       change_car(e) {
         this.car_value = e
       },
+      //读取参数接口，实质上就是根据协议向蓝牙写指令
       radar_read() {
         uni.showLoading({
           title: this.$t("modal.reading")
@@ -261,6 +264,7 @@
         this.send_cmd(radar_tx_data('77020201'))
         this.set_tout(1, 20)
       },
+      //保存参数接口
       radar_save() {
         let _str = '76'
         uni.showLoading({
@@ -270,26 +274,33 @@
           int_to2hex(this.pole_value & 0x00000000000000ff) + int_to2hex(this.car_value)
         console.log(_str)
         this.send_cmd(radar_tx_data(_str))
+        this.study_step = 0
         this.set_tout(2, 20)
       },
+      //抬杆学习
       radar_up_study() {
         this.study_master = 2
         this.radar_study()
       },
+      //赶起落学习指令
       radar_down_study() {
         this.study_master = 3
         this.radar_study2()
       },
+      //定时任务，轮询蓝牙接收数据，解析和更新显示
       timer_handle() {
         let recv_buf_tmp = '';
 
+        //这是页面刷新是para_read_enable置为true，定时器启动读取一次参数
         if (this.para_read_enable == true) {
           this.radar_read()
           this.para_read_enable = false
         }
 
+        //超时判断
         this.run_tout()
 
+        //以下与首页同理，后面的页面定时器任务都是这个框架
         if (store.state.time_out > 0) {
           store.commit('sub_time_out');
         } else {
@@ -362,7 +373,7 @@
                   }, 5000)
                 }
               }
-              //参数读取
+              //没有学习指令，解析参数读取
               else if (int_arr[0] == 0x77) {
                 this.dect_range = int_arr[1] / 10
                 this.pole_value = int_arr[2]
@@ -382,6 +393,7 @@
           this.timer_handle()
         }, 100)
       },
+      //启动背景学习，参考协议文档
       radar_study() {
         let that = this
         uni.showModal({
@@ -423,6 +435,7 @@
           }
         })
       },
+      //背景学习阶段1，参考协议文档
       radar_study1() {
         let that = this
         uni.showModal({
@@ -437,6 +450,7 @@
           }
         })
       },
+      //背景学习阶段2，参考协议文档
       radar_study2() {
         let that = this
         uni.showModal({
@@ -475,6 +489,7 @@
           }
         })
       },
+      //背景学习阶段3，参考协议文档
       radar_study3() {
         let that = this
         uni.showModal({
@@ -507,6 +522,7 @@
           }
         })
       },
+      //数据发送接口
       send_cmd(cmd) {
         var data = {
           deviceId: store.state.device_info.deviceId,

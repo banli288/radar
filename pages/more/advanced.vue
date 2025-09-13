@@ -33,9 +33,11 @@
             <view :style="dynamicFontStyle" class="unit_size">{{item.text}}</view>
             <view :style="dynamicFontStyle" class="unit_size">{{item.value}}</view>
             <view :style="dynamicFontStyle" class="unit_size" style="margin-right: 10px;">{{item.unit}}</view>
-            <uni-number-box v-model="item.value" background="#0055ff" color="#fff" :min="item.limit[0]"
-              :max="item.limit[1]" :step="item.step">
-            </uni-number-box>
+            <view class="big-nb">
+              <uni-number-box v-model="item.value" background="#0055ff" color="#fff" :min="item.limit[0]" width="25"
+                :max="item.limit[1]" :step="item.step">
+              </uni-number-box>
+            </view>
           </view>
         </view>
       </view>
@@ -199,7 +201,7 @@
             unit: this.$t('aconfig2.items.units.meter'),
             value: 0.1,
             step: 0.1,
-            limit: [0.1, 0.3],
+            limit: [0.0, 1.0],
           },
           {
             name: this.$t('aconfig2.items.leftNoDetectWidth.name'),
@@ -207,7 +209,7 @@
             unit: this.$t('aconfig2.items.units.meter'),
             value: 0.3,
             step: 0.1,
-            limit: [0.0, 1],
+            limit: [0.0, 2],
           },
           {
             name: this.$t('aconfig2.items.rightNoDetectWidth.name'),
@@ -215,7 +217,7 @@
             unit: this.$t('aconfig2.items.units.meter'),
             value: 0,
             step: 0.1,
-            limit: [0.0, 1],
+            limit: [0.0, 2],
           },
           {
             name: this.$t('aconfig2.items.leftDetectWidth.name'),
@@ -223,7 +225,7 @@
             unit: this.$t('aconfig2.items.units.meter'),
             value: 0.6,
             step: 0.1,
-            limit: [0.6, 2],
+            limit: [0.5, 2],
           },
           {
             name: this.$t('aconfig2.items.rightDetectWidth.name'),
@@ -231,7 +233,7 @@
             unit: this.$t('aconfig2.items.units.meter'),
             value: 0.6,
             step: 0.1,
-            limit: [0.6, 2],
+            limit: [0.5, 2],
           },
         ]
       },
@@ -266,6 +268,7 @@
       chagnge_lmd(e) {
         this.config2[0].value = e
       },
+      //读取参数指令
       radar_read() {
         let that = this
 
@@ -275,6 +278,7 @@
           title: that.$t("aconfig.modal.reading")
         })
       },
+      //保存参数指令，将变量的指根据协议组帧送给蓝牙发送
       radar_save() {
         let that = this
         let _str = '86'
@@ -300,6 +304,7 @@
           title: that.$t("aconfig.modal.saving")
         })
       },
+      //重启指令
       radar_restart() {
         let that = this
         uni.showModal({
@@ -318,6 +323,7 @@
           }
         })
       },
+      //恢复出厂设置指令
       radar_reset() {
         let that = this
         uni.showModal({
@@ -336,15 +342,18 @@
           }
         })
       },
+      //更新指令id，用于该id响应的超时判断
       set_cmd_id(cmd) {
         this.cmd_id = cmd
         this.cmd_tout = 20
       },
+      //清除指令id，超时将不在判断，用于收到响应后执行
       clear_cmd_id() {
         uni.hideLoading()
         this.cmd_id = 0
         this.cmd_tout = 0
       },
+      //定时任务，同其他页面
       timer_handle() {
         let recv_buf_tmp = '';
         let that = this
@@ -354,6 +363,7 @@
           this.para_read_enable = false
         }
 
+        //指令响应的超时判断
         if (this.cmd_tout > 1) {
           this.cmd_tout--
         } else if (this.cmd_tout == 1) {
@@ -444,18 +454,24 @@
                     content: that.$t("aconfig.modal.readfail"),
                   })
                 }
-              } else if (recv_data == "864f4b") {
+              }
+              //收到保存成功指令的响应，给弹窗提示
+              else if (recv_data == "864f4b") {
                 this.clear_cmd_id()
                 uni.showToast({
                   title: that.$t("aconfig.modal.savesuccess"),
                 })
-              } else if (recv_data == "664f4b") {
+              }
+              //收到重启成功指令的响应，给弹窗提示
+              else if (recv_data == "664f4b") {
                 if (this.cmd_id == 3) {
                   this.clear_cmd_id()
                   uni.showToast({
                     title: that.$t("aconfig.modal.restartsuccess"),
                   })
-                } else if (this.cmd_id == 4) {
+                }
+                ////收到恢复出厂成功指令的响应，给弹窗提示
+                else if (this.cmd_id == 4) {
                   this.clear_cmd_id()
                   uni.showToast({
                     title: that.$t("aconfig.modal.restoresuccess"),
@@ -471,6 +487,7 @@
           this.timer_handle()
         }, 100)
       },
+      //发送接口
       send_cmd(cmd) {
         var data = {
           deviceId: store.state.device_info.deviceId,
@@ -586,5 +603,30 @@
       background-color: #999999 !important;
       color: white !important;
     }
+  }
+
+  /* 外层容器整体高度 */
+  .big-nb::v-deep .uni-numbox {
+    height: 60rpx !important;
+    font-size: 20rpx !important;
+  }
+
+  /* 左右按钮 */
+  .big-nb::v-deep .uni-numbox__minus,
+  .big-nb::v-deep .uni-numbox__plus {
+    width: 80rpx !important;
+    height: 60rpx !important;
+    line-height: 60rpx !important;
+    font-size: 20rpx !important;
+  }
+
+  /* 中间输入框 */
+  .big-nb::v-deep .uni-numbox__value {
+    height: 60rpx !important;
+    /* 高度 */
+    line-height: 60rpx !important;
+    /* 让文字垂直居中 */
+    font-size: 20rpx !important;
+    /* 字体大小 */
   }
 </style>
