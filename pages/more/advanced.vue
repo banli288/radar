@@ -249,10 +249,6 @@
       })
 
       if (store.state.connect_state == true) {
-        uni.showLoading({
-          title: this.$t("modal.reading")
-        })
-
         setTimeout(() => {
           this.para_read_enable = true
         }, 500)
@@ -345,7 +341,7 @@
       //更新指令id，用于该id响应的超时判断
       set_cmd_id(cmd) {
         this.cmd_id = cmd
-        this.cmd_tout = 20
+        this.cmd_tout = 30
       },
       //清除指令id，超时将不在判断，用于收到响应后执行
       clear_cmd_id() {

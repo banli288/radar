@@ -262,7 +262,7 @@
           title: this.$t("modal.reading")
         })
         this.send_cmd(radar_tx_data('77020201'))
-        this.set_tout(1, 20)
+        this.set_tout(1, 30)
       },
       //保存参数接口
       radar_save() {
@@ -275,7 +275,7 @@
         console.log(_str)
         this.send_cmd(radar_tx_data(_str))
         this.study_step = 0
-        this.set_tout(2, 20)
+        this.set_tout(2, 30)
       },
       //抬杆学习
       radar_up_study() {
