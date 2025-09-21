@@ -68,7 +68,7 @@
 			},
 			width: {
 				type: Number,
-				default: 40,
+				default: 80,
 			}
 		},
 		data() {
@@ -196,10 +196,10 @@
 	.uni-numbox__value {
 		margin: 0 2px;
 		background-color: $bg;
-		width: 40px;
+		width: 40rpx !important;
 		height: $box-height;
 		text-align: center;
-		font-size: 14px;
+		font-size: 15rpx;
 		border-width: 0;
 		color: $color;
 	}

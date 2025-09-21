@@ -18,12 +18,12 @@
           <view :style="dynamicFontStyle" class="name_size">{{item.name}}</view>
           <view class="config2_unit_v1">
             <view :style="dynamicFontStyle" class="unit_size">{{item.text}}</view>
-            <view :style="dynamicFontStyle" class="unit_size">{{item.limit[5 - item.value].text}}
+            <view :style="dynamicFontStyle" class="unit_size">{{item.limit[5 - cfg2_value[index]].text}}
             </view>
             <view :style="dynamicFontStyle" class="unit_size" style="margin-right: 10px;">{{item.unit}}</view>
             <view :style="dynamicFontStyle" class="ld_content">
-              <uni-data-select class="unselect" v-model="item.value" :localdata="item.limit" :clear="false"
-                @change="chagnge_lmd"></uni-data-select>
+              <uni-data-select class="unselect" v-model="cfg2_value[index]" :localdata="item.limit" :clear="false"
+                @change=""></uni-data-select>
             </view>
           </view>
         </view>
@@ -31,10 +31,10 @@
           <view :style="dynamicFontStyle" class="name_size">{{item.name}}</view>
           <view :style="dynamicFontStyle" class="config2_unit_v1">
             <view :style="dynamicFontStyle" class="unit_size">{{item.text}}</view>
-            <view :style="dynamicFontStyle" class="unit_size">{{item.value}}</view>
+            <view :style="dynamicFontStyle" class="unit_size">{{cfg2_value[index]}}</view>
             <view :style="dynamicFontStyle" class="unit_size" style="margin-right: 10px;">{{item.unit}}</view>
             <view class="big-nb">
-              <uni-number-box v-model="item.value" background="#0055ff" color="#fff" :min="item.limit[0]" width="25"
+              <uni-number-box v-model="cfg2_value[index]" background="#0055ff" color="#fff" :min="item.limit[0]"
                 :max="item.limit[1]" :step="item.step">
               </uni-number-box>
             </view>
@@ -75,6 +75,7 @@
     data() {
       return {
         cfg1_value: [5, 0, 0],
+		cfg2_value: [4, 0.5, 0.1, 0.3, 0, 0.6, 0.6],
 
         timer: null,
         cmd_id: 0, //0-空闲 1-都参数 2-写参数 3-重启 4-恢复出厂
@@ -244,7 +245,7 @@
       uni.setKeepScreenOn({
         keepScreenOn: true,
         success() {
-          console.log("set_keep_screen_on")
+
         }
       })
 
@@ -255,10 +256,10 @@
       }
     },
     onHide() {
-      clearTimeout(this.timer)
+	  clearTimeout(this.timer)
     },
     onUnload() {
-      clearTimeout(this.timer)
+	  clearTimeout(this.timer)
     },
     methods: {
       chagnge_lmd(e) {
@@ -279,20 +280,17 @@
         let that = this
         let _str = '86'
 
-        // _str = _str + int_to2hex((this.config1[0].value) & 0x00000000000000ff)
-        // _str = _str + int_to2hex((this.config1[1].value) & 0x00000000000000ff)
-        // _str = _str + int_to2hex((this.config1[2].value) & 0x00000000000000ff)
         _str = _str + int_to2hex((this.cfg1_value[0]) & 0x00000000000000ff)
         _str = _str + int_to2hex((this.cfg1_value[1]) & 0x00000000000000ff)
         _str = _str + int_to2hex((this.cfg1_value[2]) & 0x00000000000000ff)
 
-        _str = _str + int_to2hex((this.config2[0].value) & 0x00000000000000ff)
-        _str = _str + int_to2hex((this.config2[1].value * 10) & 0x00000000000000ff)
-        _str = _str + int_to2hex((this.config2[2].value * 10) & 0x00000000000000ff)
-        _str = _str + int_to2hex((this.config2[3].value * 10) & 0x00000000000000ff)
-        _str = _str + int_to2hex((this.config2[4].value * 10) & 0x00000000000000ff)
-        _str = _str + int_to2hex((this.config2[5].value * 10) & 0x00000000000000ff)
-        _str = _str + int_to2hex((this.config2[6].value * 10) & 0x00000000000000ff)
+        _str = _str + int_to2hex((this.cfg2_value[0]) & 0x00000000000000ff)
+        _str = _str + int_to2hex((this.cfg2_value[1] * 10) & 0x00000000000000ff)
+        _str = _str + int_to2hex((this.cfg2_value[2] * 10) & 0x00000000000000ff)
+        _str = _str + int_to2hex((this.cfg2_value[3] * 10) & 0x00000000000000ff)
+        _str = _str + int_to2hex((this.cfg2_value[4] * 10) & 0x00000000000000ff)
+        _str = _str + int_to2hex((this.cfg2_value[5] * 10) & 0x00000000000000ff)
+        _str = _str + int_to2hex((this.cfg2_value[6] * 10) & 0x00000000000000ff)
 
         this.send_cmd(radar_tx_data(_str))
         this.set_cmd_id(2)
@@ -423,26 +421,24 @@
               //读取雷达高级参数返回
               if (int_arr[0] == 0x87) {
                 if (int_arr.length == 11) {
-                  // this.config1[0].value = int_arr[1]
-                  // this.config1[1].value = int_arr[2]
-                  // this.config1[2].value = int_arr[3]
                   this.cfg1_value[0] = int_arr[1]
                   this.cfg1_value[1] = int_arr[2]
                   this.cfg1_value[2] = int_arr[3]
 
-                  this.config2[0].value = int_arr[4]
-                  this.config2[1].value = int_arr[5] / 10
-                  this.config2[2].value = int_arr[6] / 10
-                  this.config2[3].value = int_arr[7] / 10
-                  this.config2[4].value = int_arr[8] / 10
-                  this.config2[5].value = int_arr[9] / 10
-                  this.config2[6].value = int_arr[10] / 10
+                  this.cfg2_value[0] = int_arr[4]
+                  this.cfg2_value[1] = int_arr[5] / 10
+                  this.cfg2_value[2] = int_arr[6] / 10
+                  this.cfg2_value[3] = int_arr[7] / 10
+                  this.cfg2_value[4] = int_arr[8] / 10
+                  this.cfg2_value[5] = int_arr[9] / 10
+                  this.cfg2_value[6] = int_arr[10] / 10
 
                   this.clear_cmd_id()
                   uni.showToast({
                     title: that.$t("aconfig.modal.readsuccess"),
                   })
                 } else {
+				  console.log(int_arr)
                   uni.showModal({
                     title: that.$t("aconfig.modal.notice"),
                     confirmText: that.$t("aconfig.modal.confirm"),
@@ -474,6 +470,7 @@
                   })
                 }
               }
+			  this.$forceUpdate()
             }
           }
         }
@@ -561,7 +558,7 @@
   }
 
   .unit_size {
-    font-size: 12px;
+    font-size: 20rpx;
     color: #0055ff;
   }
 
@@ -604,25 +601,20 @@
   /* 外层容器整体高度 */
   .big-nb::v-deep .uni-numbox {
     height: 60rpx !important;
-    font-size: 20rpx !important;
+    font-size: 30rpx !important;
   }
 
   /* 左右按钮 */
   .big-nb::v-deep .uni-numbox__minus,
   .big-nb::v-deep .uni-numbox__plus {
-    width: 80rpx !important;
+    width: 70rpx !important;
     height: 60rpx !important;
     line-height: 60rpx !important;
-    font-size: 20rpx !important;
+    font-size: 30rpx !important;
   }
 
-  /* 中间输入框 */
   .big-nb::v-deep .uni-numbox__value {
     height: 60rpx !important;
-    /* 高度 */
     line-height: 60rpx !important;
-    /* 让文字垂直居中 */
-    font-size: 20rpx !important;
-    /* 字体大小 */
   }
 </style>

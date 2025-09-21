@@ -54,7 +54,6 @@
       uni.setKeepScreenOn({
         keepScreenOn: true,
         success() {
-          console.log("set_keep_screen_on")
         }
       })
     },

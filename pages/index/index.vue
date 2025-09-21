@@ -95,16 +95,12 @@
         updateTabBar()
       }
     },
-    onUnload() {
-      //离开页面清除定时器
-      clearTimeout(this.timer)
-    },
     onShow() {
       //设置不息屏
       uni.setKeepScreenOn({
         keepScreenOn: true,
         success() {
-          console.log("set_keep_screen_on")
+          // console.log("set_keep_screen_on")
         }
       })
 
@@ -119,9 +115,13 @@
         this.ble_btn_name = "connect"
       }
     },
+	onUnload() {
+	  //离开页面清除定时器
+	  clearTimeout(this.timer)
+	},
     onHide() {
       //离开首页清除定时器并关闭蓝牙发现
-      clearTimeout(this.timer)
+	  clearTimeout(this.timer)
       uni.stopBluetoothDevicesDiscovery({
         success() {
 

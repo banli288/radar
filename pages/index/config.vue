@@ -159,7 +159,6 @@
       uni.setKeepScreenOn({
         keepScreenOn: true,
         success() {
-          console.log("set_keep_screen_on")
         }
       })
 
@@ -173,10 +172,10 @@
       }
     },
     onHide() {
-      clearTimeout(this.timer)
+	 clearTimeout(this.timer)
     },
     onUnload() {
-      clearTimeout(this.timer)
+	 clearTimeout(this.timer)
     },
     methods: {
       set_tout(id, cnt) {
@@ -384,6 +383,7 @@
                   title: this.$t("modal.readSuccess")
                 })
               }
+			  this.$forceUpdate()
             }
           }
         }

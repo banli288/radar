@@ -86,18 +86,14 @@
       uni.setKeepScreenOn({
         keepScreenOn: true,
         success() {
-          console.log("set_keep_screen_on")
         },
       })
     },
     onHide() {
-      clearTimeout(this.timer)
+	  clearTimeout(this.timer)
     },
     onUnload() {
-      clearTimeout(this.timer)
-    },
-    beforeDestroy() {
-      clearTimeout(this.timer)
+	  clearTimeout(this.timer)
     },
     computed: {
       ...mapState(['connect_state']),
@@ -235,7 +231,7 @@
   .btn {
     height: 80rpx;
     line-height: 80rpx;
-    font-size: 16px;
+    font-size: 15rpx;
     width: 25%;
     background-color: #3478f6;
     color: white;
@@ -244,7 +240,7 @@
   .btn_hov {
     height: 80rpx;
     line-height: 80rpx;
-    font-size: 16px;
+    font-size: 15rpx;
     width: 25%;
     background-color: #95c0ff;
     color: white;

@@ -100,15 +100,12 @@
       this.timer = setTimeout(this.timer_handle, 50)
     },
     onHide() {
-      clearTimeout(this.timer)
-      this.map_init('close')
+	  this.map_init('close')
+	  clearTimeout(this.timer)
     },
     onUnload() {
-      clearTimeout(this.timer)
       this.map_init('close')
-    },
-    beforeDestroy() {
-      clearTimeout(this.timer)
+	  clearTimeout(this.timer)
     },
     computed: {
       ...mapState(['connect_state']),
