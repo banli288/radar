@@ -35,6 +35,7 @@
 </template>
 
 <script>
+	import {int_to2hex} from '@/tools/send.js'
 	import {
 		updatePageTitle
 	} from '@/common/in18-helper.js'
