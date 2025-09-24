@@ -29,6 +29,9 @@
 		<view class="_center">
 			<view class="_herf">{{$t("index.text6")}}</view>
 		</view>
+		<view class="_center" v-if="isConnected">
+			<button class="btn_close_ble" @click="close_radar_ble()">{{$t("index.text9")}}</button>
+		</view>
 		<!-- 弹窗 -->
 		<view class="dialog" v-if="showDialog" @click="closeDialog">
 			<view class="dialog_content" @click.stop="">
@@ -67,7 +70,6 @@
 				ble_name_list: [],
 				ble_rssi_list: [],
 				ble_con_state_list: [],
-				ble_btn_name: "connect",
 
 				currentLang: this.$i18n.locale
 			}
@@ -90,13 +92,6 @@
 			})
 
 			updatePageTitle()
-
-			//更新显示按钮名称
-			if (store.state.connect_state == true) {
-				this.ble_btn_name = "disconnect"
-			} else {
-				this.ble_btn_name = "connect"
-			}
 		},
 		onUnload() {
 		},
@@ -112,7 +107,7 @@
 		computed: {
 			//动态获取国际化变量，样式
 			bleConName() {
-				return this.$t(`index.bleBtnName.${this.ble_btn_name}`)
+				return this.$t(`index.bleBtnName.${this.getSearchBtnName}`)
 			},
 			isZhActive() {
 				return this.$i18n.locale === 'zh'
@@ -129,6 +124,17 @@
 					lineHeight: this.isEnglish ? '1.8' : '1.8'
 				}
 			},
+			isConnected() {
+				return store.state.connect_state
+			},
+			getSearchBtnName() {
+				if (this.isConnected) {
+					return "disconnect"
+				}		
+				else {
+					return "connect"
+				}
+			}
 		},
 		methods: {
 			//切换语言
@@ -164,9 +170,6 @@
 									title: this.$t("modal.conSuccess")
 								})
 
-								//改变按钮名字
-								this.ble_btn_name = "disconnect"
-
 								//更新蓝牙列表的连接状态
 								this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
 							} else {
@@ -194,6 +197,37 @@
 			closeDialog() {
 				this.showDialog = false
 			},
+			//关闭当前雷达的蓝牙
+			close_radar_ble() {
+				let that = this
+				uni.showModal({
+					title: that.$t("modal.notice"),
+					content: that.$t("modal.CloseRadarBLE"),
+					confirmText: that.$t("modal.confirmText"),
+					cancelText: that.$t("modal.cancelText"),
+					success(res) {
+						if (res.confirm) {
+							uni.showLoading({
+								title: that.$t("modal.setting")
+							})
+							bt.send("661B1B00", 0x66).then(res => {
+								uni.hideLoading()
+								if (!res.error) {
+									uni.showToast({
+										title: that.$t("modal.seted")
+									})
+								} else {
+									if(that.isConnected == false) {
+										uni.showToast({
+											title: that.$t("modal.seted")
+										})
+									}
+								}
+							})
+						}
+					}
+				})
+			},
 			//按钮按钮，判断连接状态，执行搜索设备或者断开连接
 			btn_press() {
 				let that = this
@@ -211,7 +245,6 @@
 									deviceId: store.state.device_info.deviceId,
 									complete() {
 										store.commit('ble_con_state_update', false)
-										that.ble_btn_name = "connect"
 
 										uni.showToast({
 											title: that.$t("modal.closeBle"),
@@ -541,6 +574,16 @@
 		margin: 0px;
 		width: 65%;
 		background-color: #95c0ff;
+		color: white;
+	}
+
+	.btn_close_ble {
+		height: 60rpx;
+		line-height: 60rpx;
+		font-size: 14px;
+		margin: 0px;
+		width: 35%;
+		background-color: #aaaaff;
 		color: white;
 	}
 

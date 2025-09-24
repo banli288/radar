@@ -19,7 +19,7 @@ export default {
     userProtocol: "用户协议",
     langSwitch: "中英文切换",
     toolInfo: "60GHz道闸雷达",
-    prodInfo: "版本1.0.0",
+    prodInfo: "版本1.0.9",
     advancedCont: "请在专业人士指导下操作，否则将有砸车风险！，确认要继续操作吗",
     download: "加载中"
   },
@@ -33,6 +33,8 @@ export default {
     notice: "提示",
     reading: "读取中",
     saving: "保存中",
+		setting: "设置中",
+		seted: "设置完成",
     readSuccess: "读取成功",
     upStudyFinish: "抬杆背景学习完成",
     dnstudyFinish: "杆起落学习完成",
@@ -48,7 +50,8 @@ export default {
     connecting: "正在连接",
     closeBle: "蓝牙已断开连接",
     connectErr: "连接失败，请重试",
-    Bleconnected: "蓝牙已连接"
+    Bleconnected: "蓝牙已连接",
+		CloseRadarBLE: "需要断电重启后，才能重新使用当前雷达蓝牙，是否关闭？",
   },
   config: {
     text1: "过车类型:",
@@ -101,6 +104,7 @@ export default {
     text6: "如何连接雷达设备?",
     text7: "搜索中",
     text8: "刷新列表",
+		text9: "关闭雷达蓝牙",
 
     bleBtnName: {
       connect: "连接蓝牙设备",

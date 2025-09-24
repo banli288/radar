@@ -19,7 +19,7 @@ export default {
     userProtocol: "User Agreement",
     langSwitch: "Language Switch",
     toolInfo: "60GHz Barrier Gate Radar",
-    prodInfo: "Version 1.0.0",
+    prodInfo: "Version 1.0.9",
     advancedCont: "Operation requires professional guidance. Risk of vehicle damage! Confirm to proceed?",
     download: "Please Waitting Download"
   },
@@ -33,6 +33,8 @@ export default {
     notice: "Notice",
     reading: "Reading...",
     saving: "Saving...",
+		setting: "Setting...",
+		seted: "Set Successfull",
     readSuccess: "Read Successfully",
     upStudyFinish: "Raise Pole Calibration Complete",
     dnstudyFinish: "Pole Movement Calibration Complete",
@@ -48,7 +50,8 @@ export default {
     connecting: "Connecting...",
     closeBle: "Bluetooth Disconnected",
     connectErr: "Connection Failed, Please Retry",
-    Bleconnected: "Bluetooth Connected"
+    Bleconnected: "Bluetooth Connected",
+		CloseRadarBLE: "The current radar Bluetooth can only be used again after a power-off and restart. Do you want to turn it off?",
   },
   config: {
     text1: "Vehicle Passing:",
@@ -101,6 +104,7 @@ export default {
     text6: "How to connect radar device?",
     text7: "Searching...",
     text8: "Refresh List",
+		text9: "Close Radar BLE",
 
     bleBtnName: {
       connect: "Connect Bluetooth",
