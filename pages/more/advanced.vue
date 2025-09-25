@@ -434,7 +434,7 @@
 
 			.ld_content,
 			.unselect {
-				width: 246rpx;
+				width: 250rpx;
 				font-size: 6px;
 			}
 		}
