@@ -30,12 +30,11 @@
       pageList() {
         return [
           this.$t("more.advancedConfig"),
-          this.$t("more.binUpdate"),
-          this.$t("more.remote"),
+          // this.$t("more.binUpdate"),
+          // this.$t("more.remote"),
           this.$t("more.commamd"),
           this.$t("more.userSheet"),
-          this.$t("more.userProtocol"),
-          //this.$t("more.langSwitch"),
+          // this.$t("more.userProtocol"),
         ]
       },
       toolInfo() {
@@ -77,22 +76,13 @@
             }
           })
         } else if (index == 1) {
-
-        } else if (index == 2) {
-
-        } else if (index == 3) {
           that.$u.route({
             //跳转调试页面
             url: '/pages/more/debug'
           })
-        } else if (index == 4) {
+        } else if (index == 2) {
           //加载说明书
           this.downloadAndOpenPdf()
-        } else if (index == 5) {
-
-        } else if (index == 6) {
-
-          this.$i18n.locale === 'zh' ? changeLanguage('en') : changeLanguage('zh')
         }
       },
       downloadAndOpenPdf() {
@@ -102,7 +92,7 @@
         })
         //说明书的网址
         const fileUrl =
-          'https://gitee.com/chuan0125/leida/raw/master/MW60%20%E4%BA%A7%E5%93%81%E8%AF%B4%E6%98%8E%E4%B9%A62025-09-12A.pdf';
+          'https://gitee.com/chuan0125/leida/raw/master/MW60%20%E4%BA%A7%E5%93%81%E8%AF%B4%E6%98%8E%E4%B9%A62025-09-23A.pdf';
         uni.downloadFile({
           url: fileUrl,
           success: (res) => {
@@ -111,17 +101,38 @@
               uni.openDocument({
                 filePath: res.tempFilePath,
                 fileType: 'pdf',
-                success: () => console.log('打开文档成功'),
-                fail: (err) => console.error('打开文档失败:', err)
+                success: () => {
+									uni.hideLoading()
+								},
+                fail: (err) => {
+									uni.hideLoading()
+									uni.showModal({
+										title: that.$t("modal.notice"),
+										content: that.$t("more.openfailed"),
+										confirmText: that.$t("modal.confirmText"),
+										cancelText: that.$t("modal.cancelText"),
+									})
+								}
               });
             } else {
-              console.error('下载失败，状态码：', res.statusCode);
+							uni.hideLoading()
+              uni.showModal({
+              	title: that.$t("modal.notice"),
+              	content: that.$t("more.downFailed"),
+              	confirmText: that.$t("modal.confirmText"),
+              	cancelText: that.$t("modal.cancelText"),
+              })
             }
           },
-          fail: (err) => console.error('下载文件失败：', err),
-          complete: (res) => {
-            uni.hideLoading()
-          }
+          fail: (err) => {
+						uni.hideLoading()
+						uni.showModal({
+							title: that.$t("modal.notice"),
+							content: that.$t("more.downFailed"),
+							confirmText: that.$t("modal.confirmText"),
+							cancelText: that.$t("modal.cancelText"),
+						})
+					},
         });
       }
     }

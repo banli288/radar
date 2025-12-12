@@ -19,9 +19,12 @@ export default {
     userProtocol: "用户协议",
     langSwitch: "中英文切换",
     toolInfo: "60GHz道闸雷达",
-    prodInfo: "版本1.0.9",
+    prodInfo: "版本1.1.1",
     advancedCont: "请在专业人士指导下操作，否则将有砸车风险！，确认要继续操作吗",
-    download: "加载中"
+    download: "加载中",
+		opensuccess: "打开成功",
+		openfailed: "打开失败",
+		downFailed: "下载失败，请检查网络"
   },
   display: {
     text1: "目标点显示 ：",
@@ -104,7 +107,7 @@ export default {
     text6: "如何连接雷达设备?",
     text7: "搜索中",
     text8: "刷新列表",
-		text9: "关闭雷达蓝牙",
+		text9: "关闭雷达蓝牙,调试下一个雷达",
 
     bleBtnName: {
       connect: "连接蓝牙设备",

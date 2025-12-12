@@ -19,9 +19,12 @@ export default {
     userProtocol: "User Agreement",
     langSwitch: "Language Switch",
     toolInfo: "60GHz Barrier Gate Radar",
-    prodInfo: "Version 1.0.9",
+    prodInfo: "Version 1.1.1",
     advancedCont: "Operation requires professional guidance. Risk of vehicle damage! Confirm to proceed?",
-    download: "Please Waitting Download"
+    download: "Please Waitting Download",
+		opensuccess: "Open Successfull",
+		openfailed: "Open Failed",
+		downFailed: "Download failed. Please check your network connection."
   },
   display: {
     text1: "Target Points:",
@@ -104,7 +107,7 @@ export default {
     text6: "How to connect radar device?",
     text7: "Searching...",
     text8: "Refresh List",
-		text9: "Close Radar BLE",
+		text9: "Turn off the radar Bluetooth and debug the next radar",
 
     bleBtnName: {
       connect: "Connect Bluetooth",

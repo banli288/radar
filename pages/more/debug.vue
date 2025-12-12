@@ -170,7 +170,7 @@
 	.btn {
 		height: 80rpx;
 		line-height: 80rpx;
-		font-size: 15rpx;
+		font-size: 14px;
 		width: 25%;
 		background-color: #3478f6;
 		color: white;
@@ -179,7 +179,7 @@
 	.btn_hov {
 		height: 80rpx;
 		line-height: 80rpx;
-		font-size: 15rpx;
+		font-size: 14px;
 		width: 25%;
 		background-color: #95c0ff;
 		color: white;

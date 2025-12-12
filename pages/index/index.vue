@@ -583,7 +583,7 @@
 		line-height: 60rpx;
 		font-size: 14px;
 		margin: 0px;
-		width: 35%;
+		width: 60%;
 		background-color: #aaaaff;
 		color: white;
 	}
