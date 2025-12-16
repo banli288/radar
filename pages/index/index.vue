@@ -267,17 +267,16 @@
 							uni.openBluetoothAdapter({
 								success() {
 									that.showDialog = true
+									uni.hideLoading()
 									uni.startBluetoothDevicesDiscovery({
 										allowDuplicatesKey: true,
 										success() {
-											uni.hideLoading()
 											uni.onBluetoothDeviceFound(function(res) {
-												//发现新的蓝牙设备
-												if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
-													//根据名字匹配雷达设备
-													if ((res.devices[0].name.indexOf("XHJ") != -1) ||
+												//根据名字匹配雷达设备
+												if ((res.devices[0].name.indexOf("XHJ") != -1) ||
 															(res.devices[0].name.indexOf("MW60S") != -1)) {
-														//加入设备列表
+													if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
+														//发现新的蓝牙设备,加入设备列表
 														that.ble_list.push(res.devices[0].deviceId)
 														that.ble_name_list.push(res.devices[0].name)
 														that.ble_rssi_list.push(res.devices[0].RSSI)

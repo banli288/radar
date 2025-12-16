@@ -213,7 +213,7 @@
 						unit: this.$t('aconfig2.items.units.meter'),
 						value: 0.3,
 						step: 0.1,
-						limit: [0.0, 2],
+						limit: [0.0, 25.5],
 					},
 					{
 						name: this.$t('aconfig2.items.rightNoDetectWidth.name'),
@@ -221,7 +221,7 @@
 						unit: this.$t('aconfig2.items.units.meter'),
 						value: 0,
 						step: 0.1,
-						limit: [0.0, 2],
+						limit: [0.0, 25.5],
 					},
 					{
 						name: this.$t('aconfig2.items.leftDetectWidth.name'),
@@ -229,7 +229,7 @@
 						unit: this.$t('aconfig2.items.units.meter'),
 						value: 0.6,
 						step: 0.1,
-						limit: [0.5, 2],
+						limit: [0.5, 25.5],
 					},
 					{
 						name: this.$t('aconfig2.items.rightDetectWidth.name'),
@@ -237,7 +237,7 @@
 						unit: this.$t('aconfig2.items.units.meter'),
 						value: 0.6,
 						step: 0.1,
-						limit: [0.5, 2],
+						limit: [0.5, 25.5],
 					},
 				]
 			},
