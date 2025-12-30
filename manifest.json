@@ -1,9 +1,9 @@
 {
-    "name" : "uView",
+    "name" : "60GHz Barrier Gate Radar",
     "appid" : "__UNI__AD9D66A",
-    "description" : "多平台快速开发的UI框架",
-    "versionName" : "1.8.4",
-    "versionCode" : "100",
+    "description" : "",
+    "versionName" : "1.1.7",
+    "versionCode" : "117",
     "transformPx" : false,
     "app-plus" : {
         "optimization" : {
@@ -23,13 +23,15 @@
         "usingComponents" : true,
         "nvueCompiler" : "uni-app",
         "compilerVersion" : 3,
-        "modules" : {},
+        "modules" : {
+            "Bluetooth" : {},
+            "Geolocation" : {}
+        },
         "distribute" : {
             "android" : {
                 "permissions" : [
                     "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
-                    "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
                     "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
                     "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
                     "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
@@ -50,41 +52,50 @@
                     "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
                 ],
-                "abiFilters" : [ "armeabi-v7a", "arm64-v8a" ]
+                "abiFilters" : [ "armeabi-v7a", "arm64-v8a" ],
+                "targetSdkVersion" : 35,
+                "minSdkVersion" : 21
             },
-            "ios" : {},
+            "ios" : {
+                "dSYMs" : false
+            },
             "sdkConfigs" : {
-                "ad" : {}
+                "ad" : {},
+                "geolocation" : {
+                    "system" : {
+                        "__platform__" : [ "android" ]
+                    }
+                }
             },
             "icons" : {
                 "android" : {
-                    "hdpi" : "unpackage/res/icons/72x72.png",
-                    "xhdpi" : "unpackage/res/icons/96x96.png",
-                    "xxhdpi" : "unpackage/res/icons/144x144.png",
-                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                    "hdpi" : "",
+                    "xhdpi" : "",
+                    "xxhdpi" : "",
+                    "xxxhdpi" : ""
                 },
                 "ios" : {
-                    "appstore" : "unpackage/res/icons/1024x1024.png",
+                    "appstore" : "",
                     "ipad" : {
-                        "app" : "unpackage/res/icons/76x76.png",
-                        "app@2x" : "unpackage/res/icons/152x152.png",
-                        "notification" : "unpackage/res/icons/20x20.png",
-                        "notification@2x" : "unpackage/res/icons/40x40.png",
-                        "proapp@2x" : "unpackage/res/icons/167x167.png",
-                        "settings" : "unpackage/res/icons/29x29.png",
-                        "settings@2x" : "unpackage/res/icons/58x58.png",
-                        "spotlight" : "unpackage/res/icons/40x40.png",
-                        "spotlight@2x" : "unpackage/res/icons/80x80.png"
+                        "app" : "",
+                        "app@2x" : "",
+                        "notification" : "",
+                        "notification@2x" : "",
+                        "proapp@2x" : "",
+                        "settings" : "",
+                        "settings@2x" : "",
+                        "spotlight" : "",
+                        "spotlight@2x" : ""
                     },
                     "iphone" : {
-                        "app@2x" : "unpackage/res/icons/120x120.png",
-                        "app@3x" : "unpackage/res/icons/180x180.png",
-                        "notification@2x" : "unpackage/res/icons/40x40.png",
-                        "notification@3x" : "unpackage/res/icons/60x60.png",
-                        "settings@2x" : "unpackage/res/icons/58x58.png",
-                        "settings@3x" : "unpackage/res/icons/87x87.png",
-                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
-                        "spotlight@3x" : "unpackage/res/icons/120x120.png"
+                        "app@2x" : "",
+                        "app@3x" : "",
+                        "notification@2x" : "",
+                        "notification@3x" : "",
+                        "settings@2x" : "",
+                        "settings@3x" : "",
+                        "spotlight@2x" : "",
+                        "spotlight@3x" : ""
                     }
                 }
             }

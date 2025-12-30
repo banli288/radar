@@ -57,6 +57,8 @@
 	} from '../../common/in18-helper.js'
 	import store from '@/store/index.js'
 	import bt from "@/tools/BluetoothManager.js"
+	import eventBus from '../../tools/eventBus.js'
+	import wsManager from '../../tools/wsManager.js'
 	export default {
 		data() {
 			return {
@@ -75,6 +77,19 @@
 			}
 		},
 		onLoad() {
+			this.ws_recv_handler = (msg) => {
+				console.log(msg)
+			}
+			eventBus.on('ws:message', this.ws_recv_handler)
+			wsManager.send({
+				'type': 'data',
+				'id': 'device_001',
+				'payload': {
+					'sf_ver': 0.001,
+					'hd_ver': 0.002
+				}
+			})
+			
 			//更新标题栏
 			updatePageTitle()
 
@@ -94,6 +109,7 @@
 			updatePageTitle()
 		},
 		onUnload() {
+			eventBus.off('ws:message', this.ws_recv_handler)
 		},
 		onHide() {
 			uni.hideLoading()

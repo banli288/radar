@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import App from './App';
 
+import wsManager from '@/tools/wsManager'
+
+wsManager.connect('ws://10.188.249.242:9000')
+
 Vue.config.productionTip = false;
 
 App.mpType = 'app';
