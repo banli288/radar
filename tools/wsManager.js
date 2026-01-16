@@ -26,7 +26,7 @@ class WSManager {
       console.log('WS connected')
       this.connected = true
       this.startHeartbeat()
-			this.send({'type': 'register','id':'device_001'})
+			this.send({ 'device_id': 'dev01', 'payload': { 'type': 'para', 'data': { 'sw': '1.0.0', 'hw': '1.0.1' }}})
     })
 
     socket.onMessage(res => {
@@ -56,8 +56,8 @@ class WSManager {
 
   startHeartbeat() {
     this.heartbeatTimer = setInterval(() => {
-      this.send({ 'type': 'ping', 'id': 'device_001' })
-    }, 15000)
+      this.send({ 'device_id': 'dev01', 'payload': { 'type': 'heart', 'data': {}}})
+    }, 30000)
   }
 
   reconnect() {
@@ -75,4 +75,4 @@ class WSManager {
   }
 }
 
-export default new WSManager()
+//export default new WSManager()

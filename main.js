@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import App from './App';
 
-import wsManager from '@/tools/wsManager'
+//import wsManager from '@/tools/wsManager'
 
-wsManager.connect('ws://10.188.249.242:9000')
+//wsManager.connect('http://10.127.234.242:3000/ws')
 
 Vue.config.productionTip = false;
 

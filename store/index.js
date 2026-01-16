@@ -15,6 +15,8 @@ const store = new Vuex.Store({
     time_out: 0,
 
     connect_state: false,
+		
+		location: null,
   },
   mutations: {
     $uStore(state, payload) {},
@@ -40,7 +42,9 @@ const store = new Vuex.Store({
     ble_con_state_update(state, con_state) {
       state.connect_state = con_state
     },
-
+		get_location(state, data) {
+			state.location = data
+		},
     setLang(state, lang) {
       state.lang = lang
       // 保存到本地缓存

@@ -3,7 +3,8 @@ import {
 	radar_tx_data,
 	radar_recv,
 	hexStringToByteArray,
-	bufferToHex
+	bufferToHex,
+	log_upload
 } from "./send.js"
 import store from "../store/index.js"
 
@@ -47,6 +48,8 @@ class BluetoothManager {
 		let tmp = bufferToHex(buffer)
 		
 		console.log("<listen>", tmp)
+		
+		log_upload('read', {'data': tmp})
 		
 		if ((tmp != "") && (tmp != null)) {
 			let data_mid = extractWithWrapper(tmp, "ab", "5a")
@@ -119,8 +122,10 @@ class BluetoothManager {
 						ok: true
 					})
 					console.log("<send>", buffer)
+					log_upload('write', {'res': 'success', 'data': buffer})
 				},
 				fail: (res) => {
+					log_upload('write', {'res': 'fail', 'data': buffer, 'err': JSON.stringify(res)})
 					resolve({
 						error: 'send fail'
 					})
@@ -147,6 +152,7 @@ class BluetoothManager {
 		  value: tmp,
 		  success(res) {
 		    console.log('<send>', tmp)
+				log_upload('write', {'res': 'success', 'data': bufferToHex(tmp)})
 		  },
 		  fail(res) {
 		    uni.showModal({
@@ -155,6 +161,7 @@ class BluetoothManager {
 		      cancelText: "Cancel"
 		    })
 		    console.log(res, tmp)
+				log_upload('write', {'res': 'fail', 'data': bufferToHex(tmp), 'err': JSON.stringify(res)})
 		  }
 		})
 	}

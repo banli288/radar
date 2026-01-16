@@ -77,18 +77,18 @@
 			}
 		},
 		onLoad() {
-			this.ws_recv_handler = (msg) => {
-				console.log(msg)
-			}
-			eventBus.on('ws:message', this.ws_recv_handler)
-			wsManager.send({
-				'type': 'data',
-				'id': 'device_001',
-				'payload': {
-					'sf_ver': 0.001,
-					'hd_ver': 0.002
-				}
-			})
+			// this.ws_recv_handler = (msg) => {
+			// 	console.log(msg)
+			// }
+			// eventBus.on('ws:message', this.ws_recv_handler)
+			// wsManager.send({
+			// 	'type': 'data',
+			// 	'id': 'device_001',
+			// 	'payload': {
+			// 		'sf_ver': 0.001,
+			// 		'hd_ver': 0.002
+			// 	}
+			// })
 			
 			//更新标题栏
 			updatePageTitle()
@@ -179,13 +179,11 @@
 									res.payload[3].toString(16) + res.payload[4].toString(16) + res.payload[5].toString(16)
 								this.product_hd = res.payload[6] + res.payload[7] / 10
 								this.product_sf = res.payload[8] + res.payload[9] / 10
-
 								//弹窗提示读取成功--链接成功
 								uni.hideLoading()
 								uni.showToast({
 									title: this.$t("modal.conSuccess")
 								})
-
 								//更新蓝牙列表的连接状态
 								this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
 							} else {

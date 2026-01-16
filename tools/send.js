@@ -332,7 +332,6 @@ export function hexToAscii(hexStr) {
   return result
 }
 
-
 export function safeCall(tag, fn) {
   return function(...args) {
     try {
@@ -343,3 +342,58 @@ export function safeCall(tag, fn) {
     }
   }
 }
+
+export function log_upload(type, data) {
+	let json_data = {
+		'device_id': store.state.device_info.deviceId, 
+		'payload': {
+			'type': type, 
+			'data': data,
+			'time': new Date()
+		}
+	}
+
+	uni.request({
+			url: 'https://teal-magpie-315941.hostingersite.com/api/upload',
+			//url: 'http://10.127.234.242:3000/api/upload',
+			data: json_data,
+			method: 'POST',
+			success: (res) => {
+					console.log(res.data);
+			},
+			fail(err) {
+				console.log(err);
+			}
+	});
+}
+
+function getLocationAsync () {
+  return new Promise((resolve, reject) => {
+    uni.getLocation({
+      type: 'wgs84',
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+export async function reportOnline () {
+  try {
+    const location = await getLocationAsync()
+
+    store.commit('get_location', location)
+
+    log_upload('state', {
+    	'status': 'online',
+    	'location': JSON.stringify(store.state.location)
+    })
+  } catch (e) {
+		log_upload('state', {
+			'status': 'online',
+			'location': JSON.stringify(e)
+		})
+		
+    console.log('location error', e)
+  }
+}
+

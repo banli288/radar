@@ -19,7 +19,7 @@ export default {
     userProtocol: "User Agreement",
     langSwitch: "Language Switch",
     toolInfo: "60GHz Barrier Gate Radar",
-    prodInfo: "Version 1.1.1",
+    prodInfo: "Version 1.1.6",
     advancedCont: "Operation requires professional guidance. Risk of vehicle damage! Confirm to proceed?",
     download: "Please Waitting Download",
 		opensuccess: "Open Successfull",
