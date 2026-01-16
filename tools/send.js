@@ -7,7 +7,7 @@ export function send_data(obj) {
   }
 
   if (obj.mode == 'hex') {
-    var tmp = new Uint8Array(obj.dat.match(/[\da-f]{2}/gi).map(function(h) {
+    var tmp = new Uint8Array(obj.dat.match(/[\da-f]{2}/gi).map(function (h) {
       return parseInt(h, 16)
     }));
     uni.writeBLECharacteristicValue({
@@ -51,7 +51,7 @@ export function send_data(obj) {
 export function ab2hex(hex) {
   const hexArr = Array.prototype.map.call(
     new Uint8Array(hex),
-    function(bit) {
+    function (bit) {
       return ('00' + bit.toString(16)).slice(-2)
     })
   return hexArr.join('')
@@ -71,7 +71,7 @@ export function hex2int(hex) {
     a[i] = code;
   }
 
-  return a.reduce(function(acc, c) {
+  return a.reduce(function (acc, c) {
     acc = 16 * acc + c;
     return acc;
   }, 0);
@@ -333,7 +333,7 @@ export function hexToAscii(hexStr) {
 }
 
 export function safeCall(tag, fn) {
-  return function(...args) {
+  return function (...args) {
     try {
       return fn.apply(this, args)
     } catch (e) {
@@ -344,30 +344,31 @@ export function safeCall(tag, fn) {
 }
 
 export function log_upload(type, data) {
-	let json_data = {
-		'device_id': store.state.device_info.deviceId, 
-		'payload': {
-			'type': type, 
-			'data': data,
-			'time': new Date()
-		}
-	}
+  let json_data = {
+    'device_id': store.state.SN,
+    'payload': {
+      'type': type,
+      'data': data,
+      'time': new Date()
+    }
+  }
 
-	uni.request({
-			url: 'https://teal-magpie-315941.hostingersite.com/api/upload',
-			//url: 'http://10.127.234.242:3000/api/upload',
-			data: json_data,
-			method: 'POST',
-			success: (res) => {
-					console.log(res.data);
-			},
-			fail(err) {
-				console.log(err);
-			}
-	});
+  uni.request({
+    url: 'https://teal-magpie-315941.hostingersite.com/api/upload',
+    //url: 'http://10.127.234.242:3000/api/upload',
+    data: json_data,
+    method: 'POST',
+    timeout: 5000,
+    success: (res) => {
+      console.log(res.data);
+    },
+    fail(err) {
+      console.log(err);
+    }
+  });
 }
 
-function getLocationAsync () {
+function getLocationAsync() {
   return new Promise((resolve, reject) => {
     uni.getLocation({
       type: 'wgs84',
@@ -377,23 +378,65 @@ function getLocationAsync () {
   })
 }
 
-export async function reportOnline () {
+function getAddress(latitude, longitude) {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: 'https://nominatim.openstreetmap.org/reverse',
+      method: 'GET',
+      timeout: 5000,
+      data: {
+        format: 'json',
+        lat: latitude,
+        lon: longitude,
+        zoom: 18,
+        addressdetails: 1
+      },
+      header: {
+        // 非常重要：Nominatim 要求必须带 User-Agent
+        'User-Agent': 'uniapp-test/1.0'
+      },
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+export async function reportOnline() {
   try {
     const location = await getLocationAsync()
-
-    store.commit('get_location', location)
-
-    log_upload('state', {
-    	'status': 'online',
-    	'location': JSON.stringify(store.state.location)
+    store.commit('get_location', {
+      'latitude': location.latitude,
+      'longitude': location.longitude,
+      'address': ''
     })
+
+    try {
+      const address = await getAddress(location.latitude, location.longitude)
+
+      if (address.statusCode === 200) {
+        const address_name = address.data.display_name
+
+        store.commit('get_location', {
+          'latitude': location.latitude,
+          'longitude': location.longitude,
+          'address': address_name
+        })
+
+        console.log(JSON.stringify(store.state.location))
+      }
+    } catch (e) {
+      store.commit('get_location', {
+        'latitude': location.latitude,
+        'longitude': location.longitude,
+        'address': JSON.stringify(e)
+      })
+    }
+
+    log_upload('state', { 'status': 'online', 'location': store.state.location })
   } catch (e) {
-		log_upload('state', {
-			'status': 'online',
-			'location': JSON.stringify(e)
-		})
-		
+    log_upload('state', { 'status': 'online', 'location': JSON.stringify(e) })
     console.log('location error', e)
   }
 }
+
 

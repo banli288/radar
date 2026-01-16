@@ -11,15 +11,17 @@ const store = new Vuex.Store({
       w_characteristicId: ''
     },
 
+    SN: '',
+
     recv_buf: '',
     time_out: 0,
 
     connect_state: false,
-		
-		location: null,
+
+    location: null,
   },
   mutations: {
-    $uStore(state, payload) {},
+    $uStore(state, payload) { },
     set_device_info(state, obj) {
       if (obj.deviceId != null) state.device_info.deviceId = obj.deviceId
       if (obj.serviceId != null) state.device_info.serviceId = obj.serviceId
@@ -42,9 +44,12 @@ const store = new Vuex.Store({
     ble_con_state_update(state, con_state) {
       state.connect_state = con_state
     },
-		get_location(state, data) {
-			state.location = data
-		},
+    get_location(state, location) {
+      state.location = location
+    },
+    set_SN(state, SN) {
+      state.SN = SN
+    },
     setLang(state, lang) {
       state.lang = lang
       // 保存到本地缓存
@@ -71,21 +76,21 @@ const store = new Vuex.Store({
 
       // 更新每个tab的文字
       const tabBarConfig = [{
-          index: 0,
-          key: 'tabBar.home'
-        },
-        {
-          index: 1,
-          key: 'tabBar.config'
-        },
-        {
-          index: 2,
-          key: 'tabBar.display'
-        },
-        {
-          index: 3,
-          key: 'tabBar.more'
-        }
+        index: 0,
+        key: 'tabBar.home'
+      },
+      {
+        index: 1,
+        key: 'tabBar.config'
+      },
+      {
+        index: 2,
+        key: 'tabBar.display'
+      },
+      {
+        index: 3,
+        key: 'tabBar.more'
+      }
       ]
 
       tabBarConfig.forEach(item => {

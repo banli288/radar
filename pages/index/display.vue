@@ -15,7 +15,7 @@
 			<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
 				@tap="map_init('close')">{{$t("display.btnStopDis")}}</button>
 			<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
-				@tap="map_init('save')">{{$t("display.ClearDis")}}</button>
+				@tap="map_init('clear')">{{$t("display.ClearDis")}}</button>
 		</view>
 	</view>
 </template>
@@ -33,6 +33,7 @@
 	import {
 		mapState
 	} from 'vuex'
+import { log_upload } from "../../tools/send"
 	export default {
 		data() {
 			return {
@@ -115,9 +116,11 @@
 		},
 		onHide() {
 			this.map_init('close')
+      bt.offRawData()
 		},
 		onUnload() {
 			this.map_init('close')
+      bt.offRawData()
 		},
 		computed: {
 			...mapState(['connect_state']),
@@ -136,11 +139,13 @@
 			map_init(mode) {
 				var cmd = ''
 
+        log_upload('debug', {'display_set': mode})
+
 				if (mode == 'open') {
 					cmd = '66010109'
 				} else if (mode == 'close') {
 					cmd = '66010100'
-				} else if (mode == 'save') {
+				} else if (mode == 'clear') {
 					this.recv_text = ""
 					return
 				}

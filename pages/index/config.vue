@@ -44,14 +44,13 @@
 	import {
 		mapState
 	} from 'vuex'
+  import { log_upload } from '../../tools/send'
 	export default {
 		data() {
 			return {
 				pole_value: 5,
 				car_value: 1,
-
 				dect_range: 1.0,
-
 				img_url: "",
 			}
 		},
@@ -190,6 +189,12 @@
 						})
 					}
 				})
+
+        log_upload('read', {
+          'dect_range': this.dect_range,
+          'pole_value': this.pole_value,
+          'car_value': this.car_value,
+        })
 			},
 			//保存参数接口
 			radar_save() {
@@ -201,6 +206,12 @@
 				_str = _str + int_to2hex((that.dect_range * 10) & 0x00000000000000ff) +
 					int_to2hex(that.pole_value & 0x00000000000000ff) + int_to2hex(that.car_value)
 					
+        log_upload('write', {
+          'dect_range': this.dect_range * 10,
+          'pole_value': this.pole_value,
+          'car_value': this.car_value,
+        })
+
 				bt.send(_str, 0x76).then(res => {
 					uni.hideLoading()
 					if (!res.error) {
@@ -227,6 +238,7 @@
 			},
 			//抬杆学习
 			radar_up_study() {
+        log_upload('state', '抬杆学习')
 				let that = this
 				uni.showModal({
 					title: that.$t("modal.notice"),
@@ -271,6 +283,7 @@
 			},
 			//落杆学习指令
 			radar_down_study() {
+        log_upload('state', '落杆学习')
 				let that = this
 				uni.showModal({
 					title: that.$t("modal.notice"),
@@ -311,6 +324,7 @@
 																	})
 																	bt.send('66181800', 0x66).then(res => {
 																		if (!res.error) {
+                                      log_upload('state', '学习完成')
 																			setTimeout(() => {
 																				uni.hideLoading()
 																				uni.showModal({

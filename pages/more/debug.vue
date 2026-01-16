@@ -48,6 +48,7 @@
 	import {
 		mapState
 	} from 'vuex'
+import { log_upload } from "../../tools/send";
 	export default {
 		data() {
 			return {
@@ -89,8 +90,10 @@
 			})
 		},
 		onHide() {
+      bt.offRawData()
 		},
 		onUnload() {
+      bt.offRawData()
 		},
 		computed: {
 			...mapState(['connect_state']),
@@ -117,6 +120,8 @@
 				let str = this.send_text.replace(" ", "")
 				this.recv_add_data(str, this.disSend)
 
+        log_upload('debug', {'send': str})
+
 				if (this.send_format == 1) {
 					this.send_cmd_ascii(str)
 					bt.send_data(str, 'str')
@@ -126,10 +131,12 @@
 			},
 			//清除发送框
 			send_clear() {
+        log_upload('debug', '清除调试发送区')
 				this.send_text = ""
 			},
 			//清除接收框
 			recv_clear() {
+        log_upload('debug', '清除调试接收数据')
 				this.recv_text = ""
 			},
 			//接收数据，显示在接收返回框
@@ -139,6 +146,8 @@
 				if (this.recv_format == 1) {
 					tmp = str_arr_toascii(str)
 				}
+
+        log_upload('debug', {'recv': tmp})
 
 				this.recv_text += getCurrentTimeStr() + dir + ":\n" + tmp + '\n'
 				this.$nextTick(() => {

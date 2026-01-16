@@ -23,7 +23,7 @@
 					'status': 'BLE', 
 					'connect': store.state.connect_state, 
 					'MAC': store.state.device_info.deviceId,
-					'location': JSON.stringify(store.state.location)
+					'location': store.state.location
 				})
       })
     }

@@ -61,19 +61,10 @@
 
 <script>
 	import store from '@/store/index.js'
-	import {
-		mapState
-	} from 'vuex'
-	import {
-		hex2int,
-		int_to2hex,
-		radar_recv,
-		radar_tx_data,
-		send_data,
-		hexStringToByteArray,
-		extractWithWrapper
-	} from '@/tools/send.js'
+	import { mapState } from 'vuex'
+	import { int_to2hex } from '@/tools/send.js'
 	import bt from "@/tools/BluetoothManager.js"
+  import { log_upload } from '../../tools/send';
 	export default {
 		data() {
 			return {
@@ -285,6 +276,20 @@
 						
 							this.$forceUpdate()
 						
+              log_upload('read', {
+                'Human/Vehicle Distinction': this.cfg1_value[0],
+                'Traffic Direction': this.cfg1_value[1],
+                'Relay Status': this.cfg1_value[2],
+
+                'radarSensitivity': this.cfg2_value[0],
+                'delayDropTime': this.cfg2_value[1],
+                'proximityNoDetect': this.cfg2_value[2],
+                'leftNoDetectWidth': this.cfg2_value[3],
+                'rightNoDetectWidth': this.cfg2_value[4],
+                'leftDetectWidth': this.cfg2_value[5],
+                'rightDetectWidth': this.cfg2_value[6],
+              })
+
 							uni.showToast({
 								title: that.$t("aconfig.modal.readsuccess"),
 							})
@@ -325,6 +330,20 @@
 				_str = _str + int_to2hex((this.cfg2_value[5] * 10) & 0x00000000000000ff)
 				_str = _str + int_to2hex((this.cfg2_value[6] * 10) & 0x00000000000000ff)
 
+        log_upload('write', {
+          'Human/Vehicle Distinction': this.cfg1_value[0],
+          'Traffic Direction': this.cfg1_value[1],
+          'Relay Status': this.cfg1_value[2],
+
+          'radarSensitivity': this.cfg2_value[0],
+          'delayDropTime': this.cfg2_value[1],
+          'proximityNoDetect': this.cfg2_value[2],
+          'leftNoDetectWidth': this.cfg2_value[3],
+          'rightNoDetectWidth': this.cfg2_value[4],
+          'leftDetectWidth': this.cfg2_value[5],
+          'rightDetectWidth': this.cfg2_value[6],
+        })
+
 				uni.showLoading({
 					title: that.$t("aconfig.modal.saving")
 				})
@@ -355,10 +374,10 @@
 					content: that.$t("aconfig.modal.radarRestart"),
 					success(res) {
 						if (res.confirm) {
+              log_upload('restart', '')
 							uni.showLoading({
 								title: that.$t("aconfig.modal.restarting")
 							})
-							
 							bt.send("66141400", 0x66).then(res => {
 								if (!res.error) {
 									uni.showToast({
@@ -388,6 +407,7 @@
 					content: that.$t("aconfig.modal.restore"),
 					success(res) {
 						if (res.confirm) {
+              log_upload('restore', '')
 							uni.showLoading({
 								title: that.$t("aconfig.modal.restoring"),
 							})

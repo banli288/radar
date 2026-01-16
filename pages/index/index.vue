@@ -59,6 +59,7 @@
 	import bt from "@/tools/BluetoothManager.js"
 	import eventBus from '../../tools/eventBus.js'
 	import wsManager from '../../tools/wsManager.js'
+  import { log_upload } from '../../tools/send.js'
 	export default {
 		data() {
 			return {
@@ -174,16 +175,29 @@
 					if (!res.error) {
 						bt.send("89020201", 0x89).then(res => {
 							if (!res.error) {
+                //弹窗提示读取成功--链接成功
+								uni.hideLoading()
+								uni.showToast({
+									title: this.$t("modal.conSuccess")
+								})
+
 								this.product_type = res.payload[0]
 								this.product_SN = res.payload[1].toString(16) + res.payload[2].toString(16) +
 									res.payload[3].toString(16) + res.payload[4].toString(16) + res.payload[5].toString(16)
 								this.product_hd = res.payload[6] + res.payload[7] / 10
 								this.product_sf = res.payload[8] + res.payload[9] / 10
-								//弹窗提示读取成功--链接成功
-								uni.hideLoading()
-								uni.showToast({
-									title: this.$t("modal.conSuccess")
-								})
+
+                store.commit('set_SN', this.product_SN)
+
+                log_upload('read', {
+                  'product_type': this.product_type,
+                  'product_SN': this.product_SN,
+                  'product_hd': this.product_hd,
+                  'product_sf': this.product_sf,
+                  'MAC': store.state.device_info.deviceId,
+                  'location': store.state.location
+                })
+
 								//更新蓝牙列表的连接状态
 								this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
 							} else {
