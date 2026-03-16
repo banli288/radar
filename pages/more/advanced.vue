@@ -1,60 +1,61 @@
 <template>
-	<view>
-		<view class="config1">
-			<view class="config1_unit" v-for="(item, index) in config1" v-if="index != 1" :key="index">
-				<view class="config1_unit_v1" style="width: 50%;">
-					<view :style="dynamicFontStyle" class="name_size">{{item.name}}</view>
-					<view :style="dynamicFontStyle" class="dis_size">{{item.description}}</view>
+	<view class="page">
+		<view class="col">
+			<view class="card row" v-for="(item, index) in config1" v-if="index != 1" :key="index">
+				<view class="col" style="width: 65%;">
+					<view :style="dynamicFontStyle">{{item.name}}</view>
+					<view :style="dynamicFontStyle" style="width: 80%; font-size: 20rpx;">{{item.description}}</view>
 				</view>
-				<view class="ld_content">
-					<uni-data-select class="unselect" :localdata="item.checkbox" mode="tag" v-model="cfg1_value[index]"
+				<view style="width: 35%;">
+					<uni-data-select :localdata="item.checkbox" mode="tag" v-model="cfg1_value[index]"
 						:clear="false"></uni-data-select>
 				</view>
 			</view>
 		</view>
-		<view class=" config2">
-			<view class="config2_unit" v-for="(item, index) in config2" :key="index">
-				<view v-if="item.name === $t('aconfig2.items.radarSensitivity.name')" class='ldlmd'>
-					<view :style="dynamicFontStyle" class="name_size">{{item.name}}</view>
-					<view class="config2_unit_v1">
-						<view :style="dynamicFontStyle" class="unit_size">{{item.text}}</view>
-						<view :style="dynamicFontStyle" class="unit_size">{{item.limit[5 - cfg2_value[index]].text}}
-						</view>
-						<view :style="dynamicFontStyle" class="unit_size" style="margin-right: 10px;">{{item.unit}}
-						</view>
-						<view :style="dynamicFontStyle" class="ld_content">
-							<uni-data-select class="unselect" v-model="cfg2_value[index]" :localdata="item.limit"
-								:clear="false" @change=""></uni-data-select>
-						</view>
+		<view class="col">
+			<view class="card row" v-for="(item, index) in config2" :key="index">
+				<view class="row" style="width: 100vw;" v-if="item.name === $t('aconfig2.items.radarSensitivity.name')">
+					<view class="row" style="width: 65%;">
+						<view :style="dynamicFontStyle" style="width: 50%;">{{item.name}}</view>
+						<view :style="dynamicFontStyle" style="width: 25%;">{{item.text}}</view>
+						<view :style="dynamicFontStyle" style="width: 15%;">{{item.limit[5 - cfg2_value[index]].text}}</view>
+						<view :style="dynamicFontStyle" style="width: 10%;">{{item.unit}}</view>
+					</view>
+					<view :style="dynamicFontStyle" style="width: 35%">
+						<uni-data-select v-model="cfg2_value[index]" :localdata="item.limit"
+							:clear="false" @change=""></uni-data-select>
 					</view>
 				</view>
-				<view class="content" v-else>
-					<view :style="dynamicFontStyle" class="name_size">{{item.name}}</view>
-					<view :style="dynamicFontStyle" class="config2_unit_v1">
-						<view :style="dynamicFontStyle" class="unit_size">{{item.text}}</view>
-						<view :style="dynamicFontStyle" class="unit_size">{{cfg2_value[index]}}</view>
-						<view :style="dynamicFontStyle" class="unit_size" style="margin-right: 10px;">{{item.unit}}
-						</view>
-						<view class="big-nb">
-							<uni-number-box v-model="cfg2_value[index]" background="#0055ff" color="#fff"
-								:min="item.limit[0]" :max="item.limit[1]" :step="item.step">
-							</uni-number-box>
-						</view>
+				<view class="row" style="width: 100vw;" v-else>
+					<view class="row" style="width: 65%;">
+						<view :style="dynamicFontStyle" style="width: 60%;">{{item.name}}</view>
+						<view :style="dynamicFontStyle" style="width: 20%;">{{item.text}}</view>
+						<view :style="dynamicFontStyle" style="width: 10%; text-align: center;">{{cfg2_value[index]}}</view>
+						<view :style="dynamicFontStyle" style="width: 10%;">{{item.unit}}</view>
+					</view>
+					<view class="row" style="width: 35%">
+					    <image src="@/static/-.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_sub(index)"></image>
+					    <input type="number" maxlength="4" :value="cfg2_value[index]" @input="onInputChange(index, $event)"
+								style="text-align: center; width: 30%;"/>
+					    <image src="@/static/+.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_add(index)"></image>
 					</view>
 				</view>
 			</view>
 		</view>
-		<view class="first_btn" style="margin-top: 10px;">
-			<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-				@tap="radar_read()">{{$t("aconfig.btnRead")}}</button>
-			<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-				@tap="radar_save()">{{$t("aconfig.btnSave")}}</button>
-		</view>
-		<view class="second_btn">
-			<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-				@tap="radar_restart()">{{$t("aconfig.btnRestart")}}</button>
-			<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-				@tap="radar_reset()">{{$t("aconfig.btnRestore")}}</button>
+		
+		<view class="card col">
+			<view class="row" style="margin-bottom: 20rpx;">
+				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+					@tap="radar_read()">{{$t("aconfig.btnRead")}}</button>
+				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+					@tap="radar_save()">{{$t("aconfig.btnSave")}}</button>
+			</view>
+			<view class="row">
+				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+					@tap="radar_restart()">{{$t("aconfig.btnRestart")}}</button>
+				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+					@tap="radar_reset()">{{$t("aconfig.btnRestore")}}</button>
+			</view>
 		</view>
 	</view>
 </template>
@@ -62,7 +63,7 @@
 <script>
 	import store from '@/store/index.js'
 	import { mapState } from 'vuex'
-	import { int_to2hex } from '@/tools/send.js'
+	import { int_to2hex, jlog } from '@/tools/send.js'
 	import bt from "@/tools/BluetoothManager.js"
   import { log_upload } from '../../tools/send';
 	export default {
@@ -70,6 +71,15 @@
 			return {
 				cfg1_value: [5, 0, 0],
 				cfg2_value: [4, 0.5, 0.1, 0.3, 0, 0.6, 0.6],
+				cfg2_limit: [
+					{min: 1, max: 5, step: 1},
+					{min: 0.1, max: 25.5, step: 0.1},
+					{min: 0.0, max: 25.5, step: 0.1},
+					{min: 0.0, max: 25.5, step: 0.1},
+					{min: 0.0, max: 25.5, step: 0.1},
+					{min: 0.5, max: 25.5, step: 0.1},
+					{min: 0.5, max: 25.5, step: 0.1},
+				],
 
 				timer: null,
 				cmd_id: 0, //0-空闲 1-都参数 2-写参数 3-重启 4-恢复出厂
@@ -85,8 +95,8 @@
 			},
 			dynamicFontStyle() {
 				return {
-					fontSize: this.isEnglish ? '12px' : '16px',
-					lineHeight: this.isEnglish ? '1.8' : '1.8'
+					fontSize: this.isEnglish ? '12px' : '18px',
+					lineHeight: this.isEnglish ? '1.8' : '2.0'
 				}
 			},
 			config1() {
@@ -248,6 +258,37 @@
 		onHide() {},
 		onUnload() {},
 		methods: {
+			para_add(idx) {
+					if (this.cfg2_value[idx] < this.cfg2_limit[idx].max) {
+							let newVal = this.cfg2_value[idx] + this.cfg2_limit[idx].step
+							// 使用 $set 确保响应式更新
+							this.$set(this.cfg2_value, idx, Number(newVal.toFixed(1))) // 保留一位小数
+					}
+			},
+			
+			para_sub(idx) {
+					if (this.cfg2_value[idx] > this.cfg2_limit[idx].min) {
+							let newVal = this.cfg2_value[idx] - this.cfg2_limit[idx].step
+							// 同样使用 $set 确保响应式
+							this.$set(this.cfg2_value, idx, Number(newVal.toFixed(1)))
+					}
+			},
+			
+			onInputChange(index, event) {
+					let val = parseFloat(event.detail.value)
+					if (isNaN(val)) return
+					
+					// 限制在范围内
+					const min = this.cfg2_limit[index].min
+					const max = this.cfg2_limit[index].max
+					if (val < min) val = min
+					if (val > max) val = max
+					
+					// 保留一位小数
+					val = Math.round(val * 10) / 10
+					
+					this.$set(this.cfg2_value, index, val)
+			},
 			chagnge_lmd(e) {
 				this.config2[0].value = e
 			},
@@ -255,13 +296,14 @@
 			radar_read() {
 				let that = this
 
-				uni.showLoading({
-					title: that.$t("aconfig.modal.reading")
-				})
+				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
+				uni.showLoading({title: that.$t("aconfig.modal.reading"), mask:true})
 
 				bt.send("87020201", 0x87).then(res => {
 					if (!res.error) {
 						if (res.payload.length == 10) {
+							clearTimeout(timer)
+							
 							this.cfg1_value[0] = res.payload[0]
 							this.cfg1_value[1] = res.payload[1]
 							this.cfg1_value[2] = res.payload[2]
@@ -290,26 +332,8 @@
                 'rightDetectWidth': this.cfg2_value[6],
               })
 
-							uni.showToast({
-								title: that.$t("aconfig.modal.readsuccess"),
-							})
-						} else {
-							uni.hideLoading()
-							uni.showModal({
-								title: that.$t("aconfig.modal.notice"),
-								confirmText: that.$t("aconfig.modal.confirm"),
-								cancelText: that.$t("aconfig.modal.cancel"),
-								content: that.$t("aconfig.modal.readingTout"),
-							})
+							uni.showToast({title: that.$t("aconfig.modal.readsuccess"),})
 						}
-					} else {
-						uni.hideLoading()
-						uni.showModal({
-							title: that.$t("modal.notice"),
-							confirmText: that.$t("modal.confirmText"),
-							cancelText: that.$t("modal.cancelText"),
-							content: that.$t("modal.readTineout"),
-						})
 					}
 				})
 			},
@@ -344,23 +368,48 @@
           'rightDetectWidth': this.cfg2_value[6],
         })
 
-				uni.showLoading({
-					title: that.$t("aconfig.modal.saving")
-				})
+				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
+				uni.showLoading({title: that.$t("aconfig.modal.saving"), mask: true})
 				
 				bt.send(_str, 0x86).then(res => {
 					if (!res.error) {
-						uni.showToast({
-							title: that.$t("aconfig.modal.savesuccess"),
-						})
-					} else {
-						uni.hideLoading()
-						uni.showModal({
-							title: that.$t("aconfig.modal.notice"),
-							confirmText: that.$t("aconfig.modal.confirm"),
-							cancelText: that.$t("aconfig.modal.cancel"),
-							content: that.$t("aconfig.modal.savingTout"),
-						})
+						uni.showToast({title: that.$t("aconfig.modal.savesuccess")})
+						
+            bt.send("87020201", 0x87).then(res => {
+              if (!res.error) {
+								clearTimeout(timer)
+								
+                if (res.payload.length == 10) {
+                  this.cfg1_value[0] = res.payload[0]
+                  this.cfg1_value[1] = res.payload[1]
+                  this.cfg1_value[2] = res.payload[2]
+                
+                  this.cfg2_value[0] = res.payload[3]
+                  this.cfg2_value[1] = res.payload[4] / 10
+                  this.cfg2_value[2] = res.payload[5] / 10
+                  this.cfg2_value[3] = res.payload[6] / 10
+                  this.cfg2_value[4] = res.payload[7] / 10
+                  this.cfg2_value[5] = res.payload[8] / 10
+                  this.cfg2_value[6] = res.payload[9] / 10
+                
+                  this.$forceUpdate()
+                
+                  log_upload('read', {
+                    'Human/Vehicle Distinction': this.cfg1_value[0],
+                    'Traffic Direction': this.cfg1_value[1],
+                    'Relay Status': this.cfg1_value[2],
+
+                    'radarSensitivity': this.cfg2_value[0],
+                    'delayDropTime': this.cfg2_value[1],
+                    'proximityNoDetect': this.cfg2_value[2],
+                    'leftNoDetectWidth': this.cfg2_value[3],
+                    'rightNoDetectWidth': this.cfg2_value[4],
+                    'leftDetectWidth': this.cfg2_value[5],
+                    'rightDetectWidth': this.cfg2_value[6],
+                  })
+                }
+              }
+            })
 					}
 				})
 			},
@@ -374,23 +423,13 @@
 					content: that.$t("aconfig.modal.radarRestart"),
 					success(res) {
 						if (res.confirm) {
-              log_upload('restart', '')
-							uni.showLoading({
-								title: that.$t("aconfig.modal.restarting")
-							})
+							let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
+							uni.showLoading({title: that.$t("aconfig.modal.restarting"), mask: true})
+							
 							bt.send("66141400", 0x66).then(res => {
 								if (!res.error) {
-									uni.showToast({
-										title: that.$t("aconfig.modal.restartsuccess"),
-									})
-								} else {
-									uni.hideLoading()
-									uni.showModal({
-										title: that.$t("aconfig.modal.notice"),
-										confirmText: that.$t("aconfig.modal.confirm"),
-										cancelText: that.$t("aconfig.modal.cancel"),
-										content: that.$t("aconfig.modal.restartingTout"),
-									})
+									clearTimeout(timer)
+									uni.showToast({title: that.$t("aconfig.modal.restartsuccess")})
 								}
 							})
 						}
@@ -407,24 +446,13 @@
 					content: that.$t("aconfig.modal.restore"),
 					success(res) {
 						if (res.confirm) {
-              log_upload('restore', '')
-							uni.showLoading({
-								title: that.$t("aconfig.modal.restoring"),
-							})
+              let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
+              uni.showLoading({title: that.$t("aconfig.modal.setting"), mask: true})
 							
 							bt.send("66020202", 0x66).then(res => {
 								if (!res.error) {
-									uni.showToast({
-										title: that.$t("aconfig.modal.restoresuccess"),
-									})
-								} else {
-									uni.hideLoading()
-									uni.showModal({
-										title: that.$t("aconfig.modal.notice"),
-										confirmText: that.$t("aconfig.modal.confirm"),
-										cancelText: that.$t("aconfig.modal.cancel"),
-										content: that.$t("aconfig.modal.restoreingTout"),
-									})
+									clearTimeout(timer)
+									uni.showToast({title: that.$t("aconfig.modal.restoresuccess")})
 								}
 							})
 						}
@@ -435,108 +463,8 @@
 	}
 </script>
 
-<style lang="scss" scoped>
-	.config1 {
-		display: flex;
-		flex-direction: column;
-
-		.config1_unit {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-right: 10px;
-
-			.config1_unit_v1 {
-				display: flex;
-				flex-direction: column;
-				margin: 10px;
-			}
-
-			.ld_content,
-			.unselect {
-				width: 250rpx;
-				font-size: 6px;
-			}
-		}
-	}
-
-	.config2 {
-		display: flex;
-		flex-direction: column;
-
-		.ldlmd {}
-
-		.content,
-		.ldlmd {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin: 10px;
-
-			.config2_unit_v1 {
-				width: 65%;
-				display: flex;
-				flex-direction: row;
-				justify-content: space-between;
-				align-items: center;
-
-				.ld_content,
-				.unselect {
-					width: 250rpx;
-					font-size: 6px;
-				}
-			}
-		}
-	}
-
-	.name_size {
-		width: 45%;
-	}
-
-	.dis_size {
-		font-size: 12px
-	}
-
-	.unit_size {
-		font-size: 20rpx;
-		color: #0055ff;
-	}
-
-	.btn {
-		height: 80rpx;
-		line-height: 80rpx;
-		font-size: 16px;
-		margin: 0px;
-		width: 48%;
-		background-color: #3478f6;
-		color: white;
-	}
-
-	.btn_hover {
-		height: 80rpx;
-		line-height: 80rpx;
-		font-size: 16px;
-		margin: 0px;
-		width: 48%;
-		background-color: #00ffff;
-		color: white;
-	}
-
-	.first_btn {
-		margin-bottom: 20rpx;
-	}
-
-	.first_btn,
-	.second_btn {
-		padding: 0rpx 10px;
-		display: flex;
-		justify-content: space-between;
-
-		button[disabled] {
-			background-color: #999999 !important;
-			color: white !important;
-		}
-	}
+<style lang="scss">
+	@import '../common.scss';
 
 	/* 外层容器整体高度 */
 	.big-nb::v-deep .uni-numbox {

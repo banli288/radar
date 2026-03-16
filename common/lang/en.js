@@ -22,9 +22,10 @@ export default {
     prodInfo: "Version 1.1.7",
     advancedCont: "Operation requires professional guidance. Risk of vehicle damage! Confirm to proceed?",
     download: "Please Waitting Download",
-		opensuccess: "Open Successfull",
-		openfailed: "Open Failed",
-		downFailed: "Download failed. Please check your network connection."
+    opensuccess: "Open Successfull",
+    openfailed: "Open Failed",
+    downFailed: "Download failed. Please check your network connection.",
+		relay: "relay aera setting"
   },
   display: {
     text1: "Target Points:",
@@ -36,8 +37,8 @@ export default {
     notice: "Notice",
     reading: "Reading...",
     saving: "Saving...",
-		setting: "Setting...",
-		seted: "Set Successfull",
+    setting: "Setting...",
+    seted: "Set Successfull",
     readSuccess: "Read Successfully",
     upStudyFinish: "Raise Pole Calibration Complete",
     dnstudyFinish: "Pole Movement Calibration Complete",
@@ -54,7 +55,7 @@ export default {
     closeBle: "Bluetooth Disconnected",
     connectErr: "Connection Failed, Please Retry",
     Bleconnected: "Bluetooth Connected",
-		CloseRadarBLE: "The current radar Bluetooth can only be used again after a power-off and restart. Do you want to turn it off?",
+    CloseRadarBLE: "The current radar Bluetooth can only be used again after a power-off and restart. Do you want to turn it off?",
   },
   config: {
     text1: "Vehicle Passing:",
@@ -64,6 +65,7 @@ export default {
     btnSave: "Save Basic Parameters",
     btnUpStudy: "Raise Pole Calibration",
     btnDownStudy: "Pole Movement Calibration",
+    studyEndNotice: "There is a risk involved. Please adjust the installation location, pole type, etc.",
 
     poleType: {
       type0: "Right-fixed straight pole",
@@ -72,6 +74,8 @@ export default {
       type3: "Left-fixed railing pole",
       type4: "Right-fixed advertising pole",
       type5: "Left-fixed advertising pole",
+      type6: "Right-fixed airborne pole",
+      type7: "Left-fixed airborne pole",
     },
     carType: {
       type0: "Small-curve passing (angle < 10°)",
@@ -107,7 +111,7 @@ export default {
     text6: "How to connect radar device?",
     text7: "Searching...",
     text8: "Refresh List",
-		text9: "Turn off the radar Bluetooth and debug the next radar",
+    text9: "Turn off the radar Bluetooth and debug the next radar",
 
     bleBtnName: {
       connect: "Connect Bluetooth",

@@ -1,20 +1,22 @@
 <template>
-	<view>
+	<view class="page">
 		<!-- <view style="height: 50vh;">
 			<qiun-data-charts type="scatter" :opts="opts" :chartData="chartData" loadingType="0" animation="false"/>
 		</view> -->
-		<view style="font-size: 16px; margin-bottom: 10px; margin-top: 10px; margin-left: 2px;">{{$t("display.text1")}}
+		
+		<view class="card">{{$t("display.text1")}}</view>
+		<view class="card">
+			<scroll-view scroll-y="true" class="scroll_view1" :scroll-top="scrollTop">
+				<text id="scrollContainer" selectable="true" class="view_text">{{recv_text}}</text>
+			</scroll-view>
 		</view>
-		<scroll-view scroll-y="true" class="scroll_view1" :scroll-top="scrollTop">
-			<text id="scrollContainer" selectable="true" class="view_text">{{recv_text}}</text>
-		</scroll-view>
 
-		<view style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-			<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
+		<view class="card row" style="justify-content: space-between;">
+			<button class="btn" hover-class="btn_hov" style="width: 25%; font-size: 25rpx;" :disabled="!connect_state"
 				@tap="map_init('open')">{{$t("display.btnStartDis")}}</button>
-			<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
+			<button class="btn" hover-class="btn_hov" style="width: 25%; font-size: 25rpx;" :disabled="!connect_state"
 				@tap="map_init('close')">{{$t("display.btnStopDis")}}</button>
-			<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
+			<button class="btn" hover-class="btn_hov" style="width: 25%; font-size: 25rpx;" :disabled="!connect_state"
 				@tap="map_init('clear')">{{$t("display.ClearDis")}}</button>
 		</view>
 	</view>
@@ -89,6 +91,8 @@ import { log_upload } from "../../tools/send"
 			// this.chartData = JSON.parse(JSON.stringify(this.res))
 		},
 		onShow() {
+			store.commit("set_active_page", "display")
+		
 			updatePageTitle()
 
 			uni.setKeepScreenOn({
@@ -117,10 +121,12 @@ import { log_upload } from "../../tools/send"
 		onHide() {
 			this.map_init('close')
       bt.offRawData()
+			store.commit("set_active_page", "")
 		},
 		onUnload() {
 			this.map_init('close')
       bt.offRawData()
+			store.commit("set_active_page", "")
 		},
 		computed: {
 			...mapState(['connect_state']),
@@ -138,8 +144,7 @@ import { log_upload } from "../../tools/send"
 			//开启/关闭坐标显示指令
 			map_init(mode) {
 				var cmd = ''
-
-        log_upload('debug', {'display_set': mode})
+				let that = this
 
 				if (mode == 'open') {
 					cmd = '66010109'
@@ -154,6 +159,7 @@ import { log_upload } from "../../tools/send"
 					bt.send(cmd, 0x66).then(res => {
 						if (!res.error) {
 							this.recv_text += "OK\n"
+							log_upload('debug', {'display_set': mode})
 						} else {
 							uni.showModal({
 							  title: that.$t("modal.notice"),
@@ -170,27 +176,11 @@ import { log_upload } from "../../tools/send"
 </script>
 
 <style lang="scss" scoped>
+	@import "../common.scss";
+	
 	.scroll_view1 {
 		height: 500px;
 		background: #f9f9f9;
 		border: 1px solid #ccc;
-	}
-
-	.btn {
-		height: 80rpx;
-		line-height: 80rpx;
-		width: 25%;
-		font-size: 14px;
-		background-color: #3478f6;
-		color: white;
-	}
-
-	.btn_hov {
-		height: 80rpx;
-		line-height: 80rpx;
-		width: 25%;
-		font-size: 14px;
-		background-color: #95c0ff;
-		color: white;
 	}
 </style>

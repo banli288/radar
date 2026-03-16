@@ -1,12 +1,12 @@
 <template>
-  <view class="content">
-    <view class="title">
+  <view class="page">
+    <view class="card title">
       <image class="img_class" src="@/static/0.jpg" mode="heightFix"></image>
-      <view style="font-size: 20px; margin-bottom: 5px;">{{toolInfo}}</view>
+      <view style="font-size: 20px;">{{toolInfo}}</view>
       <view>{{prodInfo}}</view>
     </view>
     <view class="_label">
-      <view class="label_item" v-for="(item,index) in pageList" :key="index" @tap="more_opa(index)">
+      <view class="card label_item" v-for="(item,index) in pageList" :key="index" @tap="more_opa(index)">
         <view class="label_title">{{item}}</view>
         <image class="title_icon" src="@/static/threeangle.png"></image>
       </view>
@@ -33,6 +33,7 @@
           // this.$t("more.binUpdate"),
           // this.$t("more.remote"),
           this.$t("more.commamd"),
+					this.$t("more.relay"),
           this.$t("more.userSheet"),
           // this.$t("more.userProtocol"),
         ]
@@ -81,6 +82,11 @@
             url: '/pages/more/debug'
           })
         } else if (index == 2) {
+				   that.$u.route({
+				     //跳转调试页面
+				     url: '/pages/more/relay'
+				   })
+				 } else if (index == 3) {
           //加载说明书
           this.downloadAndOpenPdf()
         }
@@ -140,11 +146,8 @@
 </script>
 
 <style lang="scss" scoped>
-  .content {
-    display: flex;
-    flex-direction: column;
-  }
-
+	@import "../common.scss";
+	
   .img_class {
     height: 120px;
     margin: 0 auto !important;
@@ -159,11 +162,6 @@
   }
 
   ._label {
-    margin: 20px 0px;
-    // display: flex;
-    // flex-direction: column;
-    // padding: 0rpx 0rpx;
-
     .label_item {
       //border: 1px solid #000000;
       font-size: 16px;

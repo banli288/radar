@@ -22,9 +22,10 @@ export default {
     prodInfo: "版本1.1.7",
     advancedCont: "请在专业人士指导下操作，否则将有砸车风险！，确认要继续操作吗",
     download: "加载中",
-		opensuccess: "打开成功",
-		openfailed: "打开失败",
-		downFailed: "下载失败，请检查网络"
+    opensuccess: "打开成功",
+    openfailed: "打开失败",
+    downFailed: "下载失败，请检查网络",
+		relay: "继电器区域设置"
   },
   display: {
     text1: "目标点显示 ：",
@@ -36,8 +37,8 @@ export default {
     notice: "提示",
     reading: "读取中",
     saving: "保存中",
-		setting: "设置中",
-		seted: "设置完成",
+    setting: "设置中",
+    seted: "设置完成",
     readSuccess: "读取成功",
     upStudyFinish: "抬杆背景学习完成",
     dnstudyFinish: "杆起落学习完成",
@@ -45,7 +46,8 @@ export default {
     confirmText: "确定",
     confirmText1: "下一步",
     cancelText: "取消",
-    readTineout: "读取超时，请重试",
+    readTineout: "读取超时",
+		savingTout: "保存超时",
     conSuccess: "连接成功",
     disconBle: "确定断开蓝牙连接?",
     searchingDev: "正在搜索设备",
@@ -54,7 +56,7 @@ export default {
     closeBle: "蓝牙已断开连接",
     connectErr: "连接失败，请重试",
     Bleconnected: "蓝牙已连接",
-		CloseRadarBLE: "需要断电重启后，才能重新使用当前雷达蓝牙，是否关闭？",
+    CloseRadarBLE: "需要断电重启后，才能重新使用当前雷达蓝牙，是否关闭？",
   },
   config: {
     text1: "过车类型:",
@@ -64,6 +66,7 @@ export default {
     btnSave: "保存参数",
     btnUpStudy: "抬杆背景学习",
     btnDownStudy: "杆起落学习",
+    studyEndNotice: "有风险，请调整安装位置、杆子类型等。",
 
     poleType: {
       type0: "直杆右固定",
@@ -72,6 +75,8 @@ export default {
       type3: "栅栏杆左固定",
       type4: "广告杆右固定",
       type5: "广告杆左固定",
+      type6: "空降杆右固定",
+      type7: "空降杆左固定",
     },
     carType: {
       type0: "小弯过车(小于10度)",
@@ -107,7 +112,7 @@ export default {
     text6: "如何连接雷达设备?",
     text7: "搜索中",
     text8: "刷新列表",
-		text9: "关闭雷达蓝牙,调试下一个雷达",
+    text9: "关闭雷达蓝牙,调试下一个雷达",
 
     bleBtnName: {
       connect: "连接蓝牙设备",

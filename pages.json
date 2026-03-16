@@ -5,8 +5,8 @@
   //     "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
   //   }
   // },
-
-  "pages": [{
+  "pages": [
+    {
       "path": "pages/index/index",
       "style": {
         "navigationBarTitleText": "",
@@ -41,27 +41,40 @@
         "navigationBarBackgroundColor": "#3478f6",
         "navigationBarTextStyle": "white"
       }
+		}
+  ],
+  "subPackages": [
+    {
+      "root": "pages/more/",
+      "pages": [
+        {
+          "path": "advanced",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "debug",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "remote",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+				{
+					"path": "relay",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				}
+      ]
     }
   ],
-  "subPackages": [{
-    "root": "pages/more/",
-    "pages": [{
-        "path": "advanced",
-        "style": {
-          "navigationBarTitleText": ""
-        }
-      },
-      {
-        "path": "debug",
-        "style": {
-          "navigationBarTitleText": ""
-        }
-      }
-    ]
-  }],
-  "preloadRule": {
-
-  },
+  "preloadRule": {},
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uView",
@@ -73,7 +86,8 @@
     "selectedColor": "#303133",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
-    "list": [{
+    "list": [
+      {
         "pagePath": "pages/index/index",
         "text": "",
         "iconPath": "static/tabbar12.png", // 未选中图标

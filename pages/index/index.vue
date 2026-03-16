@@ -1,29 +1,29 @@
 <template>
-	<view class="content">
-		<view class="img_box">
+	<view class="page">
+		<view class="card img_box" style="margin-top: 20rpx;">
 			<image class="img_class" src="@/static/0.jpg"></image>
 			<button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
 			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button>
 		</view>
 
-		<view class="_row2">
+		<view class="card row info">
 			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text2")}}</view>
 			<view :style="dynamicFontStyle" class="_row2_right">MW60S</view>
 		</view>
-		<view class="_row2">
+		<view class="card row info">
 			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text3")}}</view>
 			<view :style="dynamicFontStyle" class="_row2_right">{{product_SN}}</view>
 		</view>
-		<view class="_row2">
+		<view class="card row info">
 			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text4")}}</view>
 			<view :style="dynamicFontStyle" class="_row2_right">V{{product_hd}}</view>
 		</view>
-		<view class="_row2">
+		<view class="card row info">
 			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text5")}}</view>
 			<view :style="dynamicFontStyle" class="_row2_right">V{{product_sf}}</view>
 		</view>
 
-		<view class="_center">
+		<view class="_center" style="margin-top: 30rpx;">
 			<button class="btn" hover-class="btn_hover" @click="btn_press()">{{bleConName}}</button>
 		</view>
 		<view class="_center">
@@ -59,7 +59,7 @@
 	import bt from "@/tools/BluetoothManager.js"
 	import eventBus from '../../tools/eventBus.js'
 	import wsManager from '../../tools/wsManager.js'
-  import { log_upload } from '../../tools/send.js'
+  import { jlog, log_upload } from '../../tools/send.js'
 	export default {
 		data() {
 			return {
@@ -79,7 +79,7 @@
 		},
 		onLoad() {
 			// this.ws_recv_handler = (msg) => {
-			// 	console.log(msg)
+			// 	jlog(msg)
 			// }
 			// eventBus.on('ws:message', this.ws_recv_handler)
 			// wsManager.send({
@@ -187,13 +187,18 @@
 								this.product_hd = res.payload[6] + res.payload[7] / 10
 								this.product_sf = res.payload[8] + res.payload[9] / 10
 
-                store.commit('set_SN', this.product_SN)
+                store.commit('set_product', {
+                  type: this.product_type,
+                  SN: this.product_SN,
+                  hd: this.product_hd,
+                  sf: this.product_sf
+                })
 
                 log_upload('read', {
-                  'product_type': this.product_type,
-                  'product_SN': this.product_SN,
-                  'product_hd': this.product_hd,
-                  'product_sf': this.product_sf,
+                  'product_type': store.state.product_info.type,
+                  'product_SN': store.state.product_info.SN,
+                  'product_hd': store.state.product_info.hd,
+                  'product_sf': store.state.product_info.sf,
                   'MAC': store.state.device_info.deviceId,
                   'location': store.state.location
                 })
@@ -273,7 +278,6 @@
 									deviceId: store.state.device_info.deviceId,
 									complete() {
 										store.commit('ble_con_state_update', false)
-
 										uni.showToast({
 											title: that.$t("modal.closeBle"),
 										})
@@ -287,6 +291,11 @@
 			//搜索蓝牙设备
 			ble_search() {
 				var that = this
+        that.showDialog = true
+        that.ble_list = []
+				that.ble_name_list = []
+				that.ble_rssi_list = []
+				that.ble_con_state_list = []
 				uni.showLoading({
 					title: that.$t("modal.searchingDev"),
 					mask: true,
@@ -294,15 +303,13 @@
 						setTimeout(() => {
 							uni.openBluetoothAdapter({
 								success() {
-									that.showDialog = true
-									uni.hideLoading()
 									uni.startBluetoothDevicesDiscovery({
 										allowDuplicatesKey: true,
 										success() {
 											uni.onBluetoothDeviceFound(function(res) {
 												//根据名字匹配雷达设备
-												if ((res.devices[0].name.indexOf("XHJ") != -1) ||
-															(res.devices[0].name.indexOf("MW60S") != -1)) {
+												if ((res.devices[0].name.indexOf("XHJ") != -1) || (res.devices[0].name.indexOf("MW60S") != -1)) {
+                          uni.hideLoading()
 													if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
 														//发现新的蓝牙设备,加入设备列表
 														that.ble_list.push(res.devices[0].deviceId)
@@ -315,7 +322,7 @@
 										},
 										fail(res) {
 											uni.hideLoading()
-											console.log("discov err", res)
+											jlog("discov err", res)
 										}
 									})
 								},
@@ -328,7 +335,7 @@
 									});
 								}
 							})
-						}, 1000)
+						}, 100)
 					}
 				})
 			},
@@ -344,74 +351,71 @@
 							deviceId: deviceId,
 							timeout: 10000,
 							success() {
-								uni.stopBluetoothDevicesDiscovery({
-									success() {
-										uni.getBLEDeviceServices({
-											deviceId: deviceId,
-											success(res) {
-												//遍历服务id
-												for (let item of res.services) {
-													if (item.isPrimary) {
-														let serviceId = item.uuid
-														//找到蓝牙IC的指定服务ID
-														if (item.uuid.indexOf('0000AE3') != -1) {
-															//获取特征ID
-															uni.getBLEDeviceCharacteristics({
-																deviceId: deviceId,
-																serviceId: serviceId,
-																success(res) {
-																	//遍历特征ID，目的是查找读写ID
-																	for (let item of res.characteristics) {
-																		//找到监听ID，直接开启监听
-																		if (item.properties.notify) {
-																			let characteristicId = item.uuid;
-																			uni.notifyBLECharacteristicValueChange({
-																				deviceId: deviceId,
-																				serviceId: serviceId,
-																				characteristicId: characteristicId,
-																				state: true,
-																				success() {
-																					that.showDialog = false
-
-																					//存储ID信息
-																					let obj = {
-																						deviceId: deviceId,
-																						serviceId: serviceId,
-																						r_characteristicId: characteristicId
-																					}
-
-																					//遍历查找写ID
-																					for (let item of res.characteristics) {
-																						if (item.properties.write) {
-																							obj.w_characteristicId = item.uuid
-																							store.commit('set_device_info', obj)
-																							console.log('device_info:', store.state.device_info)
-																							
-																							//找到写ID，延时500ms通过写ID写入读取版本信息指令
-																							setTimeout(() => {
-																								that.read_product()
-																							}, 500)
+								setTimeout(() => {
+									uni.stopBluetoothDevicesDiscovery({
+										success() {
+											uni.getBLEDeviceServices({
+												deviceId: deviceId,
+												success(res) {
+													for (let item of res.services) {
+														if (item.isPrimary) {
+															let serviceId = item.uuid
+															if (item.uuid.indexOf('0000AE3') != -1) {
+																uni.getBLEDeviceCharacteristics({
+																	deviceId: deviceId,
+																	serviceId: serviceId,
+																	success(res) {
+																		for (let item of res.characteristics) {
+																			if (item.properties.notify) {
+																				let characteristicId = item.uuid;
+																				uni.notifyBLECharacteristicValueChange({
+																					deviceId: deviceId,
+																					serviceId: serviceId,
+																					characteristicId: characteristicId,
+																					state: true,
+																					success() {
+																						that.showDialog = false
+									
+																						//存储ID信息
+																						let obj = {
+																							deviceId: deviceId,
+																							serviceId: serviceId,
+																							r_characteristicId: characteristicId
+																						}
+									
+																						//遍历查找写ID
+																						for (let item of res.characteristics) {
+																							if (item.properties.write) {
+																								obj.w_characteristicId = item.uuid
+																								store.commit('set_device_info', obj)
+																								// jlog('LOG', 'device_info:', store.state.device_info)
+																								
+																								//找到写ID，延时500ms通过写ID写入读取版本信息指令
+																								setTimeout(() => {
+																									that.read_product()
+																								}, 500)
+																							}
 																						}
 																					}
-																				}
-																			})
+																				})
+																			}
 																		}
+																	},
+																	fail() {
+																		jlog('read character fail')
 																	}
-																},
-																fail() {
-																	console.log('read character fail')
-																}
-															})
+																})
+															}
 														}
 													}
 												}
-											}
-										})
-									}
-								})
+											})
+										}
+									})
+								}, 2000)
 							},
 							fail(res) {
-								console.log(res)
+								jlog(res)
 								uni.hideLoading()
 								if (store.state.connect_state == false) {
 									uni.showModal({
@@ -438,6 +442,13 @@
 </script>
 
 <style lang="scss" scoped>
+	@import "../common.scss";
+	
+	.info {
+		padding: 20rpx; 
+		font-size: 35rpx; 
+	}
+	
 	.content {
 		width: 100%;
 		height: 100%;
@@ -623,6 +634,6 @@
 
 	._herf {
 		font-size: 16px;
-		color: #0055ff;
+		color: #3478f6;
 	}
 </style>

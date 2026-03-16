@@ -1,82 +1,127 @@
 <template>
-	<view>
-		<view>
-			<view style="margin: 5px; padding: 5px 5px; display: flex; justify-content: space-between; align-items: center;">
-				<view>{{$t("debug.recv")}}</view>
-				<view style="display: flex; flex-direction: row; align-items: center;">
-					<view style="margin-right: 10px;">{{$t("debug.format")}}</view>
-					<uni-data-checkbox :localdata="recv_format_box" v-model="recv_format"></uni-data-checkbox>
-				</view>
-			</view>
+	<view class="page" style="width: 100%;">
+    <view class="card row" style="justify-content: space-around;">
+      <view>{{$t("debug.recv")}}</view>
+      <view style="display: flex; flex-direction: row; align-items: center;">
+        <view style="margin-right: 10px;">{{$t("debug.format")}}</view>
+        <uni-data-checkbox :localdata="recv_format_box" v-model="recv_format"></uni-data-checkbox>
+      </view>
+    </view>
 
+    <view class="card">
 			<scroll-view scroll-y="true" class="scroll_view1" :scroll-top="scrollTop">
-				<text id="scrollContainer" selectable="true" class="view_text">{{recv_text}}</text>
+			  <text id="scrollContainer" selectable="true" class="view_text">{{recv_text}}</text>
 			</scroll-view>
+		</view>
 
-			<view style="margin: 5px; padding: 5px 5px; display: flex; justify-content: space-between; align-items: center;">
-				<view>{{$t("debug.send")}}</view>
-				<view style="display: flex; flex-direction: row; align-items: center;">
-					<view style="margin-right: 10px;">{{$t("debug.format")}}</view>
-					<uni-data-checkbox :localdata="send_format_box" v-model="send_format"></uni-data-checkbox>
-				</view>
-			</view>
+    <view class="card row" style="justify-content: space-around;">
+      <view>{{$t("debug.send")}}</view>
+      <view style="display: flex; flex-direction: row; align-items: center;">
+        <view style="margin-right: 10px;">{{$t("debug.format")}}</view>
+        <uni-data-checkbox :localdata="send_format_box" v-model="send_format"></uni-data-checkbox>
+      </view>
+    </view>
 
+		<view class="card">
 			<scroll-view scroll-y="true" class="scroll_view2" :scroll-top="0">
 				<textarea v-model="send_text" class="view_text">{{send_text}}</textarea>
 			</scroll-view>
+		</view>
+    
+		<view class="card">
+			<view style="margin-bottom: 10rpx;">
+			  <uni-data-select class="unselect" v-model="debug_index" :localdata="debug_arr" :clear="false" @change=""></uni-data-select>
+			</view>
+			
+			<view class="row">
+			  <button class="btn" hover-class="btn_hov" :disabled="!connect_state"
+			    @tap="send_btn">{{$t("debug.btnSend")}}</button>
+			  <button class="btn" hover-class="btn_hov" :disabled="!connect_state"
+			    @tap="recv_clear">{{$t("debug.btnClearSend")}}</button>
+			</view>
+		</view>
 
-			<view style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+		<view class="card">
+			<scroll-view scroll-y="true" style="height: 80px; margin: 10px;">
+			  <view v-for="(item, index) in aera_sensi" style="display: flex; flex-direction: row; align-items: center; padding: 5px;">
+			    <view style="min-width: 120px; font-size: 14px;">区域{{index+1}}灵敏度</view>
+			    <view style="margin-left: 100px; font-size: 30px;" @tap="sub_sensi(index)">-</view>
+			    <view style="margin-left: 40px;">{{item.value}}</view>
+			    <view style="margin-left: 40px; font-size: 30px;" @tap="add_sensi(index)">+</view>
+			  </view>
+			</scroll-view>
+			
+			<view style="display: flex; flex-direction: row; align-items: center; padding: 5px; margin: 10px;">
+			  <view style="min-width: 120px; font-size: 14px;">杆子类型</view>
+			  <view style="margin-left: 100px; font-size: 30px;" @tap="sub_pole_type">-</view>
+			  <view style="margin-left: 40px;">{{pole_type.value}}</view>
+			  <view style="margin-left: 40px; font-size: 30px;" @tap="add_pole_type">+</view>
+			</view>
+			
+			<view class="row">
 				<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
-					@tap="send_btn">{{$t("debug.btnSend")}}</button>
+				  @tap="get_sensi">读取灵敏度</button>
 				<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
-					@tap="recv_clear">{{$t("debug.btnClearSend")}}</button>
-				<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
-					@tap="send_clear">{{$t("debug.btnClearRecv")}}</button>
+					@tap="set_sensi">设置灵敏度</button>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import {
-		bufferToHex,
-		getCurrentTimeStr,
-		str_arr_toascii
-	} from "@/tools/send.js"
+	import { getCurrentTimeStr, int_to2hex } from "@/tools/send.js"
 	import bt from "@/tools/BluetoothManager.js"
-	import store from '@/store/index.js'
 	import {
 		mapState
 	} from 'vuex'
-import { log_upload } from "../../tools/send";
+import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_upload } from "../../tools/send";
 	export default {
 		data() {
 			return {
 				recv_text: "",
 				recv_format: 0,
-				recv_format_box: [{
-						text: "HEX",
-						value: 0
-					},
-					{
-						text: "ASCII",
-						value: 1
-					},
+				recv_format_box: [
+          {text: "HEX",value: 0},
+					{text: "ASCII",value: 1},
 				],
 
-				send_text: "56AB89020201715AA5",
+				send_text: "",
 				send_format: 0,
-				send_format_box: [{
-						text: "HEX",
-						value: 0
-					},
-					{
-						text: "ASCII",
-						value: 1
-					},
+				send_format_box: [
+          {text: "HEX",value: 0},
+          {text: "ASCII",value: 1},
 				],
 
-				scrollTop: 0
+        debug_index: 0,
+        debug_arr: [
+          {value: 0 ,text: '用户自定义指令'},
+          {value: 1 ,text: '读取环境参数指令'},
+          {value: 2 ,text: '读取全部参数指令'},
+          {value: 3 ,text: '读取人车区分参数指令'},
+          {value: 4 ,text: '读取噪声参数指令'},
+        ],
+        debug_cmd: [
+          '',
+          '66020204',
+          '66020205',
+          '66020206',
+          '66020207',
+        ],
+
+				scrollTop: 0,
+
+        aera_sensi: [
+          {value: 10, min: 0, max: 255, step: 1},
+          {value: 10, min: 0, max: 255, step: 1},
+          {value: 42, min: 0, max: 255, step: 1},
+          {value: 10, min: 0, max: 255, step: 1},
+          {value: 10, min: 0, max: 255, step: 1},
+          {value: 10, min: 0, max: 255, step: 1},
+          {value: 10, min: 0, max: 255, step: 1},
+          {value: 10, min: 0, max: 255, step: 1},
+          {value: 10, min: 0, max: 255, step: 1}
+        ],
+        pole_type: {value: 0, min: 0, max: 1, step: 1},
 			}
 		},
 		onShow() {
@@ -86,7 +131,13 @@ import { log_upload } from "../../tools/send";
 			})
 			
 			bt.onRawData(res => {
-			  this.recv_add_data(bufferToHex(res), this.disRecv)
+        let data = ''
+        
+        if (this.recv_format == 1) data = bytesToAsciiString(res)
+        else data = bytesToHexString(res)
+
+        this.recv_add_data(data, this.disRecv)
+        log_upload('debug-recv', data)
 			})
 		},
 		onHide() {
@@ -106,6 +157,51 @@ import { log_upload } from "../../tools/send";
 			},
 		},
 		methods: {
+      add_sensi(idx) {
+        if (this.aera_sensi[idx].value < this.aera_sensi[idx].max) 
+          this.aera_sensi[idx].value += this.aera_sensi[idx].step
+      },
+      sub_sensi(idx) {
+        if (this.aera_sensi[idx].value > this.aera_sensi[idx].min) 
+          this.aera_sensi[idx].value -= this.aera_sensi[idx].step
+      },
+      add_pole_type() {
+        if (this.pole_type.value < this.pole_type.max) 
+          this.pole_type.value += this.pole_type.step
+      },
+      sub_pole_type() {
+        if (this.pole_type.value > this.pole_type.min) 
+          this.pole_type.value -= this.pole_type.step
+      },
+			get_sensi() {
+				bt.send("98020201", 0x98).then(res => {
+				  if (!res.error) {
+				    if (res.payload.length == 10) {
+				      for (let i = 0; i < 9; i++) this.aera_sensi[i].value = res.payload[i]
+							this.pole_type.value = res.payload[9]
+							
+							uni.showToast({title: this.$t("modal.readSuccess")})
+				    } else uni.showToast({title: this.$t("modal.readfail")})
+				  } else uni.showToast({title: this.$t("modal.readfail")})
+				})
+			},
+      set_sensi() {
+        let conf_str = '88'
+
+        for (let i = 0; i < 9; i++) conf_str = conf_str + int_to2hex(this.aera_sensi[i].value & 0xFF)
+        conf_str += int_to2hex(this.pole_type.value & 0xFF)
+
+        bt.send(conf_str, 0x88).then(res => {
+          if (!res.error) {
+						uni.showToast({title: this.$t("modal.seted")})
+						
+            log_upload('write', {
+              'aera_sensi': this.aera_sensi,
+              'pole_type': this.pole_type
+            })
+          }   
+        })
+      },
 			scrollToBottom() {
 				uni.createSelectorQuery()
 					.in(this)
@@ -117,39 +213,41 @@ import { log_upload } from "../../tools/send";
 			},
 			//将发送文本框内的数据组帧发送出去
 			send_btn() {
-				let str = this.send_text.replace(" ", "")
-				this.recv_add_data(str, this.disSend)
+        if (this.debug_index != 0) {
+          log_upload('debug-send', this.debug_cmd[this.debug_index])
+          bt.send(this.debug_cmd[this.debug_index], 0xFF).then(res => {
+            if (!res.error) {
+              let data = bytesToAsciiString(res.payload)
 
-        log_upload('debug', {'send': str})
+              if (this.recv_format == 1) this.recv_add_data(data, this.disRecv)
+              else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
 
-				if (this.send_format == 1) {
-					this.send_cmd_ascii(str)
-					bt.send_data(str, 'str')
-				} else {
-					bt.send_data(str, 'hex')
-				}
+              log_upload('debug-recv', data)
+            }
+          })
+        } else {
+          let str = this.send_text.replace(" ", "")
+
+          log_upload('debug-send', str)
+
+          if (this.send_format == 1) this.recv_add_data(hexStringToAscii(str), this.disSend)
+          else this.recv_add_data(str, this.disSend)
+
+          if (this.send_format == 1) bt.send_data(str, 'str')
+          else bt.send_data(str, 'hex')
+        }
 			},
 			//清除发送框
 			send_clear() {
-        log_upload('debug', '清除调试发送区')
 				this.send_text = ""
 			},
 			//清除接收框
 			recv_clear() {
-        log_upload('debug', '清除调试接收数据')
 				this.recv_text = ""
 			},
 			//接收数据，显示在接收返回框
 			recv_add_data(data, dir) {
-				let tmp = data
-
-				if (this.recv_format == 1) {
-					tmp = str_arr_toascii(str)
-				}
-
-        log_upload('debug', {'recv': tmp})
-
-				this.recv_text += getCurrentTimeStr() + dir + ":\n" + tmp + '\n'
+				this.recv_text += getCurrentTimeStr() + dir + ":\n" + data + '\n'
 				this.$nextTick(() => {
 					this.scrollToBottom()
 				})
@@ -159,38 +257,24 @@ import { log_upload } from "../../tools/send";
 </script>
 
 <style lang="scss" scoped>
+	@import "../common.scss";
+	
+  .unselect { height: 80rpx; font-size: 8px;}
 	.scroll_view1 {
-		height: 400px;
+		height: 250px;
 		background: #f9f9f9;
 		border: 1px solid #ccc;
 	}
 
 	.scroll_view2 {
-		height: 150px;
+		height: 80px;
 		background: #f9f9f9;
 		border: 1px solid #ccc;
+    margin-bottom: 10px;
 	}
 
 	.view_text {
 		white-space: normal;
 		word-break: break-word;
-	}
-
-	.btn {
-		height: 80rpx;
-		line-height: 80rpx;
-		font-size: 14px;
-		width: 25%;
-		background-color: #3478f6;
-		color: white;
-	}
-
-	.btn_hov {
-		height: 80rpx;
-		line-height: 80rpx;
-		font-size: 14px;
-		width: 25%;
-		background-color: #95c0ff;
-		color: white;
 	}
 </style>

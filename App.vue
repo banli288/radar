@@ -1,6 +1,6 @@
 <script>
   import store from './store'
-	import { log_upload, reportOnline } from './tools/send'
+	import { log_upload, reportOnline, jlog } from './tools/send'
   export default {
     onLaunch() {			
 			reportOnline()
@@ -17,14 +17,8 @@
         } else {
           store.commit('ble_con_state_update', true)
         }
-        console.log('BLE Connect State, Store State', res.connected, store.state.connect_state)
 				
-				log_upload('state', {
-					'status': 'BLE', 
-					'connect': store.state.connect_state, 
-					'MAC': store.state.device_info.deviceId,
-					'location': store.state.location
-				})
+				jlog('BLE', 'connect state', store.state.connect_state)
       })
     }
   }

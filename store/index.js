@@ -11,7 +11,12 @@ const store = new Vuex.Store({
       w_characteristicId: ''
     },
 
-    SN: '',
+    product_info: {
+      type: 0,
+      SN: '',
+      hd: 0,
+      sf: 0,
+    },
 
     recv_buf: '',
     time_out: 0,
@@ -19,6 +24,8 @@ const store = new Vuex.Store({
     connect_state: false,
 
     location: null,
+		
+		active_page: "",
   },
   mutations: {
     $uStore(state, payload) { },
@@ -47,14 +54,20 @@ const store = new Vuex.Store({
     get_location(state, location) {
       state.location = location
     },
-    set_SN(state, SN) {
-      state.SN = SN
+    set_product(state, prod) {
+      state.product_info.type = prod.type
+      state.product_info.SN = prod.SN
+      state.product_info.hd = prod.hd
+      state.product_info.sf = prod.sf
     },
     setLang(state, lang) {
       state.lang = lang
       // 保存到本地缓存
       uni.setStorageSync('lang', lang)
-    }
+    },
+		set_active_page(state, page) {
+			state.active_page = page
+		},
   },
   actions: {
     changeLanguage({

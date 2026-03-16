@@ -6,6 +6,7 @@
     "versionCode" : "117",
     "transformPx" : false,
     "app-plus" : {
+				"debug": true,
         "optimization" : {
             "subPackages" : true
         },
