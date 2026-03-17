@@ -268,6 +268,7 @@
         bt.send(_str, 0x76).then(res => {
 					if (!res.error) {
 						clearTimeout(timer)
+						uni.hideLoading()
 						
             if (store.state.product_info.sf > 1.6) {
               let conf_str = '88'

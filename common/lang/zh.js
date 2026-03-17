@@ -19,7 +19,7 @@ export default {
     userProtocol: "用户协议",
     langSwitch: "中英文切换",
     toolInfo: "60GHz道闸雷达",
-    prodInfo: "版本1.1.7",
+    prodInfo: "版本1.1.9",
     advancedCont: "请在专业人士指导下操作，否则将有砸车风险！，确认要继续操作吗",
     download: "加载中",
     opensuccess: "打开成功",

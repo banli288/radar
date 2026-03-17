@@ -65,7 +65,7 @@ class BluetoothManager {
 						delete this.pendingRequests[0xFF]
 					} else {
 						let data = this.parsePacket(this.recvBuffer) // 正常解码
-						// jlog('decode', data)
+						// jlog('DECODE', data)
 						if (data != null) {
 						// 如果是响应，先匹配请求
 						if (data.reqId && this.pendingRequests[data.reqId]) {
