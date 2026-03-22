@@ -4,20 +4,20 @@
 			<image class="img_content" :src="img_url"></image>
 		</view>
 
-		<view class="card col">
-			<view class="car">
+		<view class="col">
+			<view class="card row">
 				<view :style="dynamicFontStyle" class="_text">{{$t("config.text1")}}</view>
-				<uni-data-select class="public_style" v-model="car_value" :localdata="car_type" :clear="false"
+				<uni-data-select style="width: 60%;" v-model="car_value" :localdata="car_type" :clear="false"
 					@change="change_car"></uni-data-select>
 			</view>
-			<view class="car">
+			<view class="card row">
 				<view :style="dynamicFontStyle" class="_text">{{$t("config.text2")}}</view>
-				<uni-data-select class="public_style" v-model="pole_value" :localdata="pole_type" :clear="false"
+				<uni-data-select style="width: 60%;" v-model="pole_value" :localdata="pole_type" :clear="false"
 					@change="change_pole"></uni-data-select>
 			</view>
-			<view class="car">
+			<view class="card row">
 				<view :style="dynamicFontStyle" class="_text">{{$t("config.text3")}}</view>
-				<slider style="width: 58%;" :value="dect_range" :min="0" :max="6" step="0.1" block-size="28" @change="change"
+				<slider style="width: 60%;" :value="dect_range" :min="0" :max="6" step="0.1" block-size="28" @change="change"
 					activeColor="#3478f6" inactiveColor="#ffff7f" showValue="" block-color="#2979ff" :block-size="15"></slider>
 			</view>
 		</view>
@@ -382,6 +382,7 @@
 			//落杆学习指令
 			radar_down_study() {
 				let that = this
+				let timer = null
 				uni.showModal({
 					title: that.$t("modal.notice"),
 					content: that.$t("config.studyCont.text6"),
@@ -389,7 +390,7 @@
 					cancelText: that.$t("modal.cancelText"),
 					success(res) {
 						if (res.confirm) {
-							let timer = setTimeout(() => {uni.showToast({title: that.$t("config.studyCont.text11")})}, 1000)
+							timer = setTimeout(() => {uni.showToast({title: that.$t("config.studyCont.text11")})}, 1000)
 							uni.showLoading({title: that.$t("config.studyCont.text7"), mask: true})
 
 							bt.send('660A0A04', 0x66).then(res => {
@@ -432,14 +433,12 @@
 																					cancelText: that.$t("modal.cancelText"),
                                           success:(res)=>{
                                             if(res.confirm) {
-																							setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
-																							uni.showLoading({title: that.$t("modal.reading"), mask: true})
+																							timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
 																							
                                               bt.send("87020201", 0x87).then(res => {
                                                 if (!res.error) {
 																									if (res.payload.length == 10) {
 																										clearTimeout(timer)
-																										uni.hideLoading()
 
 																										let Human_Vehicle = res.payload[0]
 																										let Traffic_Direction = res.payload[1]
@@ -497,7 +496,9 @@
 																											_str = _str + int_to2hex((leftDetectWidth * 10) & 0x00000000000000ff)
 																											_str = _str + int_to2hex((rightDetectWidth * 10) & 0x00000000000000ff)
 																											
-																											bt.send(_str, 0x86).then(res => {})
+																											bt.send(_str, 0x86).then(res => {
+																												if (timer) clearTimeout(timer)
+																											})
 																										}
 																									}
                                                 }
@@ -547,20 +548,9 @@
 		background-color: #ffffff;
 	}
 
-	.car {
-		display: flex;
-		align-items: center;
-		padding: 0rpx 35rpx;
-		margin-bottom: 15px;
-
-		.public_style {
-			flex: 1;
-		}
-	}
-
 	._text {
 		width: 40%;
-		margin-right: 10px;
+		padding-left: 30rpx;
 		align-items: center;
 	}
 </style>

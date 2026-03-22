@@ -1,6 +1,6 @@
 export default {
   statusBar: {
-    title: "60GHz Barrier Gate Radar",
+    title: "Barrier Gate Radar",
     advCfg: "Advanced Settings",
     cmdDebug: "Command Debugging"
   },
@@ -10,6 +10,22 @@ export default {
     display: "Target Graph",
     more: "More"
   },
+	index: {
+	  text1: "Remote Connection",
+	  text2: "Product Model",
+	  text3: "Product ID",
+	  text4: "Hardware Version",
+	  text5: "Firmware Version",
+	  text6: "The Bluetooth will automatically turn off after 30 minutes of \ninactivity. After the radar is powered off and restarted,\n the Bluetooth will be reactivated. Once a successful \nconnection is established, the blue light will come on.",
+	  text7: "Searching...",
+	  text8: "Refresh List",
+	  text9: "Turn off the radar Bluetooth and debug the next radar",
+	
+	  bleBtnName: {
+	    connect: "Connect Bluetooth",
+	    disconnect: "Disconnect Bluetooth",
+	  }
+	},
   more: {
     advancedConfig: "Advanced Settings",
     binUpdate: "Firmware upgrade function",
@@ -18,14 +34,15 @@ export default {
     userSheet: "Radar User Manual",
     userProtocol: "User Agreement",
     langSwitch: "Language Switch",
-    toolInfo: "60GHz Barrier Gate Radar",
+    toolInfo: "Barrier Gate Radar",
     prodInfo: "Version 1.1.9",
     advancedCont: "Operation requires professional guidance. Risk of vehicle damage! Confirm to proceed?",
     download: "Please Waitting Download",
     opensuccess: "Open Successfull",
     openfailed: "Open Failed",
     downFailed: "Download failed. Please check your network connection.",
-		relay: "relay aera setting"
+		relay: "relay aera setting",
+		relay_win: "The current device version is not supported."
   },
   display: {
     text1: "Target Points:",
@@ -102,22 +119,6 @@ export default {
       text11: "Raise Calibration Timeout, Please Retry"
     }
   },
-  index: {
-    text1: "Remote Connection",
-    text2: "Product Model",
-    text3: "Product ID",
-    text4: "Hardware Version",
-    text5: "Firmware Version",
-    text6: "How to connect radar device?",
-    text7: "Searching...",
-    text8: "Refresh List",
-    text9: "Turn off the radar Bluetooth and debug the next radar",
-
-    bleBtnName: {
-      connect: "Connect Bluetooth",
-      disconnect: "Disconnect Bluetooth",
-    }
-  },
   debug: {
     recv: "Receive",
     send: "Send",
@@ -188,6 +189,7 @@ export default {
         text: "Current",
         unit: "Level",
         limits: {
+					10: "Extremely low (not recommended)",
           5: "Low",
           4: "Low-Medium",
           3: "Medium",

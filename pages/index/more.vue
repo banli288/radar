@@ -28,15 +28,12 @@
     },
     computed: {
       pageList() {
-        return [
-          this.$t("more.advancedConfig"),
-          // this.$t("more.binUpdate"),
-          // this.$t("more.remote"),
-          this.$t("more.commamd"),
+				return [
+				  this.$t("more.advancedConfig"),
+				  this.$t("more.commamd"),
 					this.$t("more.relay"),
-          this.$t("more.userSheet"),
-          // this.$t("more.userProtocol"),
-        ]
+				  this.$t("more.userSheet"),
+				]
       },
       toolInfo() {
         return this.$t("more.toolInfo")
@@ -68,7 +65,6 @@
             confirmText: this.$t("modal.confirmText"),
             cancelText: this.$t("modal.cancelText"),
             success(res) {
-              //跳转高级设置
               if (res.confirm) {
                 that.$u.route({
                   url: '/pages/more/advanced'
@@ -78,16 +74,19 @@
           })
         } else if (index == 1) {
           that.$u.route({
-            //跳转调试页面
             url: '/pages/more/debug'
           })
         } else if (index == 2) {
-				   that.$u.route({
-				     //跳转调试页面
-				     url: '/pages/more/relay'
-				   })
+					if (store.state.product_info.sf < 2.0) {
+						uni.showModal({
+						  title: this.$t("modal.notice"),
+						  confirmText: this.$t("modal.confirmText"),
+						  cancelText: this.$t("modal.cancelText"),
+							content: this.$t("more.relay_win"),
+						})
+					} 
+					else that.$u.route({url: '/pages/more/relay'})
 				 } else if (index == 3) {
-          //加载说明书
           this.downloadAndOpenPdf()
         }
       },
@@ -163,7 +162,6 @@
 
   ._label {
     .label_item {
-      //border: 1px solid #000000;
       font-size: 16px;
       padding: 10px 10px;
       display: flex;

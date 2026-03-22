@@ -44,3 +44,11 @@
 	.border {
 		border: 1px solid black;
 	}
+	
+	.multiline-text {
+	  white-space: pre-line;
+	  word-break: break-all;
+		font-size: 24rpx;
+		color: #3478f6;
+		text-align: center;
+	}

@@ -12,21 +12,26 @@
 				</view>
 			</view>
 		</view>
+		
+		<view class="card row">
+			<view class="row" style="width: 65%;">
+				<view :style="dynamicFontStyle" style="width: 40%;">{{radarSensitivity[0].name}}</view>
+				<view :style="dynamicFontStyle" style="width: 25%;">{{radarSensitivity[0].text}}</view>
+				<view :style="dynamicFontStyle" style="width: 25%; text-align: center;" v-if="radarSensitivity_level === 10">
+					{{radarSensitivity[0].limit[5].text}}</view>
+				<view :style="dynamicFontStyle" style="width: 25%; text-align: center;" v-else>
+					{{radarSensitivity[0].limit[5 - radarSensitivity_level].text}}</view>
+				<view :style="dynamicFontStyle" style="width: 10%;">{{radarSensitivity[0].unit}}</view>
+			</view>
+			<view :style="dynamicFontStyle" style="width: 35%">
+				<uni-data-select v-model="radarSensitivity_level" :localdata="radarSensitivity[0].limit"
+					:clear="false" @change=""></uni-data-select>
+			</view>
+		</view>
+		
 		<view class="col">
 			<view class="card row" v-for="(item, index) in config2" :key="index">
-				<view class="row" style="width: 100vw;" v-if="item.name === $t('aconfig2.items.radarSensitivity.name')">
-					<view class="row" style="width: 65%;">
-						<view :style="dynamicFontStyle" style="width: 50%;">{{item.name}}</view>
-						<view :style="dynamicFontStyle" style="width: 25%;">{{item.text}}</view>
-						<view :style="dynamicFontStyle" style="width: 15%;">{{item.limit[5 - cfg2_value[index]].text}}</view>
-						<view :style="dynamicFontStyle" style="width: 10%;">{{item.unit}}</view>
-					</view>
-					<view :style="dynamicFontStyle" style="width: 35%">
-						<uni-data-select v-model="cfg2_value[index]" :localdata="item.limit"
-							:clear="false" @change=""></uni-data-select>
-					</view>
-				</view>
-				<view class="row" style="width: 100vw;" v-else>
+				<view class="row" style="width: 100vw;">
 					<view class="row" style="width: 65%;">
 						<view :style="dynamicFontStyle" style="width: 60%;">{{item.name}}</view>
 						<view :style="dynamicFontStyle" style="width: 20%;">{{item.text}}</view>
@@ -70,9 +75,9 @@
 		data() {
 			return {
 				cfg1_value: [5, 0, 0],
-				cfg2_value: [4, 0.5, 0.1, 0.3, 0, 0.6, 0.6],
+				cfg2_value: [0.5, 0.1, 0.3, 0, 0.6, 0.6],
+				radarSensitivity_level: 4,
 				cfg2_limit: [
-					{min: 1, max: 5, step: 1},
 					{min: 0.1, max: 25.5, step: 0.1},
 					{min: 0.0, max: 25.5, step: 0.1},
 					{min: 0.0, max: 25.5, step: 0.1},
@@ -99,12 +104,83 @@
 					lineHeight: this.isEnglish ? '1.8' : '2.0'
 				}
 			},
+			radarSensitivity() {
+				if (store.state.product_info.sf < 1.7) {
+					return[
+						{
+							name: this.$t('aconfig2.items.radarSensitivity.name'),
+							text: this.$t('aconfig2.items.radarSensitivity.text'),
+							unit: this.$t('aconfig2.items.radarSensitivity.unit'),
+							value: 4,
+							limit: [
+								{
+									value: 5,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.5')
+								},
+								{
+									value: 4,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.4')
+								},
+								{
+									value: 3,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.3')
+								},
+								{
+									value: 2,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.2')
+								},
+								{
+									value: 1,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.1')
+								},
+							]
+						}
+					]
+				} else {
+					return [
+						{
+							name: this.$t('aconfig2.items.radarSensitivity.name'),
+							text: this.$t('aconfig2.items.radarSensitivity.text'),
+							unit: this.$t('aconfig2.items.radarSensitivity.unit'),
+							value: 4,
+							limit: [
+								{
+									value: 5,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.5')
+								},
+								{
+									value: 4,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.4')
+								},
+								{
+									value: 3,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.3')
+								},
+								{
+									value: 2,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.2')
+								},
+								{
+									value: 1,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.1')
+								},
+								{
+									value: 10,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.10')
+								},
+							],
+						}
+					]
+				}
+			},
 			config1() {
-				return [{
+				return [
+					{
 						name: this.$t("aconfig.name1"),
 						description: this.$t("aconfig.description1"),
 						value: 0,
-						checkbox: [{
+						checkbox: [
+							{
 								text: this.$t("aconfig.checkbox1.close"),
 								value: 0
 							},
@@ -165,33 +241,7 @@
 				]
 			},
 			config2() {
-				return [{
-						name: this.$t('aconfig2.items.radarSensitivity.name'),
-						text: this.$t('aconfig2.items.radarSensitivity.text'),
-						unit: this.$t('aconfig2.items.radarSensitivity.unit'),
-						value: 4,
-						limit: [{
-								value: 5,
-								text: this.$t('aconfig2.items.radarSensitivity.limits.5')
-							},
-							{
-								value: 4,
-								text: this.$t('aconfig2.items.radarSensitivity.limits.4')
-							},
-							{
-								value: 3,
-								text: this.$t('aconfig2.items.radarSensitivity.limits.3')
-							},
-							{
-								value: 2,
-								text: this.$t('aconfig2.items.radarSensitivity.limits.2')
-							},
-							{
-								value: 1,
-								text: this.$t('aconfig2.items.radarSensitivity.limits.1')
-							},
-						]
-					},
+				return [
 					{
 						name: this.$t('aconfig2.items.delayDropTime.name'),
 						text: this.$t('aconfig2.items.delayDropTime.text'),
@@ -308,13 +358,14 @@
 							this.cfg1_value[1] = res.payload[1]
 							this.cfg1_value[2] = res.payload[2]
 						
-							this.cfg2_value[0] = res.payload[3]
-							this.cfg2_value[1] = res.payload[4] / 10
-							this.cfg2_value[2] = res.payload[5] / 10
-							this.cfg2_value[3] = res.payload[6] / 10
-							this.cfg2_value[4] = res.payload[7] / 10
-							this.cfg2_value[5] = res.payload[8] / 10
-							this.cfg2_value[6] = res.payload[9] / 10
+							this.radarSensitivity_level = res.payload[3]
+							
+							this.cfg2_value[0] = res.payload[4] / 10
+							this.cfg2_value[1] = res.payload[5] / 10
+							this.cfg2_value[2] = res.payload[6] / 10
+							this.cfg2_value[3] = res.payload[7] / 10
+							this.cfg2_value[4] = res.payload[8] / 10
+							this.cfg2_value[5] = res.payload[9] / 10
 						
 							this.$forceUpdate()
 						
@@ -323,13 +374,14 @@
                 'Traffic Direction': this.cfg1_value[1],
                 'Relay Status': this.cfg1_value[2],
 
-                'radarSensitivity': this.cfg2_value[0],
-                'delayDropTime': this.cfg2_value[1],
-                'proximityNoDetect': this.cfg2_value[2],
-                'leftNoDetectWidth': this.cfg2_value[3],
-                'rightNoDetectWidth': this.cfg2_value[4],
-                'leftDetectWidth': this.cfg2_value[5],
-                'rightDetectWidth': this.cfg2_value[6],
+                'radarSensitivity': this.radarSensitivity_level,
+								
+                'delayDropTime': this.cfg2_value[0],
+                'proximityNoDetect': this.cfg2_value[1],
+                'leftNoDetectWidth': this.cfg2_value[2],
+                'rightNoDetectWidth': this.cfg2_value[3],
+                'leftDetectWidth': this.cfg2_value[4],
+                'rightDetectWidth': this.cfg2_value[5],
               })
 
 							uni.showToast({title: that.$t("aconfig.modal.readsuccess"),})
@@ -346,26 +398,28 @@
 				_str = _str + int_to2hex((this.cfg1_value[1]) & 0x00000000000000ff)
 				_str = _str + int_to2hex((this.cfg1_value[2]) & 0x00000000000000ff)
 
-				_str = _str + int_to2hex((this.cfg2_value[0]) & 0x00000000000000ff)
+				_str = _str + int_to2hex((this.radarSensitivity_level) & 0x00000000000000ff)
+				
+				_str = _str + int_to2hex((this.cfg2_value[0] * 10) & 0x00000000000000ff)
 				_str = _str + int_to2hex((this.cfg2_value[1] * 10) & 0x00000000000000ff)
 				_str = _str + int_to2hex((this.cfg2_value[2] * 10) & 0x00000000000000ff)
 				_str = _str + int_to2hex((this.cfg2_value[3] * 10) & 0x00000000000000ff)
 				_str = _str + int_to2hex((this.cfg2_value[4] * 10) & 0x00000000000000ff)
 				_str = _str + int_to2hex((this.cfg2_value[5] * 10) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg2_value[6] * 10) & 0x00000000000000ff)
 
         log_upload('write', {
           'Human/Vehicle Distinction': this.cfg1_value[0],
           'Traffic Direction': this.cfg1_value[1],
           'Relay Status': this.cfg1_value[2],
 
-          'radarSensitivity': this.cfg2_value[0],
-          'delayDropTime': this.cfg2_value[1],
-          'proximityNoDetect': this.cfg2_value[2],
-          'leftNoDetectWidth': this.cfg2_value[3],
-          'rightNoDetectWidth': this.cfg2_value[4],
-          'leftDetectWidth': this.cfg2_value[5],
-          'rightDetectWidth': this.cfg2_value[6],
+          'radarSensitivity': this.radarSensitivity_level,
+					
+          'delayDropTime': this.cfg2_value[0],
+          'proximityNoDetect': this.cfg2_value[1],
+          'leftNoDetectWidth': this.cfg2_value[2],
+          'rightNoDetectWidth': this.cfg2_value[3],
+          'leftDetectWidth': this.cfg2_value[4],
+          'rightDetectWidth': this.cfg2_value[5],
         })
 
 				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
@@ -384,13 +438,14 @@
                   this.cfg1_value[1] = res.payload[1]
                   this.cfg1_value[2] = res.payload[2]
                 
-                  this.cfg2_value[0] = res.payload[3]
-                  this.cfg2_value[1] = res.payload[4] / 10
-                  this.cfg2_value[2] = res.payload[5] / 10
-                  this.cfg2_value[3] = res.payload[6] / 10
-                  this.cfg2_value[4] = res.payload[7] / 10
-                  this.cfg2_value[5] = res.payload[8] / 10
-                  this.cfg2_value[6] = res.payload[9] / 10
+                  this.radarSensitivity_level = res.payload[3]
+									
+                  this.cfg2_value[0] = res.payload[4] / 10
+                  this.cfg2_value[1] = res.payload[5] / 10
+                  this.cfg2_value[2] = res.payload[6] / 10
+                  this.cfg2_value[3] = res.payload[7] / 10
+                  this.cfg2_value[4] = res.payload[8] / 10
+                  this.cfg2_value[5] = res.payload[9] / 10
                 
                   this.$forceUpdate()
                 
@@ -399,13 +454,14 @@
                     'Traffic Direction': this.cfg1_value[1],
                     'Relay Status': this.cfg1_value[2],
 
-                    'radarSensitivity': this.cfg2_value[0],
-                    'delayDropTime': this.cfg2_value[1],
-                    'proximityNoDetect': this.cfg2_value[2],
-                    'leftNoDetectWidth': this.cfg2_value[3],
-                    'rightNoDetectWidth': this.cfg2_value[4],
-                    'leftDetectWidth': this.cfg2_value[5],
-                    'rightDetectWidth': this.cfg2_value[6],
+                    'radarSensitivity': this.radarSensitivity_level,
+										
+                    'delayDropTime': this.cfg2_value[0],
+                    'proximityNoDetect': this.cfg2_value[1],
+                    'leftNoDetectWidth': this.cfg2_value[2],
+                    'rightNoDetectWidth': this.cfg2_value[3],
+                    'leftDetectWidth': this.cfg2_value[4],
+                    'rightDetectWidth': this.cfg2_value[5],
                   })
                 }
               }

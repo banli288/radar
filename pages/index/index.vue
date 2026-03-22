@@ -26,24 +26,28 @@
 		<view class="_center" style="margin-top: 30rpx;">
 			<button class="btn" hover-class="btn_hover" @click="btn_press()">{{bleConName}}</button>
 		</view>
-		<view class="_center">
-			<view class="_herf">{{$t("index.text6")}}</view>
-		</view>
+		
 		<view class="_center" v-if="isConnected">
 			<button class="btn_close_ble" @click="close_radar_ble()">{{$t("index.text9")}}</button>
+		</view>
+		
+		<view class="_center">
+			<view class="multiline-text">{{$t("index.text6")}}</view>
 		</view>
 		<!-- 弹窗 -->
 		<view class="dialog" v-if="showDialog" @click="closeDialog">
 			<view class="dialog_content" @click.stop="">
-				<view class="title">{{$t("index.text7")}}</view>
+				<view class="card title">{{$t("index.text7")}}</view>
 				<view class="list_item">
-					<view class="_item" v-for="(item, index) in ble_name_list" :key="index" @tap="ble_connect(index)">
+					<view class="card row" style="height: 75rpx; display: flex; justify-content: space-between;" v-for="(item, index) in ble_name_list" :key="index" @tap="ble_connect(index)">
 						<view>{{item}}</view>
 						<view>{{ble_rssi_list[index]}}</view>
 						<view>{{ble_con_state_list[index]}}</view>
 					</view>
 				</view>
-				<view class="title" @tap="ble_list_refresh">{{$t("index.text8")}}</view>
+				<view class="card"
+					<button style="width: 100%;" @tap="ble_list_refresh">{{$t("index.text8")}}</button>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -78,19 +82,6 @@
 			}
 		},
 		onLoad() {
-			// this.ws_recv_handler = (msg) => {
-			// 	jlog(msg)
-			// }
-			// eventBus.on('ws:message', this.ws_recv_handler)
-			// wsManager.send({
-			// 	'type': 'data',
-			// 	'id': 'device_001',
-			// 	'payload': {
-			// 		'sf_ver': 0.001,
-			// 		'hd_ver': 0.002
-			// 	}
-			// })
-			
 			//更新标题栏
 			updatePageTitle()
 
@@ -470,11 +461,10 @@
 		.dialog_content {
 			width: 80%;
 			height: 900rpx;
-			background-color: white;
+			background: linear-gradient(180deg, #3478f6, #ffffff);
 			position: relative;
 			z-index: 1;
-			/* 可选：确保在视觉上覆盖 A 背景 */
-			border-radius: 6px;
+			border-radius: 10rpx;
 			display: flex;
 			flex-direction: column;
 
@@ -482,9 +472,9 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				height: 50px;
-				background-color: #077fff;
-				font-size: 20px;
+				height: 35rpx;
+				background-color: #6cff78;
+				font-size: 24rpx;
 			}
 
 			.list_item {
@@ -633,7 +623,7 @@
 	}
 
 	._herf {
-		font-size: 16px;
+		font-size: 24rpx;
 		color: #3478f6;
 	}
 </style>

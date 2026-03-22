@@ -1,6 +1,6 @@
 export default {
   statusBar: {
-    title: "60GHz道闸雷达",
+    title: "道闸雷达",
     advCfg: "高级设置",
     cmdDebug: "指令调试"
   },
@@ -10,6 +10,22 @@ export default {
     display: "目标图",
     more: "更多"
   },
+	index: {
+	  text1: "远程连接",
+	  text2: "产品型号",
+	  text3: "产品编码",
+	  text4: "硬件版本",
+	  text5: "固件版本",
+	  text6: "30分钟无操作蓝牙自动关闭,雷达断电重启后\n蓝牙重新启动,成功连接后蓝灯亮起",
+	  text7: "搜索中",
+	  text8: "刷新列表",
+	  text9: "关闭雷达蓝牙,调试下一个雷达",
+	
+	  bleBtnName: {
+	    connect: "连接蓝牙设备",
+	    disconnect: "断开蓝牙设备",
+	  }
+	},
   more: {
     advancedConfig: "高级设置",
     binUpdate: "固件升级",
@@ -18,14 +34,15 @@ export default {
     userSheet: "雷达用户手册",
     userProtocol: "用户协议",
     langSwitch: "中英文切换",
-    toolInfo: "60GHz道闸雷达",
+    toolInfo: "道闸雷达",
     prodInfo: "版本1.1.9",
     advancedCont: "请在专业人士指导下操作，否则将有砸车风险！，确认要继续操作吗",
     download: "加载中",
     opensuccess: "打开成功",
     openfailed: "打开失败",
     downFailed: "下载失败，请检查网络",
-		relay: "继电器区域设置"
+		relay: "继电器区域设置",
+		relay_win: "当前设备版本不支持",
   },
   display: {
     text1: "目标点显示 ：",
@@ -103,22 +120,6 @@ export default {
       text11: "起杆学习超时，请重试"
     }
   },
-  index: {
-    text1: "远程连接",
-    text2: "产品型号",
-    text3: "产品编码",
-    text4: "硬件版本",
-    text5: "固件版本",
-    text6: "如何连接雷达设备?",
-    text7: "搜索中",
-    text8: "刷新列表",
-    text9: "关闭雷达蓝牙,调试下一个雷达",
-
-    bleBtnName: {
-      connect: "连接蓝牙设备",
-      disconnect: "断开蓝牙设备",
-    }
-  },
   debug: {
     recv: "调试区",
     send: "发送区",
@@ -189,6 +190,7 @@ export default {
         text: "当前级别",
         unit: "级",
         limits: {
+					10: "极低(不建议)",
           5: "低",
           4: "中低",
           3: "中",

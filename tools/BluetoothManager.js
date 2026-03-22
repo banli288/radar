@@ -26,7 +26,7 @@ class BluetoothManager {
       // 追加数据
       this.recvBuffer = this.appendBuffer(this.recvBuffer, chunk);
 			
-			jlog('BLE CHUNK', this.recvBuffer)
+			//jlog('BLE CHUNK', this.recvBuffer)
 
       // 重置超时定时器
       if (this.recvTimer) {
@@ -58,7 +58,7 @@ class BluetoothManager {
 				// 超时，认为一包结束
 				this.recvTimer = setTimeout(() => {
 					// 如果是FF直接原数据返回，否则解析再返回
-					jlog('BLE', this.recvBuffer)
+					jlog('BLE', this.recvBuffer.length, bytesToHexString(this.recvBuffer))
 					
 					if (this.pendingRequests[0xFF]) {
 						this.pendingRequests[0xFF]({ reqId: 0xFF, payload: this.recvBuffer })
@@ -71,7 +71,7 @@ class BluetoothManager {
 						if (data.reqId && this.pendingRequests[data.reqId]) {
 							this.pendingRequests[data.reqId](data) // 触发 Promise resolve
 							delete this.pendingRequests[data.reqId]
-							jlog('DEL ID', data)
+							//jlog('DEL ID', data)
 							this.notify(data.cmd, data) // 再分发到监听者
 						} else {
 							this._rawHandler?.(this.recvBuffer)
