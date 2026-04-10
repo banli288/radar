@@ -44,7 +44,7 @@
 		<view class="card">
 			<scroll-view scroll-y="true" style="height: 80px; margin: 10px;">
 			  <view v-for="(item, index) in aera_sensi" style="display: flex; flex-direction: row; align-items: center; padding: 5px;">
-			    <view style="min-width: 120px; font-size: 14px;">区域{{index+1}}灵敏度</view>
+			    <view style="min-width: 120px; font-size: 14px;">{{ `${$t("debug.area")} ${index+1} ${$t("debug.sensitivity")}` }}</view>
 			    <view style="margin-left: 100px; font-size: 30px;" @tap="sub_sensi(index)">-</view>
 			    <view style="margin-left: 40px;">{{item.value}}</view>
 			    <view style="margin-left: 40px; font-size: 30px;" @tap="add_sensi(index)">+</view>
@@ -52,7 +52,7 @@
 			</scroll-view>
 			
 			<view style="display: flex; flex-direction: row; align-items: center; padding: 5px; margin: 10px;">
-			  <view style="min-width: 120px; font-size: 14px;">杆子类型</view>
+			  <view style="min-width: 120px; font-size: 14px;">{{$t("debug.poletype")}}</view>
 			  <view style="margin-left: 100px; font-size: 30px;" @tap="sub_pole_type">-</view>
 			  <view style="margin-left: 40px;">{{pole_type.value}}</view>
 			  <view style="margin-left: 40px; font-size: 30px;" @tap="add_pole_type">+</view>
@@ -60,9 +60,9 @@
 			
 			<view class="row">
 				<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
-				  @tap="get_sensi">读取灵敏度</button>
+				  @tap="get_sensi">{{$t("debug.readsensitivity")}}</button>
 				<button class="btn" hover-class="btn_hov" :disabled="!connect_state"
-					@tap="set_sensi">设置灵敏度</button>
+					@tap="set_sensi">{{$t("debug.writesensitivity")}}</button>
 			</view>
 		</view>
 	</view>
@@ -94,11 +94,11 @@ import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_uploa
 
         debug_index: 0,
         debug_arr: [
-          {value: 0 ,text: '用户自定义指令'},
-          {value: 1 ,text: '读取环境参数指令'},
-          {value: 2 ,text: '读取全部参数指令'},
-          {value: 3 ,text: '读取人车区分参数指令'},
-          {value: 4 ,text: '读取噪声参数指令'},
+          {value: 0 ,text: this.$t("debug.cmd1")},
+          {value: 1 ,text: this.$t("debug.cmd2")},
+          {value: 2 ,text: this.$t("debug.cmd3")},
+          {value: 3 ,text: this.$t("debug.cmd4")},
+          {value: 4 ,text: this.$t("debug.cmd5")},
         ],
         debug_cmd: [
           '',

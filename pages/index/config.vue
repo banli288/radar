@@ -50,6 +50,10 @@
 					@tap="radar_down_study()">{{$t("config.btnDownStudy")}}</button>
 			</view>
 		</view>
+		
+		<view class="card">
+			<button class="btn" hover-class="btn_hover" style="width: 100%;" :disabled="!connect_state" @tap="radar_reset">{{$t("aconfig.btnRestore")}}</button>
+		</view>
 	</view>
 </template>
 
@@ -207,6 +211,9 @@
               bt.send("98020201", 0x98).then(res => {
                 if (!res.error) {
                   if (res.payload.length == 10) {
+										clearTimeout(timer)
+										uni.showToast({title: this.$t("modal.readSuccess")})
+										
                     if (pole < 4) {
                       this.pole_value = pole
                     } else if (pole == 4) {
@@ -221,9 +228,6 @@
 
                     this.img_url = this.imgs[this.pole_value]
 										
-										clearTimeout(timer)
-                    uni.showToast({title: this.$t("modal.readSuccess")})
-
                     log_upload('read', {
                       'dect_range': this.dect_range,
                       'car_value': this.car_value,
@@ -285,6 +289,9 @@
 
               for (let i = 0; i < 10; i++) conf_str = conf_str + int_to2hex(that.aera_sensi[i].value & 0xFF)
 
+							timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 3000)
+							uni.showLoading({title: that.$t("modal.saving"), mask: true})
+
               bt.send(conf_str, 0x88).then(res => {
                 if (!res.error) {
                   bt.send('77020201', 0x77).then(res => {
@@ -293,6 +300,9 @@
                       bt.send("98020201", 0x98).then(res => {
                         if (!res.error) {
                           if (res.payload.length == 10) {
+														clearTimeout(timer)
+														uni.hideLoading()
+														
                             log_upload('read', {
                               '77020201': _data,
                               '98020201': res.payload,
@@ -358,15 +368,21 @@
 											if (!res.error) {
 												clearTimeout(timer)
 												setTimeout(() => {
-													timer = setTimeout(() => {uni.showToast({title: that.$t("config.btnCont.btnUp")})}, 1000)
-													
+													let timer = setTimeout(() => {uni.showToast({title: that.$t("config.btnCont.btnUp")})}, 1000)
 										      bt.send('66020204', 0xFF).then(res => {
 										        if (!res.error) {
 															clearTimeout(timer)
+															uni.hideLoading()
 															
 															log_upload('read', {'type': 'env para', 'data': bytesToAsciiString(res.payload)})
-															uni.hideLoading()
-															that.radar_down_study()
+															
+															uni.showModal({
+																title: that.$t("modal.notice"),
+																confirmText: that.$t("modal.confirmText"),
+																cancelText: that.$t("modal.cancelText"),
+																content: that.$t("config.studyCont.upend"),
+															})
+															// that.radar_down_study()
 										        }
 										      })
 												}, 2000)
@@ -418,7 +434,7 @@
 															cancelText: that.$t("modal.cancelText"),
 															success(res) {
 																if (res.confirm) {
-																	timer = setTimeout(() => {uni.showToast({title: that.$t("config.studyCont.text11")})}, 1000)
+																	let timer = setTimeout(() => {uni.showToast({title: that.$t("config.studyCont.text11")})}, 1000)
 																	uni.showLoading({title: that.$t("config.studyCont.text7"), mask: true})
 
 																	bt.send('66181800', 0x66).then(res => {
@@ -433,7 +449,7 @@
 																					cancelText: that.$t("modal.cancelText"),
                                           success:(res)=>{
                                             if(res.confirm) {
-																							timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
+																							let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
 																							
                                               bt.send("87020201", 0x87).then(res => {
                                                 if (!res.error) {
@@ -517,6 +533,28 @@
 											}
 										})
 									}, 2000)
+								}
+							})
+						}
+					}
+				})
+			},
+			radar_reset() {
+				let that = this
+				uni.showModal({
+					title: that.$t("aconfig.modal.notice"),
+					confirmText: that.$t("aconfig.modal.confirm"),
+					cancelText: that.$t("aconfig.modal.cancel"),
+					content: that.$t("aconfig.modal.restore"),
+					success(res) {
+						if (res.confirm) {
+			        let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
+			        uni.showLoading({title: that.$t("aconfig.modal.setting"), mask: true})
+							
+							bt.send("66020202", 0x66).then(res => {
+								if (!res.error) {
+									clearTimeout(timer)
+									uni.showToast({title: that.$t("aconfig.modal.restoresuccess")})
 								}
 							})
 						}

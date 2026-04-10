@@ -35,7 +35,7 @@ export default {
     userProtocol: "用户协议",
     langSwitch: "中英文切换",
     toolInfo: "道闸雷达",
-    prodInfo: "版本1.1.9",
+    prodInfo: "版本1.1.20",
     advancedCont: "请在专业人士指导下操作，否则将有砸车风险！，确认要继续操作吗",
     download: "加载中",
     opensuccess: "打开成功",
@@ -56,6 +56,7 @@ export default {
     saving: "保存中",
     setting: "设置中",
     seted: "设置完成",
+		saved: "保存成功",
     readSuccess: "读取成功",
     upStudyFinish: "抬杆背景学习完成",
     dnstudyFinish: "杆起落学习完成",
@@ -117,7 +118,8 @@ export default {
       text8: "请用遥控起落杆至少3次，人车不要进入杆左右2米范围内，起落完成后点击下一步",
       text9: "请先用遥控把杆落下，再点击下一步",
       text10: "杆落地学习中，人车不要进入杆左右2米范围内",
-      text11: "起杆学习超时，请重试"
+      text11: "起杆学习超时，请重试",
+			upend: "抬杆背景学习完成"
     }
   },
   debug: {
@@ -129,6 +131,16 @@ export default {
     btnClearRecv: "清除发送区",
     disSend: "发送",
     disRecv: "接收",
+		aera: "区域",
+		sensitivity: "灵敏度",
+		poletype: "杆子类型",
+		cmd1: "用户自定义指令",
+		cmd2: "读取环境参数指令",
+		cmd3: "读取全部参数指令",
+		cmd4: "读取人车区分参数指令",
+		cmd5: "读取噪声参数指令",
+		readsensitivity: "读取灵敏度",
+		writesensitivity: "设置灵敏度",
   },
   aconfig: {
     btnRead: "读取雷达配置",
@@ -228,4 +240,23 @@ export default {
       }
     }
   },
+	relay: {
+		read: "读取",
+		write: "写入",
+		para1: "启动区域x左分米",
+		para2: "启动区域x右分米",
+		para3: "启动区域y临近不检测距离",
+		para4: "启动区域y最大距离",
+		para5: "启动继电器状态",
+		para6: "启动区域状态",
+		relay_state: {
+			state0: "常开",
+			state1: "常闭",
+			state2: "失效",
+		},
+		aera_state: {
+			state0: "关闭启动区域",
+			state1: "开启启动区域",
+		}
+	},
 }

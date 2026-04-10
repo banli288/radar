@@ -35,7 +35,7 @@ export default {
     userProtocol: "User Agreement",
     langSwitch: "Language Switch",
     toolInfo: "Barrier Gate Radar",
-    prodInfo: "Version 1.1.9",
+    prodInfo: "Version 1.1.20",
     advancedCont: "Operation requires professional guidance. Risk of vehicle damage! Confirm to proceed?",
     download: "Please Waitting Download",
     opensuccess: "Open Successfull",
@@ -56,6 +56,7 @@ export default {
     saving: "Saving...",
     setting: "Setting...",
     seted: "Set Successfull",
+		saved: "Save Successfull",
     readSuccess: "Read Successfully",
     upStudyFinish: "Raise Pole Calibration Complete",
     dnstudyFinish: "Pole Movement Calibration Complete",
@@ -116,7 +117,8 @@ export default {
       text8: "Cycle pole at least 3 times. No people/vehicles within 2m range. Click Next when done",
       text9: "Use remote to lower pole, then click Next",
       text10: "Lowering Calibration in Progress. No people/vehicles within 2m range",
-      text11: "Raise Calibration Timeout, Please Retry"
+      text11: "Raise Calibration Timeout, Please Retry",
+			upend: "The background learning of raising the bar is completed."
     }
   },
   debug: {
@@ -128,6 +130,16 @@ export default {
     btnClearRecv: "Clear Receive Area",
     disSend: "Send",
     disRecv: "Receive",
+		area: "Area",
+		sensitivity: "Sensitivity",
+		poletype: "Pole Type",
+		cmd1: "User-defined Command",
+		cmd2: "Read Environment Parameters Command",
+		cmd3: "Read All Parameters Command",
+		cmd4: "Read Human-Vehicle Classification Parameters Command",
+		cmd5: "Read Noise Parameters Command",
+		readsensitivity: "Read Sensitivity",
+		writesensitivity: "Set Sensitivity"
   },
   aconfig: {
     btnRead: "Read advanced radar parameters",
@@ -226,5 +238,24 @@ export default {
         meter: "m"
       }
     }
-  }
+  },
+	relay: {
+		read: "Read",
+		write: "Write",
+		para1: "Decimeters of the left side of start area X",
+		para2: "Decimeters of the right side of start area X",
+		para3: "Proximity non-detection distance of start area Y",
+		para4: "Maximum distance of start area Y",
+		para5: "The status of the start relay",
+		para6: "Startup area status",
+		relay_state: {
+			state0: "Normally Open",
+			state1: "Normally Closed",
+			state2: "Invalid",
+		},
+		aera_state: {
+			state0: "Disable start area",
+			state1: "Enable start area",
+		}
+	}
 }

@@ -28,12 +28,21 @@
     },
     computed: {
       pageList() {
-				return [
-				  this.$t("more.advancedConfig"),
-				  this.$t("more.commamd"),
-					this.$t("more.relay"),
-				  this.$t("more.userSheet"),
-				]
+				if (store.state.product_info.sf < 2.0) {
+					return [
+					  this.$t("more.advancedConfig"),
+					  this.$t("more.commamd"),
+					  this.$t("more.userSheet"),
+					]
+				}
+				else {
+					return [
+					  this.$t("more.advancedConfig"),
+					  this.$t("more.commamd"),
+						this.$t("more.relay"),
+					  this.$t("more.userSheet"),
+					]
+				}
       },
       toolInfo() {
         return this.$t("more.toolInfo")
@@ -73,19 +82,13 @@
             }
           })
         } else if (index == 1) {
-          that.$u.route({
-            url: '/pages/more/debug'
-          })
+          that.$u.route({url: '/pages/more/debug'})
         } else if (index == 2) {
 					if (store.state.product_info.sf < 2.0) {
-						uni.showModal({
-						  title: this.$t("modal.notice"),
-						  confirmText: this.$t("modal.confirmText"),
-						  cancelText: this.$t("modal.cancelText"),
-							content: this.$t("more.relay_win"),
-						})
-					} 
-					else that.$u.route({url: '/pages/more/relay'})
+						this.downloadAndOpenPdf()
+					} else {
+						that.$u.route({url: '/pages/more/relay'})
+					}
 				 } else if (index == 3) {
           this.downloadAndOpenPdf()
         }
