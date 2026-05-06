@@ -11,6 +11,11 @@
 					@change="change_car"></uni-data-select>
 			</view>
 			<view class="card row">
+				<view :style="dynamicFontStyle" class="_text" style="width: 40%; justify-content: space-between;">{{$t("config.fixation_text")}}</view>
+				<uni-data-select style="width: 60%;" v-model="fixation_value" :localdata="fixation" :clear="false"
+					@change="change_fixation"></uni-data-select>
+			</view>
+			<view class="card row">
 				<view class="col" style="width: 40%; justify-content: space-between;">
 					<view :style="dynamicFontStyle" class="_text">{{$t("config.text2")}}</view>
 					<view :style="dynamicFontStyle" class="_text" style="font-size: 22rpx;">{{$t("config.text2_dis")}}</view>
@@ -77,11 +82,13 @@
 	export default {
 		data() {
 			return {
-				pole_value: 5,
+				pole_value: 0, // display
+				pole_index: 0, // real
 				car_value: 1,
 				dect_range: 1.0,
 				img_url: "",
 				study_entry: 0,
+				fixation_value: 0,
 
         aera_sensi: [
           {value: 0, min: 0, max: 10, step: 1},
@@ -141,29 +148,35 @@
 					  {value: 1,text: this.$t("config.poleType.type1")},
 					  {value: 2,text: this.$t("config.poleType.type2")},
 					  {value: 3,text: this.$t("config.poleType.type3")},
-					  {value: 4,text: this.$t("config.poleType.type4")},
-					  {value: 5,text: this.$t("config.poleType.type5")},
-					  {value: 6,text: this.$t("config.poleType.type6")},
-					  {value: 7,text: this.$t("config.poleType.type7")},
+					  // {value: 4,text: this.$t("config.poleType.type4")},
+					  // {value: 5,text: this.$t("config.poleType.type5")},
+					  // {value: 6,text: this.$t("config.poleType.type6")},
+					  // {value: 7,text: this.$t("config.poleType.type7")},
 					]
 				} else {
 					return [
 					  {value: 0,text: this.$t("config.poleType.type0")},
 					  {value: 1,text: this.$t("config.poleType.type1")},
 					  {value: 2,text: this.$t("config.poleType.type2")},
-					  {value: 3,text: this.$t("config.poleType.type3")},
-					  {value: 4,text: this.$t("config.poleType.type4")},
-					  {value: 5,text: this.$t("config.poleType.type5")},
+					  // {value: 3,text: this.$t("config.poleType.type3")},
+					  // {value: 4,text: this.$t("config.poleType.type4")},
+					  // {value: 5,text: this.$t("config.poleType.type5")},
 					]
 				}
 			},
 			car_type() {
 				return [
-          {value: 0,text: this.$t("config.carType.type0")},
-          {value: 1,text: this.$t("config.carType.type1")},
-          {value: 2,text: this.$t("config.carType.type2")}, 
+				  {value: 0,text: this.$t("config.carType.type0")},
+				  {value: 1,text: this.$t("config.carType.type1")},
+				  {value: 2,text: this.$t("config.carType.type2")}, 
 				]
 			},
+			fixation() {
+				return [
+				  {value: 0,text: this.$t("config.fixation_left")},
+				  {value: 1,text: this.$t("config.fixation_right")},
+				]
+			}
 		},
 		onLoad() {
 			updatePageTitle()
@@ -196,10 +209,41 @@
 			},
 			change_pole(e) {
 				this.pole_value = e
-				this.img_url = this.imgs[this.pole_value]
+				this.update_image()
 			},
 			change_car(e) {
 				this.car_value = e
+			},
+			change_fixation(e) {
+				this.fixation_value = e
+				this.update_image()
+			},
+			update_image() {
+				let that = this
+				let image_index = 0
+				// 0: left 1: right
+				if (that.fixation_value == 0) {
+					if (that.pole_value == 0) {
+						image_index = 1 // 直杆
+					} else if (that.pole_value == 1) {
+						image_index = 3 // 栅栏杆
+					} else if (that.pole_value == 2) {
+						image_index = 5 // 广告杆
+					} else if (that.pole_value == 3) {
+						image_index = 7 // 空降杆
+					}
+				} else {
+					if (that.pole_value == 0) {
+						image_index = 0
+					} else if (that.pole_value == 1) {
+						image_index = 2
+					} else if (that.pole_value == 2) {
+						image_index = 4
+					} else if (that.pole_value == 3) {
+						image_index = 6 // 空降杆
+					}
+				}
+				this.img_url = this.imgs[image_index]
 			},
 			//读取参数接口，实质上就是根据协议向蓝牙写指令
 			radar_read() {
@@ -214,6 +258,9 @@
             this.dect_range = res.payload[0] / 10
             this.car_value = res.payload[2]
 
+						// 0: right 1: left
+						pole % 2 == 0 ? that.fixation_value = 1 : that.fixation_value = 0
+
             if (store.state.product_info.sf > 1.6) {
               bt.send("98020201", 0x98).then(res => {
                 if (!res.error) {
@@ -221,32 +268,49 @@
 										clearTimeout(timer)
 										uni.showToast({title: this.$t("modal.readSuccess")})
 										
+										if (pole <= 1) {
+											that.pole_value = 0 // 直杆
+										} else if (pole <= 3) {
+											that.pole_value = 1 // 栅栏干
+										} else if (pole <= 5) {
+											// byte 10: 0: 广告杆 1: 空降杆
+											res.payload[9] == 0 ? that.pole_value = 2 : that.pole_value = 3
+										} 
+										
                     if (pole < 4) {
-                      this.pole_value = pole
+                      this.pole_index = pole
                     } else if (pole == 4) {
-                      if (res.payload[9] == 0) this.pole_value = 4
-                      else this.pole_value = 6
+                      if (res.payload[9] == 0) this.pole_index = 4
+                      else this.pole_index = 6
                     } else if (pole == 5) {
-                      if (res.payload[9] == 0) this.pole_value = 5
-                      else this.pole_value = 7
+                      if (res.payload[9] == 0) this.pole_index = 5
+                      else this.pole_index = 7
                     }
 
                     for (let i = 0; i < 10; i++) this.aera_sensi[i].value = res.payload[i]
 
-                    this.img_url = this.imgs[this.pole_value]
+                    this.img_url = this.imgs[this.pole_index]
 										
                     log_upload('read', {
                       'dect_range': this.dect_range,
                       'car_value': this.car_value,
-                      'pole_value': pole,
+                      'pole_value': this.pole_index,
                       '98020201': res.payload
                     })
                   } 
                 }
               })
             } else {
-              this.pole_value = pole
-              this.img_url = this.imgs[this.pole_value]
+              this.pole_index = pole
+              this.img_url = this.imgs[this.pole_index]
+							
+							if (pole <= 1) {
+								that.pole_value = 0 // 直杆
+							} else if (pole <= 3) {
+								that.pole_value = 1 // 栅栏栏
+							} else if (pole <= 5) {
+								that.pole_value = 2 // 广告杆
+							} 
 							
 							clearTimeout(timer)
 							uni.showToast({title: this.$t("modal.readSuccess")})
@@ -254,7 +318,7 @@
               log_upload('read', {
                   'dect_range': this.dect_range,
                   'car_value': this.car_value,
-                  'pole_value': this.pole_value
+                  'pole_value': this.pole_index
               })
             }
 					}
@@ -269,9 +333,26 @@
 				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
 				uni.showLoading({title: that.$t("modal.saving"), mask: true})
 
-				if (that.pole_value == 6) pole = 4
-				else if (that.pole_value == 7) pole = 5
-				else pole = that.pole_value
+				// 0: left 1: right
+				if (that.fixation_value == 0) {
+					if (that.pole_value == 0) {
+						that.pole_index = 1 // 直杆
+					} else if (that.pole_value == 1) {
+						that.pole_index = 3 // 栅栏杆
+					} else if (that.pole_value == 2 || that.pole_value == 3) {
+						that.pole_index = 5 // 广告杆/空降杆
+					}
+				} else {
+					if (that.pole_value == 0) {
+						that.pole_index = 0
+					} else if (that.pole_value == 1) {
+						that.pole_index = 2
+					} else if (that.pole_value == 2 || that.pole_value == 3) {
+						that.pole_index = 4
+					}
+				}
+
+				pole = that.pole_index
 
 				_str = _str + int_to2hex((that.dect_range * 10) & 0x00000000000000ff) +
 					int_to2hex(pole & 0x00000000000000ff) + int_to2hex(that.car_value)
@@ -286,10 +367,11 @@
 
 							for (let i = 0; i < 9; i++) that.aera_sensi[i].value = 0x0A
 
-              if (that.pole_value == 4 || that.pole_value == 5) {
+							// 2: 广告杆 3: 空降杆
+              if (that.pole_value == 2) {
 								that.aera_sensi[9].value = 0
 							}
-              else if(that.pole_value == 6 || that.pole_value == 7)  {
+              else if(that.pole_value == 3)  {
 								that.aera_sensi[2].value = 0x2A
 								that.aera_sensi[9].value = 1
 							}
@@ -350,7 +432,7 @@
 								
 								log_upload('write', {
 								  'dect_range': that.dect_range * 10,
-								  'pole_value': that.pole_value,
+								  'pole_value': that.pole_index,
 								  'car_value': that.car_value
 								})
             }
