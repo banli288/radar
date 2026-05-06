@@ -6,17 +6,23 @@
 
 		<view class="col">
 			<view class="card row">
-				<view :style="dynamicFontStyle" class="_text">{{$t("config.text1")}}</view>
+				<view :style="dynamicFontStyle" class="_text" style="width: 40%; justify-content: space-between;">{{$t("config.text1")}}</view>
 				<uni-data-select style="width: 60%;" v-model="car_value" :localdata="car_type" :clear="false"
 					@change="change_car"></uni-data-select>
 			</view>
 			<view class="card row">
-				<view :style="dynamicFontStyle" class="_text">{{$t("config.text2")}}</view>
+				<view class="col" style="width: 40%; justify-content: space-between;">
+					<view :style="dynamicFontStyle" class="_text">{{$t("config.text2")}}</view>
+					<view :style="dynamicFontStyle" class="_text" style="font-size: 22rpx;">{{$t("config.text2_dis")}}</view>
+				</view>
 				<uni-data-select style="width: 60%;" v-model="pole_value" :localdata="pole_type" :clear="false"
 					@change="change_pole"></uni-data-select>
 			</view>
 			<view class="card row">
-				<view :style="dynamicFontStyle" class="_text">{{$t("config.text3")}}</view>
+				<view class="col" style="width: 40%; justify-content: space-between;">
+					<view :style="dynamicFontStyle" class="_text">{{$t("config.text3")}}</view>
+					<view :style="dynamicFontStyle" class="_text">{{$t("config.text3_dis")}}</view>
+				</view>
 				<slider style="width: 60%;" :value="dect_range" :min="0" :max="6" step="0.1" block-size="28" @change="change"
 					activeColor="#3478f6" inactiveColor="#ffff7f" showValue="" block-color="#2979ff" :block-size="15"></slider>
 			</view>
@@ -75,6 +81,7 @@
 				car_value: 1,
 				dect_range: 1.0,
 				img_url: "",
+				study_entry: 0,
 
         aera_sensi: [
           {value: 0, min: 0, max: 10, step: 1},
@@ -314,7 +321,10 @@
                               cancelText: that.$t("modal.cancelText"),
                               content: that.$t("config.studyCont.text5"),
                               success(res) {
-                                if (res.confirm) that.radar_up_study()
+                                if (res.confirm) {
+																	that.radar_up_study()
+																	that.study_entry = 1
+																}
                               }
                             })
                           }
@@ -331,7 +341,10 @@
                   cancelText: that.$t("modal.cancelText"),
                   content: that.$t("config.studyCont.text5"),
                   success(res) {
-                    if (res.confirm) that.radar_up_study()
+                    if (res.confirm) {
+                    	that.radar_up_study()
+                    	that.study_entry = 1
+                    }
                   }
                 })
 								
@@ -381,8 +394,15 @@
 																confirmText: that.$t("modal.confirmText"),
 																cancelText: that.$t("modal.cancelText"),
 																content: that.$t("config.studyCont.upend"),
+																success(res) {
+																	if (res.confirm) {
+																		if (that.study_entry == 1) {
+																			that.radar_down_study()
+																			that.study_entry = 0
+																		}
+																	}
+																}
 															})
-															// that.radar_down_study()
 										        }
 										      })
 												}, 2000)
@@ -399,6 +419,9 @@
 			radar_down_study() {
 				let that = this
 				let timer = null
+				
+				that.study_entry = 0
+				
 				uni.showModal({
 					title: that.$t("modal.notice"),
 					content: that.$t("config.studyCont.text6"),
@@ -587,8 +610,6 @@
 	}
 
 	._text {
-		width: 40%;
-		padding-left: 30rpx;
 		align-items: center;
 	}
 </style>

@@ -61,6 +61,10 @@
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
 					@tap="radar_reset()">{{$t("aconfig.btnRestore")}}</button>
 			</view>
+			<view class="card">
+				<button class="btn" hover-class="btn_hover" style="width: 100%;" :disabled="!connect_state"
+					@tap="ble_dis_con()">{{$t("aconfig.btnBleAutoConnect")}}</button>
+			</view>
 		</view>
 	</view>
 </template>
@@ -386,6 +390,14 @@
 
 							uni.showToast({title: that.$t("aconfig.modal.readsuccess"),})
 						}
+					}
+				})
+			},
+			ble_dis_con() {
+				let that = this
+				bt.send("661b1b02", 0x66).then(res => {
+					if (!res.error) {
+						uni.showToast({title: that.$t("aconfig.modal.savesuccess")})
 					}
 				})
 			},

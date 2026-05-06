@@ -11,8 +11,96 @@ import {
 } from "./send.js"
 import store from "../store/index.js"
 
+class BLEStateMachine {
+  constructor() {
+    this.state = 'IDLE'  // IDLE, HEADER, DATA, CHECK
+    this.frame = []
+    this.expectedLen = 0
+    this.checkSum = 0
+    
+    this.HEADER1 = 0x56
+    this.HEADER2 = 0xab
+		this.ENDER1 = 0x5a
+		this.ENDER2 = 0xa5
+  }
+  
+  // 每收到一个字节就调用
+  pushByte(byte) {
+    switch(this.state) {
+      case 'IDLE':
+        if (byte === this.HEADER1) {
+          this.state = 'HEADER'
+          this.frame = [byte]
+        }
+        break
+        
+      case 'HEADER':
+        this.frame.push(byte)
+        if (byte === this.HEADER2) {
+          this.state = 'DATA'
+        } else {
+          this.state = 'IDLE'
+        }
+        break
+        
+      case 'DATA':
+        this.frame.push(byte)
+				if (byte === this.ENDER1)
+					this.state = 'END'
+        break
+        
+			case 'END':
+				this.frame.push(byte)
+				if (byte === this.ENDER2) { //check
+					if (1) {
+						if (this.verifyCheckSum()) {
+						  const frameData = this.parseFrame()
+						  this.onComplete(frameData)  // 触发回调
+						}
+						this.reset()
+					}
+				} else {
+					this.state = 'IDLE'
+				}
+				break;
+    }
+  }
+  
+  verifyCheckSum() {
+    
+  }
+  
+  parseFrame() {
+    // 提取数据部分
+    return this.frame.slice(3, -1)  // 跳过帧头和校验
+  }
+  
+  onComplete(data) {
+    // 通过事件总线发送解析好的数据
+    uni.$emit('ble-frame-complete', data)
+  }
+  
+  reset() {
+    this.state = 'IDLE'
+    this.frame = []
+    this.expectedLen = 0
+  }
+  
+  // 外部可调用的复位（超时保护）
+  forceReset() {
+    if (this.state !== 'IDLE') {
+      console.warn('状态机超时复位')
+      this.reset()
+    }
+  }
+}
+
 class BluetoothManager {
   constructor() {
+		this.byteQueue = []
+		this.isProcessing = false
+		
+		
     this.listeners = {} // { cmd: [callback1, callback2] }
     this.pendingRequests = {} // 请求-响应映射 {reqId: resolve}
     this.recvBuffer = new Uint8Array(0);

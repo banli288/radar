@@ -135,36 +135,30 @@ export function bytesToAsciiString(bytes) {
   const byteArray = new Uint8Array(bytes);
   return Array.from(byteArray)
     .map(b => {
-      // 可打印 ASCII
-      if (b >= 32 && b <= 126) {
+      if ((b >= 32 && b <= 126) || [9, 10, 13].includes(b)) {
         return String.fromCharCode(b);
+      } else {
+        return '.'; 
       }
-      // 不可打印的用点或转义
-      return '.';
     })
     .join('');
 }
 
 export function hexStringToAscii(hexStr) {
-  // 去掉空格、换行
+  // 清洗字符串
   const clean = hexStr.replace(/\s+/g, '').toUpperCase();
-
-  if (clean.length % 2 !== 0) {
-    throw new Error('hex string length must be even');
-  }
+  if (clean.length % 2 !== 0) throw new Error('hex string length must be even');
 
   let result = '';
-
   for (let i = 0; i < clean.length; i += 2) {
     const byte = parseInt(clean.substr(i, 2), 16);
 
-    if (byte >= 32 && byte <= 126) {
+    if ((byte >= 32 && byte <= 126) || [9, 10, 13].includes(byte)) {
       result += String.fromCharCode(byte);
     } else {
-      result += '.'
+      result += '.'; 
     }
   }
-
   return result;
 }
 

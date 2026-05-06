@@ -79,7 +79,7 @@ import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_uploa
 		data() {
 			return {
 				recv_text: "",
-				recv_format: 0,
+				recv_format: 1,
 				recv_format_box: [
           {text: "HEX",value: 0},
 					{text: "ASCII",value: 1},
@@ -96,9 +96,9 @@ import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_uploa
         debug_arr: [
           {value: 0 ,text: this.$t("debug.cmd1")},
           {value: 1 ,text: this.$t("debug.cmd2")},
-          {value: 2 ,text: this.$t("debug.cmd3")},
-          {value: 3 ,text: this.$t("debug.cmd4")},
-          {value: 4 ,text: this.$t("debug.cmd5")},
+          // {value: 2 ,text: this.$t("debug.cmd3")},
+          // {value: 3 ,text: this.$t("debug.cmd4")},
+          // {value: 4 ,text: this.$t("debug.cmd5")},
         ],
         debug_cmd: [
           '',
@@ -214,17 +214,66 @@ import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_uploa
 			//将发送文本框内的数据组帧发送出去
 			send_btn() {
         if (this.debug_index != 0) {
-          log_upload('debug-send', this.debug_cmd[this.debug_index])
-          bt.send(this.debug_cmd[this.debug_index], 0xFF).then(res => {
-            if (!res.error) {
-              let data = bytesToAsciiString(res.payload)
+					bt.send('66020204', 0xFF).then(res => {
+						if (!res.err) {
+							let env_param = bytesToAsciiString(res.payload)
+							
+							if (this.recv_format == 1) this.recv_add_data(env_param, this.disRecv)
+							else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
+							
+							log_upload('debug-recv', env_param)
+						}
+					})
+					
+					setTimeout(() => {
+						bt.send('66020205', 0xFF).then(res => {
+							if (!res.err) {
+								let all_param = bytesToAsciiString(res.payload)
+								
+								if (this.recv_format == 1) this.recv_add_data(all_param, this.disRecv)
+								else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
+								
+								log_upload('debug-recv', all_param)
+							}
+						})
+					}, 500)
+					
+					setTimeout(() => {
+						bt.send('66020206', 0xFF).then(res => {
+							if (!res.err) {
+								let car_param = bytesToAsciiString(res.payload)
+								
+								if (this.recv_format == 1) this.recv_add_data(car_param, this.disRecv)
+								else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
+								
+								log_upload('debug-recv', car_param)
+							}
+						})
+					}, 1000)
+					
+					setTimeout(() => {
+						bt.send('66020207', 0xFF).then(res => {
+							if (!res.err) {
+								let noise_param = bytesToAsciiString(res.payload)
+								
+								if (this.recv_format == 1) this.recv_add_data(noise_param, this.disRecv)
+								else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
+								
+								log_upload('debug-recv', noise_param)
+							}
+						})
+					}, 1500)
+          // log_upload('debug-send', this.debug_cmd[this.debug_index])
+          // bt.send(this.debug_cmd[this.debug_index], 0xFF).then(res => {
+          //   if (!res.error) {
+          //     let data = bytesToAsciiString(res.payload)
 
-              if (this.recv_format == 1) this.recv_add_data(data, this.disRecv)
-              else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
+          //     if (this.recv_format == 1) this.recv_add_data(data, this.disRecv)
+          //     else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
 
-              log_upload('debug-recv', data)
-            }
-          })
+          //     log_upload('debug-recv', data)
+          //   }
+          // })
         } else {
           let str = this.send_text.replace(" ", "")
 
