@@ -8,7 +8,7 @@
 
 		<view class="card row info">
 			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text2")}}</view>
-			<view :style="dynamicFontStyle" class="_row2_right">MW60S</view>
+			<view :style="dynamicFontStyle" class="_row2_right">MWS</view>
 		</view>
 		<view class="card row info">
 			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text3")}}</view>
@@ -45,9 +45,8 @@
 						<view>{{ble_con_state_list[index]}}</view>
 					</view>
 				</view>
-				<view class="card"
-					<button style="width: 100%;" @tap="ble_list_refresh">{{$t("index.text8")}}</button>
-				</view>
+				<view class="card" style="margin-bottom: 2px;">{{$t("index.text6")}}</view>
+				<view class="card" <button style="width: 100%;" @tap="ble_list_refresh">{{$t("index.text8")}}</button></view>
 			</view>
 		</view>
 	</view>

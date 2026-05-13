@@ -11,14 +11,23 @@
 					@change="change_car"></uni-data-select>
 			</view>
 			<view class="card row">
-				<view :style="dynamicFontStyle" class="_text" style="width: 40%; justify-content: space-between;">{{$t("config.fixation_text")}}</view>
-				<uni-data-select style="width: 60%;" v-model="fixation_value" :localdata="fixation" :clear="false"
-					@change="change_fixation"></uni-data-select>
+				<view class="col" style="width: 40%; justify-content: space-between;">
+					<view :style="dynamicFontStyle" class="_text">{{$t("config.fixation_text")}}</view>
+					<view :style="dynamicFontStyle" class="_text" style="font-size: 22rpx;">{{$t("config.text2_dis")}}</view>
+				</view>
+				
+				<radio-group class="radio-row" @change="radioChange">
+					<label class="radio-item" style="margin-right: 20px;" v-for="item in fixation_items" :key="item.value">
+						<radio :value="item.value" :checked="item.value === fixation_value" color="#007AFF" />
+						<text class="radio-text">{{ item.name }}</text>
+					</label>
+				</radio-group>
+				<!-- <uni-data-select style="width: 60%;" v-model="fixation_value" :localdata="fixation" :clear="false"
+					@change="change_fixation"></uni-data-select> -->
 			</view>
 			<view class="card row">
 				<view class="col" style="width: 40%; justify-content: space-between;">
 					<view :style="dynamicFontStyle" class="_text">{{$t("config.text2")}}</view>
-					<view :style="dynamicFontStyle" class="_text" style="font-size: 22rpx;">{{$t("config.text2_dis")}}</view>
 				</view>
 				<uni-data-select style="width: 60%;" v-model="pole_value" :localdata="pole_type" :clear="false"
 					@change="change_pole"></uni-data-select>
@@ -89,7 +98,7 @@
 				img_url: "",
 				study_entry: 0,
 				fixation_value: 0,
-
+					
         aera_sensi: [
           {value: 0, min: 0, max: 10, step: 1},
           {value: 0, min: 0, max: 10, step: 1},
@@ -173,10 +182,16 @@
 			},
 			fixation() {
 				return [
+					{value: 1,text: this.$t("config.fixation_right")},
 				  {value: 0,text: this.$t("config.fixation_left")},
-				  {value: 1,text: this.$t("config.fixation_right")},
 				]
-			}
+			},
+			fixation_items() {
+				return [
+					{ value: 1, name: this.$t("config.fixation_left") },
+					{ value: 0, name: this.$t("config.fixation_right") }
+				]
+			},
 		},
 		onLoad() {
 			updatePageTitle()
@@ -204,6 +219,10 @@
 			uni.hideLoading()
 		},
 		methods: {
+			radioChange(e) {
+				this.fixation_value = Number(e.detail.value);
+				this.update_image()
+			},
 			change(e) {
 				this.dect_range = e.detail.value
 			},
@@ -221,8 +240,8 @@
 			update_image() {
 				let that = this
 				let image_index = 0
-				// 0: left 1: right
-				if (that.fixation_value == 0) {
+				// 0: right 1: left
+				if (that.fixation_value == 1) {
 					if (that.pole_value == 0) {
 						image_index = 1 // 直杆
 					} else if (that.pole_value == 1) {
@@ -259,7 +278,7 @@
             this.car_value = res.payload[2]
 
 						// 0: right 1: left
-						pole % 2 == 0 ? that.fixation_value = 1 : that.fixation_value = 0
+						pole % 2 == 0 ? that.fixation_value = 0 : that.fixation_value = 1
 
             if (store.state.product_info.sf > 1.6) {
               bt.send("98020201", 0x98).then(res => {
@@ -294,7 +313,7 @@
                     log_upload('read', {
                       'dect_range': this.dect_range,
                       'car_value': this.car_value,
-                      'pole_value': this.pole_index,
+                      'pole_value': pole,
                       '98020201': res.payload
                     })
                   } 
@@ -318,7 +337,7 @@
               log_upload('read', {
                   'dect_range': this.dect_range,
                   'car_value': this.car_value,
-                  'pole_value': this.pole_index
+                  'pole_value': pole
               })
             }
 					}
@@ -333,8 +352,8 @@
 				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
 				uni.showLoading({title: that.$t("modal.saving"), mask: true})
 
-				// 0: left 1: right
-				if (that.fixation_value == 0) {
+				// 0: right 1: left
+				if (that.fixation_value == 1) {
 					if (that.pole_value == 0) {
 						that.pole_index = 1 // 直杆
 					} else if (that.pole_value == 1) {

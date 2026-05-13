@@ -121,7 +121,7 @@ export default {
       text3: "Keep pole raised. No people/vehicles within 2m range",
       text4: "Raise Calibration Timeout, Please Retry",
       text5: "Parameters saved successfully. Perform pole learning?",
-      text6: "After clicking Confirm, please use the remote control joystick to lift and lower it more than five times.",
+      text6: "The configuration has been saved successfully. Do you want to proceed with the background learning of raising the barrier and the learning of barrier lifting and lowering?",
       text7: "In the process of learning to raise and lower the pole",
       text8: "Cycle pole at least 5 times. No people/vehicles within 2m range. Click Next when done",
       text9: "Use remote to lower pole, then click Next",
