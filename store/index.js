@@ -14,8 +14,8 @@ const store = new Vuex.Store({
     product_info: {
       type: 0,
       SN: '',
-      hd: 0,
-      sf: 0,
+      hd_ver: 0,
+      sw_ver: 0,
     },
 
     recv_buf: '',
@@ -57,8 +57,8 @@ const store = new Vuex.Store({
     set_product(state, prod) {
       state.product_info.type = prod.type
       state.product_info.SN = prod.SN
-      state.product_info.hd = prod.hd
-      state.product_info.sf = prod.sf
+      state.product_info.hd_ver = prod.hd_ver
+      state.product_info.sw_ver = prod.sw_ver
     },
     setLang(state, lang) {
       state.lang = lang

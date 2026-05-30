@@ -187,6 +187,7 @@ export default {
     },
     modal: {
       reading: "读取中",
+			setting: "设置中",
       saving: "保存中",
       notice: "提示",
       radarRestart: "确定重启雷达?",

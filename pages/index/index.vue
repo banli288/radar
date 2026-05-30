@@ -5,24 +5,33 @@
 			<button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
 			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button>
 		</view>
-
-		<view class="card row info">
-			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text2")}}</view>
-			<view :style="dynamicFontStyle" class="_row2_right">MWS</view>
+		
+<!-- 		<view class="card row info">
+			<view class="_row2_left">产品型号</view>
+			<view class="_row2_right">ZRD-803</view>
 		</view>
 		<view class="card row info">
-			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text3")}}</view>
-			<view :style="dynamicFontStyle" class="_row2_right">{{product_SN}}</view>
+			<view class="_row2_left">雷达类型</view>
+			<view class="_row2_right">防砸雷达</view>
+		</view> -->
+		
+		<view class="card row info">
+			<view class="_row2_left">{{$t("index.text2")}}</view>
+			<view class="_row2_right">MWS</view>
 		</view>
 		<view class="card row info">
-			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text4")}}</view>
-			<view :style="dynamicFontStyle" class="_row2_right">V{{product_hd}}</view>
+			<view class="_row2_left">{{$t("index.text3")}}</view>
+			<view class="_row2_right">{{product.SN}}</view>
 		</view>
 		<view class="card row info">
-			<view :style="dynamicFontStyle" class="_row2_left">{{$t("index.text5")}}</view>
-			<view :style="dynamicFontStyle" class="_row2_right">V{{product_sf}}</view>
+			<view class="_row2_left">{{$t("index.text4")}}</view>
+			<view class="_row2_right">V{{product.hd_ver}}</view>
 		</view>
-
+		<view class="card row info">
+			<view class="_row2_left">{{$t("index.text5")}}</view>
+			<view class="_row2_right">V{{product.sw_ver}}</view>
+		</view>
+		
 		<view class="_center" style="margin-top: 30rpx;">
 			<button class="btn" hover-class="btn_hover" @click="btn_press()">{{bleConName}}</button>
 		</view>
@@ -34,7 +43,19 @@
 		<view class="_center">
 			<view class="multiline-text">{{$t("index.text6")}}</view>
 		</view>
-		<!-- 弹窗 -->
+		
+		<!-- 使用说明弹窗 -->
+<!-- 		<view class="notes" v-if="showNotes">
+			<view class="notes_content" @click.stop="">
+				<view class="card title">{{$t("index.Notes.title")}}</view>
+				<view class="list_item">
+					<view style="padding: 5rpx; margin-bottom: 5rpx;" v-for="(item ,index) in notes">{{item}}</view>
+				</view>
+				<button style="width: 100%; color: blue;" @tap="closeNotes">{{$t("index.Notes.confirm")}}</button>
+			</view>
+		</view> -->
+		
+		<!-- 扫描蓝牙弹窗 -->
 		<view class="dialog" v-if="showDialog" @click="closeDialog">
 			<view class="dialog_content" @click.stop="">
 				<view class="card title">{{$t("index.text7")}}</view>
@@ -45,10 +66,13 @@
 						<view>{{ble_con_state_list[index]}}</view>
 					</view>
 				</view>
-				<view class="card" style="margin-bottom: 2px;">{{$t("index.text6")}}</view>
-				<view class="card" <button style="width: 100%;" @tap="ble_list_refresh">{{$t("index.text8")}}</button></view>
+				<!-- <view class="card" style="margin-bottom: 2px;">{{$t("index.text6")}}</view> -->
+				<view class="card">
+					<button style="width: 100%;" @tap="ble_list_refresh">{{$t("index.text8")}}</button>
+				</view>
 			</view>
 		</view>
+		
 	</view>
 </template>
 
@@ -63,14 +87,19 @@
 	import eventBus from '../../tools/eventBus.js'
 	import wsManager from '../../tools/wsManager.js'
   import { jlog, log_upload } from '../../tools/send.js'
+	import { get_production, close_ble } from '../../tools/radar_port.js'
 	export default {
 		data() {
 			return {
 				showDialog: false,
-				product_type: 0,
-				product_SN: "",
-				product_hd: 1.01,
-				product_sf: 1.01,
+				showNotes: true,
+				
+				product: {
+					type: 0,
+					SN: "",
+					hd_ver: 1.01,
+					sw_ver: 1.01,
+				},
 
 				ble_list: [],
 				ble_name_list: [],
@@ -81,18 +110,13 @@
 			}
 		},
 		onLoad() {
-			//更新标题栏
-			updatePageTitle()
-
-			//更新工具栏
 			if (this.$mp.page.route === 'pages/index/index') {
 				updateTabBar()
 			}
 		},
 		onShow() {
-			//设置不息屏
 			uni.setKeepScreenOn({
-				keepScreenOn: true,
+				keepScreenOn: true, //设置不息屏
 				success() {
 				}
 			})
@@ -104,15 +128,9 @@
 		},
 		onHide() {
 			uni.hideLoading()
-			
-			//离开首页关闭蓝牙发现
-			uni.stopBluetoothDevicesDiscovery({
-				success() {
-				}
-			})
+			uni.stopBluetoothDevicesDiscovery({})
 		},
 		computed: {
-			//动态获取国际化变量，样式
 			bleConName() {
 				return this.$t(`index.bleBtnName.${this.getSearchBtnName}`)
 			},
@@ -125,32 +143,35 @@
 			isEnglish() {
 				return this.$i18n.locale === 'en'
 			},
-			dynamicFontStyle() {
-				return {
-					fontSize: this.isEnglish ? '17px' : '20px',
-					lineHeight: this.isEnglish ? '1.8' : '1.8'
-				}
-			},
 			isConnected() {
 				return store.state.connect_state
 			},
 			getSearchBtnName() {
-				if (this.isConnected) {
+				if (this.isConnected)
 					return "disconnect"
-				}		
-				else {
+				else
 					return "connect"
-				}
+			},
+			notes() {
+				return [
+					this.$t("index.Notes.line1"),
+					this.$t("index.Notes.line2"),
+					this.$t("index.Notes.line3"),
+					this.$t("index.Notes.line4"),
+					this.$t("index.Notes.line5"),
+					this.$t("index.Notes.line6"),
+					this.$t("index.Notes.line7"),
+					this.$t("index.Notes.line8"),
+					this.$t("index.Notes.line9"),
+				]
 			}
 		},
 		methods: {
-			//切换语言
 			swLang(lang) {
 				changeLanguage(lang)
 				this.currentLang = lang
 			},
 
-			//刷新蓝牙列表
 			ble_list_refresh() {
 				this.ble_list = []
 				this.ble_name_list = []
@@ -159,94 +180,61 @@
 				this.btn_press()
 			},
 
-			//读取版本信息
-			read_product() {
-				bt.send("66010100", 0x66).then(res => {
-					if (!res.error) {
-						bt.send("89020201", 0x89).then(res => {
-							if (!res.error) {
-                //弹窗提示读取成功--链接成功
-								uni.hideLoading()
-								uni.showToast({
-									title: this.$t("modal.conSuccess")
-								})
-
-								this.product_type = res.payload[0]
-								this.product_SN = res.payload[1].toString(16) + res.payload[2].toString(16) +
-									res.payload[3].toString(16) + res.payload[4].toString(16) + res.payload[5].toString(16)
-								this.product_hd = res.payload[6] + res.payload[7] / 10
-								this.product_sf = res.payload[8] + res.payload[9] / 10
-
-                store.commit('set_product', {
-                  type: this.product_type,
-                  SN: this.product_SN,
-                  hd: this.product_hd,
-                  sf: this.product_sf
-                })
-
-                log_upload('read', {
-                  'product_type': store.state.product_info.type,
-                  'product_SN': store.state.product_info.SN,
-                  'product_hd': store.state.product_info.hd,
-                  'product_sf': store.state.product_info.sf,
-                  'MAC': store.state.device_info.deviceId,
-                  'location': store.state.location
-                })
-
-								//更新蓝牙列表的连接状态
-								this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
-							} else {
-								uni.hideLoading()
-								uni.showModal({
-								  title: this.$t("modal.notice"),
-								  confirmText: this.$t("modal.confirmText"),
-								  cancelText: this.$t("modal.cancelText"),
-								  content: this.$t("modal.readTineout"),
-								})
-							}
-						})
-					} else {
-						uni.hideLoading()
-						uni.showModal({
-						  title: this.$t("modal.notice"),
-						  confirmText: this.$t("modal.confirmText"),
-						  cancelText: this.$t("modal.cancelText"),
-						  content: this.$t("modal.readTineout"),
-						})
-					}
-				})
+			async read_product() {
+				const res = await get_production()
+				uni.hideLoading()
+				
+				if (res) {
+					this.product = res
+					uni.showToast({title: this.$t("modal.conSuccess")})
+					this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
+					
+					store.commit('set_product', res)
+					
+					log_upload('read', {
+						'product_type': store.state.product_info.type,
+						'product_SN': store.state.product_info.SN,
+						'product_hd': store.state.product_info.hd_ver,
+						'product_sf': store.state.product_info.sw_ver,
+						'MAC': store.state.device_info.deviceId,
+						'location': store.state.location
+					})
+				} else {
+					uni.showModal({
+					  title: this.$t("modal.notice"),
+					  confirmText: this.$t("modal.confirmText"),
+					  cancelText: this.$t("modal.cancelText"),
+					  content: this.$t("modal.readTineout"),
+					})
+				}
 			},
-			// 关闭弹窗
 			closeDialog() {
 				this.showDialog = false
 			},
-			//关闭当前雷达的蓝牙
-			close_radar_ble() {
+			closeNotes() {
+				this.showNotes = false
+			},
+			async close_radar_ble() {
 				let that = this
 				uni.showModal({
 					title: that.$t("modal.notice"),
 					content: that.$t("modal.CloseRadarBLE"),
 					confirmText: that.$t("modal.confirmText"),
 					cancelText: that.$t("modal.cancelText"),
-					success(res) {
+					async success(res) {
 						if (res.confirm) {
 							uni.showLoading({
 								title: that.$t("modal.setting")
 							})
-							bt.send("661B1B00", 0x66).then(res => {
-								uni.hideLoading()
-								if (!res.error) {
-									uni.showToast({
-										title: that.$t("modal.seted")
-									})
-								} else {
-									if(that.isConnected == false) {
-										uni.showToast({
-											title: that.$t("modal.seted")
-										})
-									}
+							const res_close = await close_ble();
+							uni.hideLoading()
+							if (res_close) {
+								uni.showToast({title: that.$t("modal.seted")})
+							} else {
+								if(that.isConnected == false) {
+									uni.showToast({title: that.$t("modal.seted")})
 								}
-							})
+							}
 						}
 					}
 				})
@@ -304,6 +292,7 @@
 														//发现新的蓝牙设备,加入设备列表
 														that.ble_list.push(res.devices[0].deviceId)
 														that.ble_name_list.push(res.devices[0].name)
+														// that.ble_name_list.push('ZRD-803')
 														that.ble_rssi_list.push(res.devices[0].RSSI)
 														that.ble_con_state_list.push('disconnected')
 													}
@@ -481,6 +470,50 @@
 				overflow-y: auto;
 			}
 
+			._item {
+				display: flex;
+				justify-content: space-between;
+				height: 50px;
+				padding: 30rpx 30rpx;
+			}
+		}
+	}
+
+	.notes {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: rgba(129, 129, 129, 0.5);;
+		
+		.notes_content {
+			width: 85%;
+			height: 1130rpx;
+			background: linear-gradient(180deg, #ffffff, #ffffff);
+			position: relative;
+			z-index: 1;
+			border-radius: 10rpx;
+			display: flex;
+			flex-direction: column;
+		
+			.title {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 60rpx;
+				font-size: 36rpx;
+				border-bottom: 1px solid #000000; /* 设置横线的粗细、样式和颜色 */
+			}
+		
+			.list_item {
+				flex: 1;
+				overflow-y: auto;
+			}
+		
 			._item {
 				display: flex;
 				justify-content: space-between;

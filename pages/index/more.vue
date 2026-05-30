@@ -28,7 +28,7 @@
     },
     computed: {
       pageList() {
-				if (store.state.product_info.sf < 2.0) {
+				if (store.state.product_info.sw_ver < 2.0) {
 					return [
 					  this.$t("more.advancedConfig"),
 					  this.$t("more.commamd"),
@@ -84,7 +84,7 @@
         } else if (index == 1) {
           that.$u.route({url: '/pages/more/debug'})
         } else if (index == 2) {
-					if (store.state.product_info.sf < 2.0) {
+					if (store.state.product_info.sw_ver < 2.0) {
 						this.downloadAndOpenPdf()
 					} else {
 						that.$u.route({url: '/pages/more/relay'})

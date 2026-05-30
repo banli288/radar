@@ -114,7 +114,7 @@ class BluetoothManager {
       // 追加数据
       this.recvBuffer = this.appendBuffer(this.recvBuffer, chunk);
 			
-			//jlog('BLE CHUNK', this.recvBuffer)
+			// jlog('BLE CHUNK', this.recvBuffer)
 
       // 重置超时定时器
       if (this.recvTimer) {
