@@ -1,21 +1,25 @@
 <template>
 	<view class="page">
 		<view class="card img_box" style="margin-top: 20rpx;">
-			<image class="img_class" src="@/static/0.jpg"></image>
-			<button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
-			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button>
+			<image class="img_class" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"></image>
+			<!-- <button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
+			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button> -->
 		</view>
 		
-<!-- 		<view class="card row info">
+		<view class="card row info">
 			<view class="_row2_left">产品型号</view>
-			<view class="_row2_right">ZRD-803</view>
+			<view class="_row2_right">{{isConnected ? "ZRD-803" : " "}}</view>
 		</view>
 		<view class="card row info">
 			<view class="_row2_left">雷达类型</view>
-			<view class="_row2_right">防砸雷达</view>
-		</view> -->
-		
+			<view class="_row2_right">{{isConnected ? "防砸雷达" : " "}}</view>
+		</view>
 		<view class="card row info">
+			<view class="_row2_left">产品编码</view>
+			<view class="_row2_right">{{isConnected ? prodSN : " "}}</view>
+		</view>
+		
+<!-- 		<view class="card row info">
 			<view class="_row2_left">{{$t("index.text2")}}</view>
 			<view class="_row2_right">MWS</view>
 		</view>
@@ -30,7 +34,7 @@
 		<view class="card row info">
 			<view class="_row2_left">{{$t("index.text5")}}</view>
 			<view class="_row2_right">V{{product.sw_ver}}</view>
-		</view>
+		</view> -->
 		
 		<view class="_center" style="margin-top: 30rpx;">
 			<button class="btn" hover-class="btn_hover" @click="btn_press()">{{bleConName}}</button>
@@ -45,7 +49,7 @@
 		</view>
 		
 		<!-- 使用说明弹窗 -->
-<!-- 		<view class="notes" v-if="showNotes">
+		<view class="notes" v-if="showNotes">
 			<view class="notes_content" @click.stop="">
 				<view class="card title">{{$t("index.Notes.title")}}</view>
 				<view class="list_item">
@@ -53,7 +57,7 @@
 				</view>
 				<button style="width: 100%; color: blue;" @tap="closeNotes">{{$t("index.Notes.confirm")}}</button>
 			</view>
-		</view> -->
+		</view>
 		
 		<!-- 扫描蓝牙弹窗 -->
 		<view class="dialog" v-if="showDialog" @click="closeDialog">
@@ -85,9 +89,9 @@
 	import store from '@/store/index.js'
 	import bt from "@/tools/BluetoothManager.js"
 	import eventBus from '../../tools/eventBus.js'
-	import wsManager from '../../tools/wsManager.js'
   import { jlog, log_upload } from '../../tools/send.js'
 	import { get_production, close_ble } from '../../tools/radar_port.js'
+	import wsManager from '../../tools/wsManager.js'
 	export default {
 		data() {
 			return {
@@ -120,15 +124,15 @@
 				success() {
 				}
 			})
-
+			eventBus.on('ws:message', this.ws_recv_handler)
 			updatePageTitle()
 		},
 		onUnload() {
-			eventBus.off('ws:message', this.ws_recv_handler)
 		},
 		onHide() {
 			uni.hideLoading()
 			uni.stopBluetoothDevicesDiscovery({})
+			eventBus.off('ws:message', this.ws_recv_handler)
 		},
 		computed: {
 			bleConName() {
@@ -145,6 +149,9 @@
 			},
 			isConnected() {
 				return store.state.connect_state
+			},
+			prodSN() {
+				return store.state.product_info.SN
 			},
 			getSearchBtnName() {
 				if (this.isConnected)
@@ -167,6 +174,11 @@
 			}
 		},
 		methods: {
+			ws_recv_handler(data) {
+				if (data.msg.cmd == 'read') {
+					wsManager.send({type: 'p2p', toUserId: data.fromUserId, msg: {param: "123312"} })
+				}
+			},
 			swLang(lang) {
 				changeLanguage(lang)
 				this.currentLang = lang
@@ -190,6 +202,8 @@
 					this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
 					
 					store.commit('set_product', res)
+					
+					// wsManager.connect('ws://localhost/ws')
 					
 					log_upload('read', {
 						'product_type': store.state.product_info.type,
@@ -286,13 +300,14 @@
 										success() {
 											uni.onBluetoothDeviceFound(function(res) {
 												//根据名字匹配雷达设备
-												if ((res.devices[0].name.indexOf("XHJ") != -1) || (res.devices[0].name.indexOf("MW60S") != -1)) {
+												if ((res.devices[0].name.indexOf("XHJ") != -1) || (res.devices[0].name.indexOf("MW60S") != -1) ||
+													(res.devices[0].name.indexOf("ZRD") != -1)) {
                           uni.hideLoading()
 													if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
 														//发现新的蓝牙设备,加入设备列表
 														that.ble_list.push(res.devices[0].deviceId)
-														that.ble_name_list.push(res.devices[0].name)
-														// that.ble_name_list.push('ZRD-803')
+														// that.ble_name_list.push(res.devices[0].name)
+														that.ble_name_list.push('ZRD-803-' + res.devices[0].deviceId)
 														that.ble_rssi_list.push(res.devices[0].RSSI)
 														that.ble_con_state_list.push('disconnected')
 													}
@@ -531,7 +546,7 @@
 		position: relative;
 
 		.img_class {
-			width: 50%;
+			width: 100%;
 			margin: 0 auto !important;
 			// border: 1px solid #000;
 		}

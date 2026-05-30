@@ -1,4 +1,5 @@
 import eventBus from './eventBus'
+import store from '../store'
 
 class WSManager {
   constructor() {
@@ -26,13 +27,14 @@ class WSManager {
       console.log('WS connected')
       this.connected = true
       this.startHeartbeat()
-			this.send({ 'device_id': 'dev01', 'payload': { 'type': 'para', 'data': { 'sw': '1.0.0', 'hw': '1.0.1' }}})
+			this.send({ type: 'auth', userId: 'DEVIC1', SN: '000000000000' })
     })
 
     socket.onMessage(res => {
       let data = res.data
       try {
         data = JSON.parse(data)
+				console.log('<WS>', data)
       } catch (e) {}
       eventBus.emit('ws:message', data)
     })
@@ -56,7 +58,7 @@ class WSManager {
 
   startHeartbeat() {
     this.heartbeatTimer = setInterval(() => {
-      this.send({ 'device_id': 'dev01', 'payload': { 'type': 'heart', 'data': {}}})
+      // this.send({ 'device_id': 'dev01', 'payload': { 'type': 'heart', 'data': {}}})
     }, 30000)
   }
 
@@ -75,4 +77,4 @@ class WSManager {
   }
 }
 
-//export default new WSManager()
+export default new WSManager()

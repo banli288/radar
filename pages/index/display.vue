@@ -35,7 +35,8 @@
 	import {
 		mapState
 	} from 'vuex'
-import { log_upload } from "../../tools/send"
+	import { log_upload } from "../../tools/send"
+	import { display_en } from "../../tools/radar_port"
 	export default {
 		data() {
 			return {
@@ -142,33 +143,32 @@ import { log_upload } from "../../tools/send"
 					.exec()
 			},
 			//开启/关闭坐标显示指令
-			map_init(mode) {
-				var cmd = ''
+			async map_init(mode) {
+				var cmd = false
 				let that = this
 
 				if (mode == 'open') {
-					cmd = '66010109'
+					cmd = true
 				} else if (mode == 'close') {
-					cmd = '66010100'
+					cmd = false
 				} else if (mode == 'clear') {
 					this.recv_text = ""
 					return
 				}
 
 				if (store.state.connect_state == true) {
-					bt.send(cmd, 0x66).then(res => {
-						if (!res.error) {
-							this.recv_text += "OK\n"
-							log_upload('debug', {'display_set': mode})
-						} else {
-							uni.showModal({
-							  title: that.$t("modal.notice"),
-							  confirmText: that.$t("modal.confirmText"),
-							  cancelText: that.$t("modal.cancelText"),
-							  content: that.$t("modal.readTineout"),
-							})
-						}
-					})
+					const res = await display_en(cmd);
+					if (res) {
+						this.recv_text += "OK\n"
+						log_upload('debug', {'display_set': mode})
+					} else {
+						uni.showModal({
+						  title: that.$t("modal.notice"),
+						  confirmText: that.$t("modal.confirmText"),
+						  cancelText: that.$t("modal.cancelText"),
+						  content: that.$t("modal.readTineout"),
+						})
+					}
 				}
 			},
 		},

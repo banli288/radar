@@ -1,9 +1,11 @@
 <script>
   import store from './store'
 	import { log_upload, reportOnline, jlog } from './tools/send'
+	import wsManager from './tools/wsManager'
   export default {
-    onLaunch() {			
+    onLaunch() {
 			reportOnline()
+			wsManager.connect('ws://localhost/ws')
     },
     onShow() {
       uni.onBLEConnectionStateChange(function(res) {

@@ -30,6 +30,7 @@ import { mapState } from 'vuex'
 import { int_to2hex, jlog } from '@/tools/send.js'
 import bt from "@/tools/BluetoothManager.js"
 import { log_upload } from '../../tools/send';
+import { relay_read, relay_write } from '../../tools/radar_port';
 export default {
   data() {
     return {
@@ -72,75 +73,45 @@ export default {
 			if (this.aera_para_list[index].value > this.aera_para_list[index].min)
 				this.aera_para_list[index].value -= this.aera_para_list[index].step
 		},
-		para_read() {
+		async para_read() {
 			let that = this
 			
 			let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
 			uni.showLoading({title: that.$t("modal.reading"), mask:true})
 			
-			bt.send("99020201", 0x99).then(res => {
-				if (!res.err) {
-					if (res.payload.length == 10) {
-						clearTimeout(timer)
-						uni.showToast({title: that.$t("modal.readSuccess")})
-						
-						if (res.payload[0] == 1) that.aera_para_list[0].value = -1 * res.payload[1]
-						else that.aera_para_list[0].value = res.payload[1]
-						
-						if (res.payload[2] == 1) that.aera_para_list[1].value = -1 * res.payload[3]
-						else that.aera_para_list[1].value = res.payload[3]
-						
-						that.aera_para_list[2].value = res.payload[4]
-						that.aera_para_list[3].value = res.payload[5]
-						
-						that.state_list[0].value = res.payload[6]
-						that.state_list[1].value = res.payload[7]
-					}
-				}
-			})
+			const res = await relay_read()
+			if (res) {
+				clearTimeout(timer)
+				uni.showToast({title: that.$t("modal.readSuccess")})
+										
+				that.aera_para_list[0].value = res.param1
+				that.aera_para_list[1].value = res.param2
+				that.aera_para_list[2].value = res.param3
+				that.aera_para_list[3].value = res.param4
+				that.state_list[0].value = res.param5
+				that.state_list[1].value = res.param6
+			}
 		},
-		para_write() {
+		async para_write() {
 			let that = this
 			
 			let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
 			uni.showLoading({title: that.$t("modal.saving"), mask:true})
 			
-			let _str = '9a'
-			
-			if (that.aera_para_list[0].value >= 0) {
-				_str += int_to2hex(2 & 0x00000000000000ff)
-				_str += int_to2hex(that.aera_para_list[0].value & 0x00000000000000ff)
-			} else {
-				_str += int_to2hex(1 & 0x00000000000000ff)
-				_str += int_to2hex((-1 * that.aera_para_list[0].value) & 0x00000000000000ff)
+			let param = {
+				param1: that.aera_para_list[0].value,
+				param2: that.aera_para_list[1].value,
+				param3: that.aera_para_list[2].value,
+				param4: that.aera_para_list[3].value,
+				param5: that.state_list[0].value,
+				param6: that.state_list[1].value,
 			}
 			
-			if (that.aera_para_list[1].value >= 0) {
-				_str += int_to2hex(2 & 0x00000000000000ff)
-				_str += int_to2hex(that.aera_para_list[1].value & 0x00000000000000ff)
+			const res = await relay_write(param)
+			if (res) {
+				clearTimeout(timer)
+				uni.showToast({title: that.$t("modal.saved")})
 			}
-			else {
-				_str += int_to2hex(1 & 0x00000000000000ff)
-				_str += int_to2hex((-1 * that.aera_para_list[1].value) & 0x00000000000000ff)
-			}
-			
-			_str += int_to2hex(that.aera_para_list[2].value & 0x00000000000000ff)
-			_str += int_to2hex(that.aera_para_list[3].value & 0x00000000000000ff)
-			
-			that.state_list.forEach(item => {
-				_str = _str + int_to2hex((item.value) & 0x00000000000000ff)
-			})
-			
-			_str = _str + int_to2hex((9) & 0x00000000000000ff)
-			_str = _str + int_to2hex((1) & 0x00000000000000ff)
-			
-			bt.send(_str, 0x9A).then(res => {
-				jlog("READ", res)
-				if (!res.err) {
-					clearTimeout(timer)
-					uni.showToast({title: that.$t("modal.saved")})
-				}
-			})
 		}
 	}
 }

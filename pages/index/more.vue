@@ -1,10 +1,10 @@
 <template>
   <view class="page">
-    <view class="card title">
-      <image class="img_class" src="@/static/0.jpg" mode="heightFix"></image>
-      <view style="font-size: 20px;">{{toolInfo}}</view>
-      <view>{{prodInfo}}</view>
-    </view>
+		<view class="card title" style="margin-top: 20rpx;">
+			<image style="width: 100%; margin: 0 auto !important;" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"></image>
+			<view style="font-size: 20px;">{{toolInfo}}</view>
+			<view>{{prodInfo}}</view>
+		</view>
     <view class="_label">
       <view class="card label_item" v-for="(item,index) in pageList" :key="index" @tap="more_opa(index)">
         <view class="label_title">{{item}}</view>
@@ -150,13 +150,8 @@
 <style lang="scss" scoped>
 	@import "../common.scss";
 	
-  .img_class {
-    height: 120px;
-    margin: 0 auto !important;
-  }
-
   .title {
-    padding: 20px 20px;
+    padding: 2px 2px;
     display: flex;
     flex-direction: column;
     justify-content: center;

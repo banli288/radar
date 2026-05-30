@@ -75,6 +75,7 @@
 		mapState
 	} from 'vuex'
 import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_upload } from "../../tools/send";
+import { get_radar_sensi, param_all_read, param_env_read, param_humcar_read, param_noise_read, user_send } from "../../tools/radar_port";
 	export default {
 		data() {
 			return {
@@ -173,34 +174,30 @@ import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_uploa
         if (this.pole_type.value > this.pole_type.min) 
           this.pole_type.value -= this.pole_type.step
       },
-			get_sensi() {
-				bt.send("98020201", 0x98).then(res => {
-				  if (!res.error) {
-				    if (res.payload.length == 10) {
-				      for (let i = 0; i < 9; i++) this.aera_sensi[i].value = res.payload[i]
-							this.pole_type.value = res.payload[9]
-							
-							uni.showToast({title: this.$t("modal.readSuccess")})
-				    } else uni.showToast({title: this.$t("modal.readfail")})
-				  } else uni.showToast({title: this.$t("modal.readfail")})
-				})
+			async get_sensi() {
+				const res = await get_radar_sensi();
+				if (res) {
+					for (let i = 0; i < 9; i++) this.aera_sensi[i].value = res.sensi[i]
+					this.pole_type.value = res.pole					
+					uni.showToast({title: this.$t("modal.readSuccess")})
+				} else uni.showToast({title: this.$t("modal.readfail")})
 			},
-      set_sensi() {
-        let conf_str = '88'
+      async set_sensi() {
+        let sensi = []
+				let pole = 0
+				
+        for (let i = 0; i < 9; i++) sensi.push(this.aera_sensi[i].value)
+        pole = this.pole_type.value
 
-        for (let i = 0; i < 9; i++) conf_str = conf_str + int_to2hex(this.aera_sensi[i].value & 0xFF)
-        conf_str += int_to2hex(this.pole_type.value & 0xFF)
-
-        bt.send(conf_str, 0x88).then(res => {
-          if (!res.error) {
-						uni.showToast({title: this.$t("modal.seted")})
-						
-            log_upload('write', {
-              'aera_sensi': this.aera_sensi,
-              'pole_type': this.pole_type
-            })
-          }   
-        })
+				const res = await get_radar_sensi()
+				if (res) {
+					uni.showToast({title: this.$t("modal.seted")})
+					
+					log_upload('write', {
+					  'aera_sensi': this.aera_sensi,
+					  'pole_type': this.pole_type
+					})
+				}
       },
 			scrollToBottom() {
 				uni.createSelectorQuery()
@@ -211,69 +208,40 @@ import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_uploa
 					})
 					.exec()
 			},
-			//将发送文本框内的数据组帧发送出去
-			send_btn() {
+
+			async send_btn() {
         if (this.debug_index != 0) {
-					bt.send('66020204', 0xFF).then(res => {
-						if (!res.err) {
-							let env_param = bytesToAsciiString(res.payload)
-							
-							if (this.recv_format == 1) this.recv_add_data(env_param, this.disRecv)
-							else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
-							
-							log_upload('debug-recv', env_param)
-						}
-					})
+					const res1 = await param_env_read();
+					if (res1) {
+						let env_param = bytesToAsciiString(res1.payload)
+						if (this.recv_format == 1) this.recv_add_data(env_param, this.disRecv)
+						else this.recv_add_data(bytesToHexString(res1.payload), this.disRecv)
+						log_upload('debug-recv', env_param)
+					}
 					
-					setTimeout(() => {
-						bt.send('66020205', 0xFF).then(res => {
-							if (!res.err) {
-								let all_param = bytesToAsciiString(res.payload)
-								
-								if (this.recv_format == 1) this.recv_add_data(all_param, this.disRecv)
-								else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
-								
-								log_upload('debug-recv', all_param)
-							}
-						})
-					}, 500)
+					const res2 = await param_all_read();
+					if (res2) {
+						let all_param = bytesToAsciiString(res2.payload)
+						if (this.recv_format == 1) this.recv_add_data(all_param, this.disRecv)
+						else this.recv_add_data(bytesToHexString(res2.payload), this.disRecv)
+						log_upload('debug-recv', all_param)
+					}
 					
-					setTimeout(() => {
-						bt.send('66020206', 0xFF).then(res => {
-							if (!res.err) {
-								let car_param = bytesToAsciiString(res.payload)
-								
-								if (this.recv_format == 1) this.recv_add_data(car_param, this.disRecv)
-								else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
-								
-								log_upload('debug-recv', car_param)
-							}
-						})
-					}, 1000)
+					const res3 = await param_humcar_read();
+					if (res3) {
+						let car_param = bytesToAsciiString(res3.payload)
+						if (this.recv_format == 1) this.recv_add_data(car_param, this.disRecv)
+						else this.recv_add_data(bytesToHexString(res3.payload), this.disRecv)
+						log_upload('debug-recv', car_param)
+					}
 					
-					setTimeout(() => {
-						bt.send('66020207', 0xFF).then(res => {
-							if (!res.err) {
-								let noise_param = bytesToAsciiString(res.payload)
-								
-								if (this.recv_format == 1) this.recv_add_data(noise_param, this.disRecv)
-								else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
-								
-								log_upload('debug-recv', noise_param)
-							}
-						})
-					}, 1500)
-          // log_upload('debug-send', this.debug_cmd[this.debug_index])
-          // bt.send(this.debug_cmd[this.debug_index], 0xFF).then(res => {
-          //   if (!res.error) {
-          //     let data = bytesToAsciiString(res.payload)
-
-          //     if (this.recv_format == 1) this.recv_add_data(data, this.disRecv)
-          //     else this.recv_add_data(bytesToHexString(res.payload), this.disRecv)
-
-          //     log_upload('debug-recv', data)
-          //   }
-          // })
+					const res4 = await param_noise_read();
+					if (res4) {
+						let noise_param = bytesToAsciiString(res4.payload)		
+						if (this.recv_format == 1) this.recv_add_data(noise_param, this.disRecv)
+						else this.recv_add_data(bytesToHexString(res4.payload), this.disRecv)
+						log_upload('debug-recv', noise_param)
+					}
         } else {
           let str = this.send_text.replace(" ", "")
 
@@ -282,8 +250,8 @@ import { bytesToAsciiString, bytesToHexString, hexStringToAscii, jlog, log_uploa
           if (this.send_format == 1) this.recv_add_data(hexStringToAscii(str), this.disSend)
           else this.recv_add_data(str, this.disSend)
 
-          if (this.send_format == 1) bt.send_data(str, 'str')
-          else bt.send_data(str, 'hex')
+          if (this.send_format == 1) user_send(str, 'str')
+          else user_send(str, 'hex')
         }
 			},
 			//清除发送框

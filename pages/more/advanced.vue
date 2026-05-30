@@ -16,12 +16,12 @@
 		<view class="card row">
 			<view class="row" style="width: 65%;">
 				<view :style="dynamicFontStyle" style="width: 40%;">{{radarSensitivity[0].name}}</view>
-				<view :style="dynamicFontStyle" style="width: 25%;">{{radarSensitivity[0].text}}</view>
+				<!-- <view :style="dynamicFontStyle" style="width: 25%;">{{radarSensitivity[0].text}}</view>
 				<view :style="dynamicFontStyle" style="width: 25%; text-align: center;" v-if="radarSensitivity_level === 10">
 					{{radarSensitivity[0].limit[5].text}}</view>
 				<view :style="dynamicFontStyle" style="width: 25%; text-align: center;" v-else>
 					{{radarSensitivity[0].limit[5 - radarSensitivity_level].text}}</view>
-				<view :style="dynamicFontStyle" style="width: 10%;">{{radarSensitivity[0].unit}}</view>
+				<view :style="dynamicFontStyle" style="width: 10%;">{{radarSensitivity[0].unit}}</view> -->
 			</view>
 			<view :style="dynamicFontStyle" style="width: 35%">
 				<uni-data-select v-model="radarSensitivity_level" :localdata="radarSensitivity[0].limit"
@@ -34,15 +34,15 @@
 				<view class="row" style="width: 100vw;">
 					<view class="row" style="width: 65%;">
 						<view :style="dynamicFontStyle" style="width: 60%;">{{item.name}}</view>
-						<view :style="dynamicFontStyle" style="width: 20%;">{{item.text}}</view>
+					<!-- 	<view :style="dynamicFontStyle" style="width: 20%;">{{item.text}}</view>
 						<view :style="dynamicFontStyle" style="width: 10%; text-align: center;">{{cfg2_value[index]}}</view>
-						<view :style="dynamicFontStyle" style="width: 10%;">{{item.unit}}</view>
+						<view :style="dynamicFontStyle" style="width: 10%;">{{item.unit}}</view> -->
 					</view>
 					<view class="row" style="width: 35%">
-					    <image src="@/static/-.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_sub(index)"></image>
+					    <view class="view_btn" @tap="para_sub(index)">-</view>
 					    <input type="number" maxlength="4" :value="cfg2_value[index]" @input="onInputChange(index, $event)"
-								style="text-align: center; width: 30%;"/>
-					    <image src="@/static/+.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_add(index)"></image>
+								style="text-align: center; flex: 1"/>
+					    <view class="view_btn" @tap="para_add(index)">+</view>
 					</view>
 				</view>
 			</view>
@@ -51,20 +51,20 @@
 		<view class="card col">
 			<view class="row" style="margin-bottom: 20rpx;">
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_read()">{{$t("aconfig.btnRead")}}</button>
+					@tap="radar_read()">读取参数</button>
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_save()">{{$t("aconfig.btnSave")}}</button>
+					@tap="radar_restart()">{{$t("aconfig.btnRestart")}}</button>
 			</view>
 			<view class="row">
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_restart()">{{$t("aconfig.btnRestart")}}</button>
+					@tap="radar_save()">保存参数</button>
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_reset()">{{$t("aconfig.btnRestore")}}</button>
+					@tap="radar_reset()">恢复出厂设置</button>
 			</view>
-			<view class="card">
+			<!-- <view class="card">
 				<button class="btn" hover-class="btn_hover" style="width: 100%;" :disabled="!connect_state"
 					@tap="ble_dis_con()">{{$t("aconfig.btnBleAutoConnect")}}</button>
-			</view>
+			</view> -->
 		</view>
 	</view>
 </template>
@@ -75,6 +75,7 @@
 	import { int_to2hex, jlog } from '@/tools/send.js'
 	import bt from "@/tools/BluetoothManager.js"
   import { log_upload } from '../../tools/send';
+import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restore } from '../../tools/radar_port';
 	export default {
 		data() {
 			return {
@@ -246,14 +247,14 @@
 			},
 			config2() {
 				return [
-					{
-						name: this.$t('aconfig2.items.delayDropTime.name'),
-						text: this.$t('aconfig2.items.delayDropTime.text'),
-						unit: this.$t('aconfig2.items.units.second'),
-						value: 0.5,
-						step: 0.1,
-						limit: [0.1, 25.5],
-					},
+					// {
+					// 	name: this.$t('aconfig2.items.delayDropTime.name'),
+					// 	text: this.$t('aconfig2.items.delayDropTime.text'),
+					// 	unit: this.$t('aconfig2.items.units.second'),
+					// 	value: 0.5,
+					// 	step: 0.1,
+					// 	limit: [0.1, 25.5],
+					// },
 					{
 						name: this.$t('aconfig2.items.proximityNoDetect.name'),
 						text: this.$t('aconfig2.items.proximityNoDetect.text'),
@@ -278,22 +279,22 @@
 						step: 0.1,
 						limit: [0.0, 25.5],
 					},
-					{
-						name: this.$t('aconfig2.items.leftDetectWidth.name'),
-						text: this.$t('aconfig2.items.leftDetectWidth.text'),
-						unit: this.$t('aconfig2.items.units.meter'),
-						value: 0.6,
-						step: 0.1,
-						limit: [0.5, 25.5],
-					},
-					{
-						name: this.$t('aconfig2.items.rightDetectWidth.name'),
-						text: this.$t('aconfig2.items.rightDetectWidth.text'),
-						unit: this.$t('aconfig2.items.units.meter'),
-						value: 0.6,
-						step: 0.1,
-						limit: [0.5, 25.5],
-					},
+					// {
+					// 	name: this.$t('aconfig2.items.leftDetectWidth.name'),
+					// 	text: this.$t('aconfig2.items.leftDetectWidth.text'),
+					// 	unit: this.$t('aconfig2.items.units.meter'),
+					// 	value: 0.6,
+					// 	step: 0.1,
+					// 	limit: [0.5, 25.5],
+					// },
+					// {
+					// 	name: this.$t('aconfig2.items.rightDetectWidth.name'),
+					// 	text: this.$t('aconfig2.items.rightDetectWidth.text'),
+					// 	unit: this.$t('aconfig2.items.units.meter'),
+					// 	value: 0.6,
+					// 	step: 0.1,
+					// 	limit: [0.5, 25.5],
+					// },
 				]
 			},
 		},
@@ -346,183 +347,125 @@
 			chagnge_lmd(e) {
 				this.config2[0].value = e
 			},
-			//读取参数指令
-			radar_read() {
+			async radar_read() {
 				let that = this
 
 				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
 				uni.showLoading({title: that.$t("aconfig.modal.reading"), mask:true})
 
-				bt.send("87020201", 0x87).then(res => {
-					if (!res.error) {
-						if (res.payload.length == 10) {
-							clearTimeout(timer)
-							
-							this.cfg1_value[0] = res.payload[0]
-							this.cfg1_value[1] = res.payload[1]
-							this.cfg1_value[2] = res.payload[2]
-						
-							this.radarSensitivity_level = res.payload[3]
-							
-							this.cfg2_value[0] = res.payload[4] / 10
-							this.cfg2_value[1] = res.payload[5] / 10
-							this.cfg2_value[2] = res.payload[6] / 10
-							this.cfg2_value[3] = res.payload[7] / 10
-							this.cfg2_value[4] = res.payload[8] / 10
-							this.cfg2_value[5] = res.payload[9] / 10
-						
-							this.$forceUpdate()
-						
-              log_upload('read', {
-                'Human/Vehicle Distinction': this.cfg1_value[0],
-                'Traffic Direction': this.cfg1_value[1],
-                'Relay Status': this.cfg1_value[2],
+				const res = await advanced_read();
+				if (res) {
+					clearTimeout(timer)
 
-                'radarSensitivity': this.radarSensitivity_level,
-								
-                'delayDropTime': this.cfg2_value[0],
-                'proximityNoDetect': this.cfg2_value[1],
-                'leftNoDetectWidth': this.cfg2_value[2],
-                'rightNoDetectWidth': this.cfg2_value[3],
-                'leftDetectWidth': this.cfg2_value[4],
-                'rightDetectWidth': this.cfg2_value[5],
-              })
-
-							uni.showToast({title: that.$t("aconfig.modal.readsuccess"),})
-						}
-					}
-				})
-			},
-			ble_dis_con() {
-				let that = this
-				bt.send("661b1b02", 0x66).then(res => {
-					if (!res.error) {
-						uni.showToast({title: that.$t("aconfig.modal.savesuccess")})
-					}
-				})
-			},
-			//保存参数指令，将变量的指根据协议组帧送给蓝牙发送
-			radar_save() {
-				let that = this
-				let _str = '86'
-
-				_str = _str + int_to2hex((this.cfg1_value[0]) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg1_value[1]) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg1_value[2]) & 0x00000000000000ff)
-
-				_str = _str + int_to2hex((this.radarSensitivity_level) & 0x00000000000000ff)
+					this.cfg1_value[0] = res.HumanVehicleDistinction
+					this.cfg1_value[1] = res.TrafficDirection
+					this.cfg1_value[2] = res.RelayStatus
 				
-				_str = _str + int_to2hex((this.cfg2_value[0] * 10) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg2_value[1] * 10) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg2_value[2] * 10) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg2_value[3] * 10) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg2_value[4] * 10) & 0x00000000000000ff)
-				_str = _str + int_to2hex((this.cfg2_value[5] * 10) & 0x00000000000000ff)
-
-        log_upload('write', {
-          'Human/Vehicle Distinction': this.cfg1_value[0],
-          'Traffic Direction': this.cfg1_value[1],
-          'Relay Status': this.cfg1_value[2],
-
-          'radarSensitivity': this.radarSensitivity_level,
+					this.radarSensitivity_level = res.radarSensitivity
 					
-          'delayDropTime': this.cfg2_value[0],
-          'proximityNoDetect': this.cfg2_value[1],
-          'leftNoDetectWidth': this.cfg2_value[2],
-          'rightNoDetectWidth': this.cfg2_value[3],
-          'leftDetectWidth': this.cfg2_value[4],
-          'rightDetectWidth': this.cfg2_value[5],
-        })
+					// this.cfg2_value[0] = res.delayDropTime
+					this.cfg2_value[1] = res.proximityNoDetect
+					this.cfg2_value[2] = res.leftNoDetectWidth
+					this.cfg2_value[3] = res.rightNoDetectWidth
+					// this.cfg2_value[4] = res.leftDetectWidth
+					// this.cfg2_value[5] = res.rightDetectWidth
+					
+					this.$forceUpdate()
+					log_upload('read', res)
+					uni.showToast({title: that.$t("aconfig.modal.readsuccess"),})
+				}
+			},
+			async ble_dis_con() {
+				const res = await close_ble_auto_poweroff();
+				if (res) {
+					uni.showToast({title: this.$t("aconfig.modal.savesuccess")})
+				}
+			},
+			async radar_save() {
+				let that = this
+
+				let param = {
+          HumanVehicleDistinction: this.cfg1_value[0],
+          TrafficDirection: this.cfg1_value[1],
+          RelayStatus: this.cfg1_value[2],
+
+          radarSensitivity: this.radarSensitivity_level,
+					
+          // delayDropTime: this.cfg2_value[0],
+          proximityNoDetect: this.cfg2_value[1],
+          leftNoDetectWidth: this.cfg2_value[2],
+          rightNoDetectWidth: this.cfg2_value[3],
+          // leftDetectWidth: this.cfg2_value[4],
+          // rightDetectWidth: this.cfg2_value[5],
+        }
+
+        log_upload('write', param)
 
 				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
 				uni.showLoading({title: that.$t("aconfig.modal.saving"), mask: true})
 				
-				bt.send(_str, 0x86).then(res => {
-					if (!res.error) {
-						uni.showToast({title: that.$t("aconfig.modal.savesuccess")})
-						
-            bt.send("87020201", 0x87).then(res => {
-              if (!res.error) {
-								clearTimeout(timer)
+				const res_write = await advanced_write(param)
+				if (!res_write) return;
+				
+				uni.showToast({title: that.$t("aconfig.modal.savesuccess")})
+				const res_read = await advanced_read()
+				if (res_read) {
+					clearTimeout(timer)
+					this.cfg1_value[0] = res_read.HumanVehicleDistinction
+					this.cfg1_value[1] = res_read.TrafficDirection
+					this.cfg1_value[2] = res_read.RelayStatus
+				
+					this.radarSensitivity_level = res_read.radarSensitivity
+					
+					// this.cfg2_value[0] = res_read.delayDropTime
+					this.cfg2_value[1] = res_read.proximityNoDetect
+					this.cfg2_value[2] = res_read.leftNoDetectWidth
+					this.cfg2_value[3] = res_read.rightNoDetectWidth
+					// this.cfg2_value[4] = res_read.leftDetectWidth
+					// this.cfg2_value[5] = res_read.rightDetectWidth
 								
-                if (res.payload.length == 10) {
-                  this.cfg1_value[0] = res.payload[0]
-                  this.cfg1_value[1] = res.payload[1]
-                  this.cfg1_value[2] = res.payload[2]
-                
-                  this.radarSensitivity_level = res.payload[3]
-									
-                  this.cfg2_value[0] = res.payload[4] / 10
-                  this.cfg2_value[1] = res.payload[5] / 10
-                  this.cfg2_value[2] = res.payload[6] / 10
-                  this.cfg2_value[3] = res.payload[7] / 10
-                  this.cfg2_value[4] = res.payload[8] / 10
-                  this.cfg2_value[5] = res.payload[9] / 10
-                
-                  this.$forceUpdate()
-                
-                  log_upload('read', {
-                    'Human/Vehicle Distinction': this.cfg1_value[0],
-                    'Traffic Direction': this.cfg1_value[1],
-                    'Relay Status': this.cfg1_value[2],
-
-                    'radarSensitivity': this.radarSensitivity_level,
-										
-                    'delayDropTime': this.cfg2_value[0],
-                    'proximityNoDetect': this.cfg2_value[1],
-                    'leftNoDetectWidth': this.cfg2_value[2],
-                    'rightNoDetectWidth': this.cfg2_value[3],
-                    'leftDetectWidth': this.cfg2_value[4],
-                    'rightDetectWidth': this.cfg2_value[5],
-                  })
-                }
-              }
-            })
-					}
-				})
+					this.$forceUpdate()
+					log_upload('read', res_read)
+				}
 			},
-			//重启指令
-			radar_restart() {
+			async radar_restart() {
 				let that = this
 				uni.showModal({
 					title: that.$t("aconfig.modal.notice"),
 					confirmText: that.$t("aconfig.modal.confirm"),
 					cancelText: that.$t("aconfig.modal.cancel"),
 					content: that.$t("aconfig.modal.radarRestart"),
-					success(res) {
+					async success(res) {
 						if (res.confirm) {
 							let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
 							uni.showLoading({title: that.$t("aconfig.modal.restarting"), mask: true})
 							
-							bt.send("66141400", 0x66).then(res => {
-								if (!res.error) {
-									clearTimeout(timer)
-									uni.showToast({title: that.$t("aconfig.modal.restartsuccess")})
-								}
-							})
+							const res_restart = await restart();
+							if (res_restart) {
+								clearTimeout(timer)
+								uni.showToast({title: that.$t("aconfig.modal.restartsuccess")})
+							}
 						}
 					}
 				})
 			},
-			//恢复出厂设置指令
-			radar_reset() {
+			async radar_reset() {
 				let that = this
 				uni.showModal({
 					title: that.$t("aconfig.modal.notice"),
 					confirmText: that.$t("aconfig.modal.confirm"),
 					cancelText: that.$t("aconfig.modal.cancel"),
 					content: that.$t("aconfig.modal.restore"),
-					success(res) {
+					async success(res) {
 						if (res.confirm) {
               let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
               uni.showLoading({title: that.$t("aconfig.modal.setting"), mask: true})
 							
-							bt.send("66020202", 0x66).then(res => {
-								if (!res.error) {
-									clearTimeout(timer)
-									uni.showToast({title: that.$t("aconfig.modal.restoresuccess")})
-								}
-							})
+							const res_reset = await restore();
+							if (res_reset) {
+								clearTimeout(timer)
+								uni.showToast({title: that.$t("aconfig.modal.restoresuccess")})
+							}
 						}
 					}
 				})

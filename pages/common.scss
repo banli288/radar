@@ -52,3 +52,55 @@
 		color: #3478f6;
 		text-align: center;
 	}
+	
+	.discenter {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+	}
+	
+	.win {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: rgba(129, 129, 129, 0.5);;
+		
+		.title {
+			height: 80rpx;
+			width: 100%;
+			font-size: 40rpx;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-bottom: 1px black solid;
+		}
+		
+		.content {
+			width: 80%;
+			height: auto;
+			background: linear-gradient(180deg, #ffffff, #ffffff);
+			position: relative;
+			z-index: 1;
+			border-radius: 10rpx;
+			display: flex;
+			flex-direction: column;
+		}
+	}
+	
+	.view_btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		font-size: 40rpx;
+		color: #ffffff;
+		background-color: #3478f6;
+		width: 70rpx; 
+		height: 70rpx;
+	}

@@ -70,6 +70,12 @@
 					"style": {
 						"navigationBarTitleText": ""
 					}
+				},
+				{
+					"path": "userModal",
+					"style": {
+						"navigationBarTitleText": ""
+					}
 				}
       ]
     }
@@ -90,14 +96,14 @@
       {
         "pagePath": "pages/index/index",
         "text": "",
-        "iconPath": "static/tabbar12.png", // 未选中图标
-        "selectedIconPath": "static/tabbar1.png" // 选中图标
+        "iconPath": "static/1-.png", // 未选中图标
+        "selectedIconPath": "static/1+.png" // 选中图标
       },
       {
         "pagePath": "pages/index/config",
         "text": "",
-        "iconPath": "static/tabbar2.png",
-        "selectedIconPath": "static/tabbar22.png"
+        "iconPath": "static/2-.png",
+        "selectedIconPath": "static/2+.png"
       },
       {
         "pagePath": "pages/index/display",
@@ -108,8 +114,8 @@
       {
         "pagePath": "pages/index/more",
         "text": "",
-        "iconPath": "static/tabbar4.png",
-        "selectedIconPath": "static/tabbar42.png"
+        "iconPath": "static/4-.png",
+        "selectedIconPath": "static/4+.png"
       }
     ]
   }
