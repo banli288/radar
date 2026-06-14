@@ -1,6 +1,6 @@
 export default {
   statusBar: {
-    title: "道闸雷达",
+    title: "雷达调试软件",
     advCfg: "高级设置",
     cmdDebug: "指令调试"
   },
@@ -10,42 +10,42 @@ export default {
     display: "目标信息",
     more: "高级"
   },
-	index: {
-	  text1: "远程连接",
-	  text2: "产品型号",
-	  text3: "产品编码",
-	  text4: "硬件版本",
-	  text5: "固件版本",
-	  text6: "30分钟无操作蓝牙自动关闭,雷达断电重启后\n蓝牙重新启动,成功连接后蓝灯亮起",
-	  text7: "搜索中",
-	  text8: "刷新列表",
-	  text9: "关闭雷达蓝牙,调试下一个雷达",
-	
-		Notes: {
-				title: "使用注意事项",
-				line1: "1：雷达需要使用独立电源12V/2A或24V/2A供电，不可使用道闸控制板12V输出供电；",
-				line2: "2：过小车安装离地面高度55~65cm之间，过大车安装离地面高度70~80cm之间；",
-				line3: "3：直杆道闸安装雷达时，雷达建议安装低于杆子15cm以下，如果雷达安装与杆子平齐或高于杆子、杆子上安装有广告牌或警示灯等，必须设置雷达固定方向（左/右固定）使用，并进行动态标定；",
-				line4: "4：单通道混进混出场景，建议闸机两边各安装一个雷达，保证安全性；",
-				line5: "5：雷达前方有车牌识别或其它物体突出场景，必须单独使用立柱或支架把雷达移出来安装，以保证雷达性能不受突出物体干扰；",
-				line6: "6：雷达使用在物流园出/入口时，如有小桥车、中/大型车、大长车、拖挂车场景，一个雷达存在盲区，建议安装二个雷达，60cm/80cm各安装一个雷达，并设置车过延时落杆功能来保证过车的安全；",
-				line7: "7：雷达安装位置、设置参数、闸杆变形及现场场景发生变化或改变时，必须重新按照雷达小程序场景学习步骤进行重新学习雷达；",
-				line8: "8：雷达不适用于大拐角出/入口场景使用（如：车辆拐入/拐出通过雷达前方形成夹角大于30℃以上时，车辆通行风险过大，不建议使用）；",
-				line9: "9：雷达安装时，有疑问或者特殊现场场景时，请及时与厂家联系确认。",
-				confirm: "我已确认阅读",
-		},
-	
-	  bleBtnName: {
-	    connect: "连接蓝牙设备",
-	    disconnect: "断开蓝牙设备",
-	  }
-	},
+  index: {
+    text1: "远程连接",
+    text2: "产品型号",
+    text3: "产品编码",
+    text4: "硬件版本",
+    text5: "固件版本",
+    text6: "30分钟无操作蓝牙自动关闭,雷达断电重启后\n蓝牙重新启动,成功连接后蓝灯亮起",
+    text7: "搜索中",
+    text8: "刷新列表",
+    text9: "关闭雷达蓝牙,调试下一个雷达",
+
+    Notes: {
+      title: "使用注意事项",
+      line1: "1：雷达需要使用独立电源12V/2A或24V/2A供电，不可使用道闸控制板12V输出供电；",
+      line2: "2：过小车安装离地面高度55~65cm之间，过大车安装离地面高度70~80cm之间；",
+      line3: "3：直杆道闸安装雷达时，雷达建议安装低于杆子15cm以下，如果雷达安装与杆子平齐或高于杆子、杆子上安装有广告牌或警示灯等，必须设置雷达固定方向（左/右固定）使用，并进行动态标定；",
+      line4: "4：单通道混进混出场景，建议闸机两边各安装一个雷达，保证安全性；",
+      line5: "5：雷达前方有车牌识别或其它物体突出场景，必须单独使用立柱或支架把雷达移出来安装，以保证雷达性能不受突出物体干扰；",
+      line6: "6：雷达使用在物流园出/入口时，如有小桥车、中/大型车、大长车、拖挂车场景，一个雷达存在盲区，建议安装二个雷达，60cm/80cm各安装一个雷达，并设置车过延时落杆功能来保证过车的安全；",
+      line7: "7：雷达安装位置、设置参数、闸杆变形及现场场景发生变化或改变时，必须重新按照雷达小程序场景学习步骤进行重新学习雷达；",
+      line8: "8：雷达不适用于大拐角出/入口场景使用（如：车辆拐入/拐出通过雷达前方形成夹角大于30°以上时，车辆通行风险过大，不建议使用）；",
+      line9: "9：雷达安装时，有疑问或者特殊现场场景时，请及时与厂家联系确认。",
+      confirm: "我已确认阅读",
+    },
+
+    bleBtnName: {
+      connect: "连接蓝牙设备",
+      disconnect: "断开蓝牙设备",
+    }
+  },
   more: {
     advancedConfig: "高级设置",
     binUpdate: "固件升级",
     remote: "远程支持",
     commamd: "指令调试",
-    userSheet: "雷达用户手册",
+    userSheet: "使用说明",
     userProtocol: "用户协议",
     langSwitch: "中英文切换",
     toolInfo: "道闸雷达",
@@ -55,8 +55,8 @@ export default {
     opensuccess: "打开成功",
     openfailed: "打开失败",
     downFailed: "下载失败，请检查网络",
-		relay: "继电器区域设置",
-		relay_win: "当前设备版本不支持",
+    relay: "继电器区域设置",
+    relay_win: "当前设备版本不支持",
   },
   display: {
     text1: "目标点显示 ：",
@@ -70,8 +70,9 @@ export default {
     saving: "保存中",
     setting: "设置中",
     seted: "设置完成",
-		saved: "保存成功",
+    saved: "保存成功",
     readSuccess: "读取成功",
+    readfail: "读取失败",
     upStudyFinish: "抬杆背景学习完成",
     dnstudyFinish: "杆起落学习完成",
     studyFinish: "学习完成",
@@ -79,7 +80,7 @@ export default {
     confirmText1: "下一步",
     cancelText: "取消",
     readTineout: "读取超时",
-		savingTout: "保存超时",
+    savingTout: "保存超时",
     conSuccess: "连接成功",
     disconBle: "确定断开蓝牙连接?",
     searchingDev: "正在搜索设备",
@@ -93,23 +94,23 @@ export default {
   config: {
     text1: "道闸类型:",
     text2: "杆子类型:",
-		text2_dis: "背对雷达，杆子在雷达哪边，为固定方向",
+    text2_dis: "背对雷达，杆子在雷达哪边，为固定方向",
     text3: "纵向检测距离(米):",
-		text3_dis: "杆长",
+    text3_dis: "杆长",
     btnRead: "读取参数",
     btnSave: "保存参数",
     btnUpStudy: "抬杆背景学习",
     btnDownStudy: "杆起落学习",
     studyEndNotice: "有风险，请调整安装位置、杆子类型等。",
-		fixation_text: "固定方向",
-		fixation_left: "左固定",
-		fixation_right: "右固定",
+    fixation_text: "固定方向",
+    fixation_left: "左固定",
+    fixation_right: "右固定",
 
     poleType: {
-			type0: "离地低于0.6米-直杆",
-			type1: "栅栏杆或离地高于0.6米",
-			type2: "广告杆",
-			type3: "空降杆",
+      type0: "离地低于0.6米-直杆",
+      type1: "栅栏杆或离地高于0.6米",
+      type2: "广告杆",
+      type3: "空降杆",
       // type0: "直杆右固定",
       // type1: "直杆左固定",
       // type2: "栅栏杆右固定",
@@ -121,7 +122,7 @@ export default {
     },
     carType: {
       // type0: "小弯过车(小于10度)",
-			type0: "直杆",
+      type0: "直杆",
       // type1: "直进直出",
       // type2: "弯道过车(小于25度)",
     },
@@ -143,7 +144,7 @@ export default {
       text9: "请先用遥控把杆落下，再点击下一步",
       text10: "杆落地学习中，人车不要进入杆左右2米范围内",
       text11: "起杆学习超时，请重试",
-			upend: "抬杆背景学习完成"
+      upend: "抬杆背景学习完成"
     }
   },
   debug: {
@@ -155,24 +156,24 @@ export default {
     btnClearRecv: "清除发送区",
     disSend: "发送",
     disRecv: "接收",
-		aera: "区域",
-		sensitivity: "灵敏度",
-		poletype: "杆子类型",
-		cmd1: "用户自定义指令",
-		cmd2: "一键读取雷达所有参数", 
-		// cmd2: "读取环境参数指令",
-		cmd3: "读取全部参数指令",
-		cmd4: "读取人车区分参数指令",
-		cmd5: "读取噪声参数指令",
-		readsensitivity: "读取灵敏度",
-		writesensitivity: "设置灵敏度",
+    aera: "区域",
+    sensitivity: "灵敏度",
+    poletype: "杆子类型",
+    cmd1: "用户自定义指令",
+    cmd2: "一键读取雷达所有参数",
+    // cmd2: "读取环境参数指令",
+    cmd3: "读取全部参数指令",
+    cmd4: "读取人车区分参数指令",
+    cmd5: "读取噪声参数指令",
+    readsensitivity: "读取灵敏度",
+    writesensitivity: "设置灵敏度",
   },
   aconfig: {
     btnRead: "读取雷达配置",
     btnSave: "保存雷达配置",
     btnRestart: "重启雷达",
     btnRestore: "恢复出厂配置",
-		btnBleAutoConnect: "取消蓝牙自动关闭",
+    btnBleAutoConnect: "取消蓝牙自动关闭",
 
     name1: "人车区分",
     name2: "行车方向",
@@ -202,7 +203,7 @@ export default {
     },
     modal: {
       reading: "读取中",
-			setting: "设置中",
+      setting: "设置中",
       saving: "保存中",
       notice: "提示",
       radarRestart: "确定重启雷达?",
@@ -229,7 +230,7 @@ export default {
         text: "当前级别",
         unit: "级",
         limits: {
-					10: "极低(不建议)",
+          10: "极低(不建议)",
           5: "低",
           4: "中低",
           3: "中",
@@ -242,15 +243,15 @@ export default {
         text: "当前为 "
       },
       proximityNoDetect: {
-        name: "临近不检测距离",
+        name: "临近不检测距离(米)",
         text: "当前为 "
       },
       leftNoDetectWidth: {
-        name: "左侧不检测距离宽度",
+        name: "左侧切割值(米)",
         text: "当前为 "
       },
       rightNoDetectWidth: {
-        name: "右侧不检测距离宽度",
+        name: "右侧切割值(米)",
         text: "当前为 "
       },
       leftDetectWidth: {
@@ -267,23 +268,23 @@ export default {
       }
     }
   },
-	relay: {
-		read: "读取",
-		write: "写入",
-		para1: "启动区域x左分米",
-		para2: "启动区域x右分米",
-		para3: "启动区域y临近不检测距离",
-		para4: "启动区域y最大距离",
-		para5: "启动继电器状态",
-		para6: "启动区域状态",
-		relay_state: {
-			state0: "常开",
-			state1: "常闭",
-			state2: "失效",
-		},
-		aera_state: {
-			state0: "关闭启动区域",
-			state1: "开启启动区域",
-		}
-	},
+  relay: {
+    read: "读取",
+    write: "写入",
+    para1: "启动区域x左分米",
+    para2: "启动区域x右分米",
+    para3: "启动区域y临近不检测距离",
+    para4: "启动区域y最大距离",
+    para5: "启动继电器状态",
+    para6: "启动区域状态",
+    relay_state: {
+      state0: "常开",
+      state1: "常闭",
+      state2: "失效",
+    },
+    aera_state: {
+      state0: "关闭启动区域",
+      state1: "开启启动区域",
+    }
+  },
 }

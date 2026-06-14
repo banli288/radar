@@ -1,0 +1,17 @@
+{
+    "[javascript]": {
+        "editor.tabSize": 2
+    },
+    "[vue]": {
+        "editor.tabSize": 2
+    },
+    "[scss]": {
+        "editor.tabSize": 2
+    },
+    "[c]": {
+        "editor.tabSize": 4
+    },
+    "[json]": {
+        "editor.tabSize": 2
+    }
+}

@@ -83,7 +83,7 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 				cfg2_value: [0.5, 0.1, 0.3, 0, 0.6, 0.6],
 				radarSensitivity_level: 4,
 				cfg2_limit: [
-					{min: 0.1, max: 25.5, step: 0.1},
+					{min: 0.0, max: 2.0, step: 0.1},
 					{min: 0.0, max: 25.5, step: 0.1},
 					{min: 0.0, max: 25.5, step: 0.1},
 					{min: 0.0, max: 25.5, step: 0.1},
@@ -261,7 +261,7 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 						unit: this.$t('aconfig2.items.units.meter'),
 						value: 0.1,
 						step: 0.1,
-						limit: [0.0, 1.0],
+						limit: [0.0, 2.0],
 					},
 					{
 						name: this.$t('aconfig2.items.leftNoDetectWidth.name'),

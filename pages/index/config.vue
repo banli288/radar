@@ -1,13 +1,13 @@
 <template>
 	<view class="page">
 		<view class="card img_box">
-			<image class="img_content" :src="img_url"></image>
+			<image mode="'aspectFit'" :src="img_url"></image>
 		</view>
 
 		<view class="col">
 			<view class="card row" style="height: 40px;">
 				<view class="_text" style="width: 40%; justify-content: space-between;">{{$t("config.text1")}}</view>
-				<uni-data-select style="width: 60%;" v-model="car_value" :localdata="car_type" :clear="false"
+				<uni-data-select style="width: 60%;" v-model="car_value_1" :localdata="car_type" :clear="false"
 					@change="change_car"></uni-data-select>
 			</view>
 			
@@ -17,7 +17,7 @@
 				</view>
 				<view class="row" style="width: 60%; justify-content: space-around;">
 					<view class="view_btn" @tap="pole_sub()">-</view>
-					<slider style="flex: 1;" :value="dect_range" :min="0" :max="6" step="0.1" block-size="28" @change="change"
+					<slider style="flex: 1;" :value="dect_range" :min="0.5" :max="6" step="0.1" block-size="28" @change="change"
 						activeColor="#3478f6" inactiveColor="#ffff7f" showValue="" block-color="#2979ff" :block-size="15"></slider>
 					<view class="view_btn" @tap="pole_add()">+</view>
 				</view>
@@ -105,7 +105,7 @@
 		<view class="win" v-if="imageLeft">
 			<view class="content">
 				<view class="title">选择左固定</view>
-				<image style="width: 100%;" src="https://gitee.com/chuan0125/leida/raw/master/images/left2.jpg"/>
+				<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/left2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageLeft = false">确定</button>
 			</view>
 		</view>
@@ -113,7 +113,7 @@
 		<view class="win" v-if="imageRight">
 			<view class="content">
 				<view class="title">选择右固定</view>
-				<image style="width: 100%;" src="https://gitee.com/chuan0125/leida/raw/master/images/right2.jpg"/>
+				<image mode="'aspectFit'" src="https://gitee.com/chuan0125/leida/raw/master/images/right2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageRight = false">确定</button>
 			</view>
 		</view>
@@ -121,10 +121,11 @@
 		<view class="win" v-if="studyStep.step1.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step1.title}}</view>
-				<view class="winSize">{{studyStep.step1.content}}</view>
+				<view class="head">按遥控器把道闸杆抬杆，并保持抬杆状态！</view>
+        <view class="winSize">注意：将车道内所有杂物移除，雷达学习过程中,确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
 				<view class="row" style="width: 100%;">
 					<button class="discenter" style="height:80rpx; width: 50%;" @tap="setStep(2)">{{studyStep.nextStep}}</button>
-					<button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep.step1.enable = false">{{studyStep.cancel}}</button>
+					<button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(1)">{{studyStep.cancel}}</button>
 				</view>
 			</view>
 		</view>
@@ -132,32 +133,48 @@
 		<view class="win" v-if="studyStep.step2.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step2.title}}</view>
-				<view class="winSize">{{studyStep.step2.content}}</view>
-				<button class="discenter" style="height:80rpx; width: 100%;" :disabled="studyStep.step2.btnEnable" @tap="setStep(3)">{{studyStep.nextStep}}</button>
+        <view class="head">正在学习开闸场景!</view>
+				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="row" style="width: 100%;">
+          <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step2.btnEnable" @tap="setStep(3)">{{studyStep.nextStep}}</button>
+          <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(2)">{{studyStep.cancel}}</button>
+        </view>
 			</view>
 		</view>
 		
 		<view class="win" v-if="studyStep.step3.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step3.title}}</view>
-				<view class="winSize">{{studyStep.step3.content}}</view>
-				<button class="discenter" style="height:80rpx; width: 100%;" :disabled="studyStep.step3.btnEnable" @tap="setStep(4)">{{studyStep.nextStep}}</button>
+        <view class="head">动态学习，按遥控器起落道闸杆3到5次!</view>
+				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="row" style="width: 100%;">
+				  <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step3.btnEnable" @tap="setStep(4)">{{studyStep.nextStep}}</button>
+          <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(3)">{{studyStep.cancel}}</button>
+        </view>
 			</view>
 		</view>
 		
 		<view class="win" v-if="studyStep.step4.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step4.title}}</view>
-				<view class="winSize">{{studyStep.step4.content}}</view>
-				<button class="discenter" style="height:80rpx; width: 100%;" :disabled="studyStep.step4.btnEnable" @tap="setStep(5)">{{studyStep.nextStep}}</button>
+        <view class="head">按遥控器把道闸杆落下，并保持落杆状态!</view>
+				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="row" style="width: 100%;">
+				  <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step4.btnEnable" @tap="setStep(5)">{{studyStep.nextStep}}</button>
+          <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(4)">{{studyStep.cancel}}</button>
+        </view>
 			</view>
 		</view>
 		
 		<view class="win" v-if="studyStep.step5.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step5.title}}</view>
-				<view class="winSize">{{studyStep.step5.content}}</view>
-				<button class="discenter" style="height:80rpx; width: 100%;" :disabled="studyStep.step5.btnEnable" @tap="setStep(6)">{{studyStep.nextStep}}</button>
+        <view class="head">正在学习关闸场景!</view>
+				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="row" style="width: 100%;">
+				  <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step5.btnEnable" @tap="setStep(6)">{{studyStep.nextStep}}</button>
+          <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(5)">{{studyStep.cancel}}</button>
+        </view>
 			</view>
 		</view>
 		
@@ -234,6 +251,7 @@
 				pole_value: 0, // display
 				pole_index: 0, // real
 				car_value: 0,
+        car_value_1: 0,
 				dect_range: 1.0,
 				img_url: "",
 				study_entry: 0,
@@ -242,9 +260,9 @@
 				polyType: {name: "杆长(米)", value: 0, min: 0, max: 6, step: 0.1},
 				
 				param_list: [
-					{name: "左侧检测范围(米)", value: 0.6, min: 0.5, max: 25.5, step: 0.1},
-					{name: "右侧检测范围(米)", value: 0.6, min: 0.5, max: 25.5, step: 0.1},
-					{name: "延迟设置(秒)", value: 0.5, min: 0.1, max: 25.5, step: 0.1},
+					{name: "左侧检测范围(米)", value: 0.6, min: 0.0, max: 1.5, step: 0.1},
+					{name: "右侧检测范围(米)", value: 0.6, min: 0.0, max: 1.5, step: 0.1},
+					{name: "延迟设置(秒)", value: 0.5, min: 0.0, max: 25.5, step: 0.5},
 				],
 	
         aera_sensi: [
@@ -318,7 +336,7 @@
 			car_type() {
 				return [
 				  {value: 0,text: this.$t("config.carType.type0")},
-					{value: 1,text: "不支持该类型杆子"},
+					// {value: 1,text: "不支持该类型杆子"},
 				  // {value: 1,text: this.$t("config.carType.type1")},
 				  // {value: 2,text: this.$t("config.carType.type2")}, 
 				]
@@ -365,6 +383,21 @@
 			uni.hideLoading()
 		},
 		methods: {
+      studyStep1Cancel(index) {
+        let that = this
+        uni.showModal({
+          content:'确定要关闭雷达学习场景吗？一旦关闭雷达将终止学习功能',
+          success:(res)=>{
+            if (res.confirm) {
+              if (index == 1) that.studyStep.step1.enable = false
+              else if (index == 2) that.studyStep.step2.enable = false
+              else if (index == 3) that.studyStep.step3.enable = false
+              else if (index == 4) that.studyStep.step4.enable = false
+              else if (index == 5) that.studyStep.step5.enable = false
+            }
+          },
+        })
+      },
 			studyErr() {
 				this.studyStep.step1.enable = false;
 				this.studyStep.step2.enable = false; 
@@ -376,6 +409,7 @@
 				uni.showModal({content: "学习失败，雷达无响应"})
 			},
 			async setStep(step) {
+        let that = this
 				switch (step) {
 					case 0:
 						this.studyStep.step1.enable = false;
@@ -384,6 +418,42 @@
 						this.studyStep.step4.enable = false; 
 						this.studyStep.step5.enable = false; 
 						this.studyStep.stepFinish.enable = false; 
+            uni.showModal({title: "雷达学习场景完成", showCancel: false, async success(res) {
+              if (res.confirm) {
+                const advanced = await advanced_read()
+                if (!advanced) {
+                  this.studyErr()
+                  return
+                }
+                
+                if ((advanced.leftNoDetectWidth + advanced.rightNoDetectWidth) > 1.0) {
+                  uni.showModal({
+                    title: that.$t("config.studyEndNotice"),
+                    confirmText: that.$t("modal.confirmText"),
+                    cancelText: that.$t("modal.cancelText"),
+                  });
+                }
+                
+                log_upload('read', advanced)
+                
+                if (that.pole_value == 0 || that.pole_value == 1) {
+                  if (that.pole_value == 0) {
+                    advanced.leftNoDetectWidth = 0
+                    advanced.rightNoDetectWidth = 0.5
+                  } else if (that.pole_value == 1) {
+                    advanced.leftNoDetectWidth = 0.5
+                    advanced.rightNoDetectWidth = 0
+                  }
+                  
+                  const advSave = await advanced_write(advanced)
+                  if (!advSave) {
+                    this.studyErr()
+                    return
+                  }
+                }
+              }
+            }})
+            
 					break;
 					case 1: 
 						this.studyStep.step1.enable = true; 
@@ -406,6 +476,7 @@
 						setTimeout(() => { 
 							this.studyStep.step2.btnEnable = false
 							this.studyStep.step3.btnEnable = true
+              this.setStep(3)
 						}, 2000)
 					break;
 					case 3:
@@ -463,6 +534,7 @@
 						setTimeout(() => {
 							this.studyStep.step5.btnEnable = false
 							this.studyStep.stepFinish.btnEnable = false
+              this.setStep(0)
 						}, 5000)
 					break;
 					case 6:
@@ -471,46 +543,12 @@
 						this.studyStep.step3.enable = false; 
 						this.studyStep.step4.enable = false; 
 						this.studyStep.step5.enable = false; 
-						this.studyStep.stepFinish.enable = true; 
-						
-						let that = this
-						
-						const advanced = await advanced_read()
-						if (!advanced) {
-							this.studyErr()
-							return
-						}
-						
-						if ((advanced.leftNoDetectWidth + advanced.rightNoDetectWidth) > 1.0) {
-							uni.showModal({
-								title: that.$t("config.studyEndNotice"),
-								confirmText: that.$t("modal.confirmText"),
-								cancelText: that.$t("modal.cancelText"),
-							});
-						}
-						
-						log_upload('read', advanced)
-						
-						if (that.pole_value == 0 || that.pole_value == 1) {
-							if (that.pole_value == 0) {
-								advanced.leftNoDetectWidth = 0
-								advanced.rightNoDetectWidth = 0.5
-							} else if (that.pole_value == 1) {
-								advanced.leftNoDetectWidth = 0.5
-								advanced.rightNoDetectWidth = 0
-							}
-							
-							const advSave = await advanced_write(advanced)
-							if (!advSave) {
-								this.studyErr()
-								return
-							}
-						}
+						this.studyStep.stepFinish.enable = false; 
 					break;
 				}
 			},
 			pole_sub() {
-				if (this.dect_range > 0) this.dect_range -= 0.1
+				if (this.dect_range > 0.5) this.dect_range -= 0.1
 			},
 			pole_add() {
 				if (this.dect_range < 6) this.dect_range += 0.1
@@ -518,10 +556,12 @@
 			para_add(index) {
 				if (this.param_list[index].value < this.param_list[index].max)
 					this.param_list[index].value += this.param_list[index].step
+        this.param_list[index].value = +(this.param_list[index].value.toFixed(1)) //将0.99999或者1.0000001强行转成1，不会加/减超出范围，下同
 			},
 			para_sub(index) {
 				if (this.param_list[index].value > this.param_list[index].min)
 					this.param_list[index].value -= this.param_list[index].step
+        this.param_list[index].value = +(this.param_list[index].value.toFixed(1))
 			},
 			radioChange(e) {
 				this.fixation_value = Number(e.detail.value);
@@ -619,7 +659,7 @@
 							if (sensi.pole == 0) this.pole_index = 5
 							else this.pole_index = 7
 						}
-							
+						
 						this.car_value = 	that.pole_value === 0 ? 0 : 1
 						
 						for (let i = 0; i < 9; i++) this.aera_sensi[i].value = sensi.sensi[i]
@@ -745,34 +785,37 @@
 					
 					log_upload('read', { '77020201': res_getConfig, '98020201': res_getSensi})
 						
-					uni.showModal({
-					  title: that.$t("modal.notice"),
-					  confirmText: that.$t("modal.confirmText"),
-					  cancelText: that.$t("modal.cancelText"),
-						content: "保存成功",
-					  // content: that.$t("config.studyCont.text5"),
-					  // success(res) {
-					  //   if (res.confirm) {
-							// 	that.radar_up_study()
-							// 	that.study_entry = 1
-							// }
-					  // }
-					})
+					// uni.showModal({
+					//   title: that.$t("modal.notice"),
+					//   confirmText: that.$t("modal.confirmText"),
+					//   cancelText: that.$t("modal.cancelText"),
+					// 	content: "保存成功",
+					//   // content: that.$t("config.studyCont.text5"),
+					//   // success(res) {
+					//   //   if (res.confirm) {
+					// 		// 	that.radar_up_study()
+					// 		// 	that.study_entry = 1
+					// 		// }
+					//   // }
+					// })
+          uni.showToast({title: "保存成功"})
 				} else {
-					uni.showModal({
-					  title: that.$t("modal.notice"),
-					  confirmText: that.$t("modal.confirmText"),
-					  cancelText: that.$t("modal.cancelText"),
-					  // content: that.$t("config.studyCont.text5"),
-						content: "保存成功",
-					  // success(res) {
-					  //   if (res.confirm) {
-					  //   	that.radar_up_study()
-					  //   	that.study_entry = 1
-					  //   }
-					  // }
-					})
+					// uni.showModal({
+					//   title: that.$t("modal.notice"),
+					//   confirmText: that.$t("modal.confirmText"),
+					//   cancelText: that.$t("modal.cancelText"),
+					//   // content: that.$t("config.studyCont.text5"),
+					// 	content: "保存成功",
+					//   // success(res) {
+					//   //   if (res.confirm) {
+					//   //   	that.radar_up_study()
+					//   //   	that.study_entry = 1
+					//   //   }
+					//   // }
+					// })
 					
+          uni.showToast({title: "保存成功"})
+
 					log_upload('write', {
 					  'dect_range': that.dect_range * 10,
 					  'pole_value': that.pole_index,
@@ -1008,11 +1051,22 @@
 	  box-shadow: 0 4rpx 12rpx rgba(41, 121, 255, 0.2);
 	}
 	
-	.winSize {
-		width: 100%;
-		height: 300rpx;
-		line-height: 60rpx;
+  .head {
+		width: 90%;
+		padding: 20rpx;
 		font-size: 32rpx; 
 		background-color: #fafafa;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  }
+
+	.winSize {
+		width: 98%;
+		height: 300rpx;
+		line-height: 50rpx;
+		font-size: 32rpx; 
+		background-color: #fafafa;
+    color: red;
 	}
 </style>

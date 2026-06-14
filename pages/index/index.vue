@@ -1,7 +1,7 @@
 <template>
 	<view class="page">
 		<view class="card img_box" style="margin-top: 20rpx;">
-			<image class="img_class" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"></image>
+			<image mode="'aspectFit'" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"></image>
 			<!-- <button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
 			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button> -->
 		</view>
@@ -66,8 +66,8 @@
 				<view class="list_item">
 					<view class="card row" style="height: 75rpx; display: flex; justify-content: space-between;" v-for="(item, index) in ble_name_list" :key="index" @tap="ble_connect(index)">
 						<view>{{item}}</view>
-						<view>{{ble_rssi_list[index]}}</view>
-						<view>{{ble_con_state_list[index]}}</view>
+						<view>信号: {{ble_rssi_list[index]}}</view>
+						<!-- <view>{{ble_con_state_list[index]}}</view> -->
 					</view>
 				</view>
 				<!-- <view class="card" style="margin-bottom: 2px;">{{$t("index.text6")}}</view> -->
@@ -302,12 +302,13 @@
 												//根据名字匹配雷达设备
 												if ((res.devices[0].name.indexOf("XHJ") != -1) || (res.devices[0].name.indexOf("MW60S") != -1) ||
 													(res.devices[0].name.indexOf("ZRD") != -1)) {
-                          uni.hideLoading()
+                                                    uni.hideLoading()
 													if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
 														//发现新的蓝牙设备,加入设备列表
 														that.ble_list.push(res.devices[0].deviceId)
 														// that.ble_name_list.push(res.devices[0].name)
-														that.ble_name_list.push('ZRD-803-' + res.devices[0].deviceId)
+														// that.ble_name_list.push('ZRD-803-' + res.devices[0].deviceId)
+                                                        that.ble_name_list.push('ZRD-803')
 														that.ble_rssi_list.push(res.devices[0].RSSI)
 														that.ble_con_state_list.push('disconnected')
 													}
