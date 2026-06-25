@@ -354,6 +354,7 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 				uni.showLoading({title: that.$t("aconfig.modal.reading"), mask:true})
 
 				const res = await advanced_read();
+				console.log(res)
 				if (res) {
 					clearTimeout(timer)
 
@@ -364,9 +365,9 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 					this.radarSensitivity_level = res.radarSensitivity
 					
 					// this.cfg2_value[0] = res.delayDropTime
-					this.cfg2_value[1] = res.proximityNoDetect
-					this.cfg2_value[2] = res.leftNoDetectWidth
-					this.cfg2_value[3] = res.rightNoDetectWidth
+					this.cfg2_value[0] = res.proximityNoDetect
+					this.cfg2_value[1] = res.leftNoDetectWidth
+					this.cfg2_value[2] = res.rightNoDetectWidth
 					// this.cfg2_value[4] = res.leftDetectWidth
 					// this.cfg2_value[5] = res.rightDetectWidth
 					
@@ -392,9 +393,9 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
           radarSensitivity: this.radarSensitivity_level,
 					
           // delayDropTime: this.cfg2_value[0],
-          proximityNoDetect: this.cfg2_value[1],
-          leftNoDetectWidth: this.cfg2_value[2],
-          rightNoDetectWidth: this.cfg2_value[3],
+          proximityNoDetect: this.cfg2_value[0],
+          leftNoDetectWidth: this.cfg2_value[1],
+          rightNoDetectWidth: this.cfg2_value[2],
           // leftDetectWidth: this.cfg2_value[4],
           // rightDetectWidth: this.cfg2_value[5],
         }
@@ -418,15 +419,17 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 					this.radarSensitivity_level = res_read.radarSensitivity
 					
 					// this.cfg2_value[0] = res_read.delayDropTime
-					this.cfg2_value[1] = res_read.proximityNoDetect
-					this.cfg2_value[2] = res_read.leftNoDetectWidth
-					this.cfg2_value[3] = res_read.rightNoDetectWidth
+					this.cfg2_value[0] = res_read.proximityNoDetect
+					this.cfg2_value[1] = res_read.leftNoDetectWidth
+					this.cfg2_value[2] = res_read.rightNoDetectWidth
 					// this.cfg2_value[4] = res_read.leftDetectWidth
 					// this.cfg2_value[5] = res_read.rightDetectWidth
 								
 					this.$forceUpdate()
 					log_upload('read', res_read)
 				}
+				
+				that.radar_read()
 			},
 			async radar_restart() {
 				let that = this
@@ -465,6 +468,7 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 							if (res_reset) {
 								clearTimeout(timer)
 								uni.showToast({title: that.$t("aconfig.modal.restoresuccess")})
+								that.radar_read()
 							}
 						}
 					}

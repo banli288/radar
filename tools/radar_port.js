@@ -11,9 +11,11 @@ export async function get_production() {
 
   let product = {
     type: res89.payload[0],
-    SN: res89.payload[1].toString(16) + res89.payload[2].toString(16) + res89.payload[3].toString(16) + res89.payload[4].toString(16) + res89.payload[5].toString(16),
+    SN: res89.payload[1].toString(16).padStart(2, '0') + res89.payload[2].toString(16).padStart(2, '0') + res89.payload[3].toString(16).padStart(2, '0') + 
+			res89.payload[4].toString(16).padStart(2, '0') + res89.payload[5].toString(16).padStart(2, '0'),
     hd_ver: res89.payload[6] + res89.payload[7] / 10,
-    sw_ver: res89.payload[8] + res89.payload[9] / 10,
+    // sw_ver: res89.payload[8] + res89.payload[9] / 10,
+		sw_ver: `${res89.payload[8]}.${res89.payload[9]}`,
   }
 
   return product

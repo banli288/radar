@@ -262,7 +262,7 @@
 				param_list: [
 					{name: "左侧检测范围(米)", value: 0.6, min: 0.0, max: 1.5, step: 0.1},
 					{name: "右侧检测范围(米)", value: 0.6, min: 0.0, max: 1.5, step: 0.1},
-					{name: "延迟设置(秒)", value: 0.5, min: 0.0, max: 25.5, step: 0.5},
+					{name: "延时设置(秒)", value: 0.5, min: 0.0, max: 25.5, step: 0.5},
 				],
 	
         aera_sensi: [
@@ -548,19 +548,29 @@
 				}
 			},
 			pole_sub() {
-				if (this.dect_range > 0.5) this.dect_range -= 0.1
+				if (this.dect_range > 0.5) {
+					this.dect_range -= 0.1
+					this.dect_range = +(this.dect_range.toFixed(1))
+				}
 			},
 			pole_add() {
-				if (this.dect_range < 6) this.dect_range += 0.1
+				if (this.dect_range < 6) {
+					this.dect_range += 0.1
+					this.dect_range = +(this.dect_range.toFixed(1))
+				}
 			},
 			para_add(index) {
 				if (this.param_list[index].value < this.param_list[index].max)
 					this.param_list[index].value += this.param_list[index].step
+				if (this.param_list[index].value > this.param_list[index].max)
+					this.param_list[index].value = this.param_list[index].max
         this.param_list[index].value = +(this.param_list[index].value.toFixed(1)) //将0.99999或者1.0000001强行转成1，不会加/减超出范围，下同
 			},
 			para_sub(index) {
 				if (this.param_list[index].value > this.param_list[index].min)
 					this.param_list[index].value -= this.param_list[index].step
+				if (this.param_list[index].value < this.param_list[index].min)
+					this.param_list[index].value = this.param_list[index].min
         this.param_list[index].value = +(this.param_list[index].value.toFixed(1))
 			},
 			radioChange(e) {
@@ -624,7 +634,7 @@
 				if (!config) return;
 				
 				pole = config.pole
-				this.dect_range = config.range
+				this.dect_range = +(config.range.toFixed(1))
 				// this.car_value = config.carType
 				
 				const advacned = await advanced_read()
@@ -636,7 +646,8 @@
 				
 				pole % 2 == 0 ? that.fixation_value = 0 : that.fixation_value = 1; // 0: right 1: left
 				
-				if (store.state.product_info.sw_ver > 1.6) {
+				const ver = store.state.product_info.sw_ver.split('.').map(Number)
+				if (ver[0] > 1 || ver[1] > 6) {
 					const sensi = await get_radar_sensi()
 					if (sensi) {
 						clearTimeout(timer)
@@ -753,7 +764,8 @@
 				clearTimeout(timer)
 				uni.hideLoading()
 				
-				if (store.state.product_info.sw_ver > 1.6) {
+				const ver = store.state.product_info.sw_ver.split('.').map(Number)
+				if (ver[0] > 1 || ver[1] > 6) {
 					timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 3000)
 					uni.showLoading({title: that.$t("modal.saving"), mask: true})
 					
@@ -799,6 +811,7 @@
 					//   // }
 					// })
           uni.showToast({title: "保存成功"})
+					that.radar_read()
 				} else {
 					// uni.showModal({
 					//   title: that.$t("modal.notice"),
@@ -822,6 +835,7 @@
 					  'car_value': that.car_value
 					})
 				}
+				that.radar_read()
 			},
 			//抬杆学习
 			async radar_up_study() {
@@ -990,6 +1004,7 @@
 							if (res_restore) {
 								clearTimeout(timer)
 								uni.showToast({title: that.$t("aconfig.modal.restoresuccess")})
+								that.radar_read()
 							}
 						}
 					}
@@ -1055,7 +1070,7 @@
 		width: 90%;
 		padding: 20rpx;
 		font-size: 32rpx; 
-		background-color: #fafafa;
+		background-color: #ffffff;
     display: flex;
     text-align: center;
     justify-content: center;
@@ -1066,7 +1081,7 @@
 		height: 300rpx;
 		line-height: 50rpx;
 		font-size: 32rpx; 
-		background-color: #fafafa;
+		background-color: #ffffff;
     color: red;
 	}
 </style>

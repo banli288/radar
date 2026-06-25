@@ -1,9 +1,9 @@
-<template>
-  <view class="page">
-		<view class="card title" style="margin-top: 20rpx;">
-			<image mode="'aspectFit'" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"></image>
-			<!-- <view style="font-size: 20px;">{{toolInfo}}</view>
-			<view>{{prodInfo}}</view> -->
+<template> 
+ <view class="page">
+		<view class="card title">
+			<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"/>
+			<view style="font-size: 20px;">{{toolInfo}}</view>
+			<view>{{prodInfo}}</view>
 		</view>
     <view class="_label">
       <view class="card label_item" v-for="(item,index) in pageList" :key="index" @tap="more_opa(index)">
@@ -28,7 +28,7 @@
     },
     computed: {
       pageList() {
-				if (store.state.product_info.sw_ver < 2.0) {
+				if (parseFloat(store.state.product_info.sw_ver) < 2.0) {
 					return [
 					  this.$t("more.advancedConfig"),
 					  this.$t("more.commamd"),
@@ -84,7 +84,7 @@
         } else if (index == 1) {
           that.$u.route({url: '/pages/more/debug'})
         } else if (index == 2) {
-					if (store.state.product_info.sw_ver < 2.0) {
+					if (parseFloat(store.state.product_info.sw_ver) < 2.0) {
 						this.downloadAndOpenPdf()
 					} else {
 						that.$u.route({url: '/pages/more/relay'})

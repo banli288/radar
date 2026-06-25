@@ -1,7 +1,7 @@
 <template>
 	<view class="page">
-		<view class="card img_box" style="margin-top: 20rpx;">
-			<image mode="'aspectFit'" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"></image>
+		<view class="card" style="display: flex; justify-content: center;">
+			<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"/>
 			<!-- <button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
 			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button> -->
 		</view>
@@ -292,6 +292,11 @@
 					title: that.$t("modal.searchingDev"),
 					mask: true,
 					success() {
+						let timer = setTimeout(() => {
+							uni.hideLoading()
+							uni.showModal({
+							title: "搜索超时，暂未发现雷达设备，正在后台继续搜索"
+						})}, 5000)
 						setTimeout(() => {
 							uni.openBluetoothAdapter({
 								success() {
@@ -302,13 +307,14 @@
 												//根据名字匹配雷达设备
 												if ((res.devices[0].name.indexOf("XHJ") != -1) || (res.devices[0].name.indexOf("MW60S") != -1) ||
 													(res.devices[0].name.indexOf("ZRD") != -1)) {
-                                                    uni.hideLoading()
+													uni.hideLoading()
+													clearTimeout(timer)
 													if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
 														//发现新的蓝牙设备,加入设备列表
 														that.ble_list.push(res.devices[0].deviceId)
 														// that.ble_name_list.push(res.devices[0].name)
 														// that.ble_name_list.push('ZRD-803-' + res.devices[0].deviceId)
-                                                        that.ble_name_list.push('ZRD-803')
+														that.ble_name_list.push('ZRD-803')
 														that.ble_rssi_list.push(res.devices[0].RSSI)
 														that.ble_con_state_list.push('disconnected')
 													}

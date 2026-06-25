@@ -4,9 +4,9 @@
 			<view v-for="(item, index) in aera_para_list" class="card row" style="justify-content: space-around;">
 			  <view style="width: 60%; font-size: 14px;">{{item.name}}</view>
 			  <view class="row" style="width: 40%;">
-					<image src="@/static/-.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_sub(index)"></image>
+					<!-- <image src="@/static/-.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_sub(index)"></image> -->
 					<input v-model="item.value" style="text-align: center; width: 30%;"/>
-					<image src="@/static/+.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_add(index)"></image>
+					<!-- <image src="@/static/+.png" mode="aspectFit" style="width: 35%; height: 70rpx;" @tap="para_add(index)"></image> -->
 				</view>
 			</view>
 			<view v-for="(item, index) in state_list" class="card row" style="justify-content: space-around;">

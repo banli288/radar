@@ -15,7 +15,7 @@ const store = new Vuex.Store({
       type: 0,
       SN: '',
       hd_ver: 0,
-      sw_ver: 0,
+      sw_ver: "0",
     },
 
     recv_buf: '',
