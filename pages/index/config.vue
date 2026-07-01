@@ -949,11 +949,11 @@
 																
 																log_upload('read', advanced)
 																
-																if (that.pole_value == 0 || that.pole_value == 1) {
-																	if (that.pole_value == 0) {
+																if (that.pole_index == 0 || that.pole_index == 1) {
+																	if (that.pole_index == 0) {
 																		advanced.leftNoDetectWidth = 0
 																		advanced.rightNoDetectWidth = 0.5
-																	} else if (that.pole_value == 1) {
+																	} else if (that.pole_index == 1) {
 																		advanced.leftNoDetectWidth = 0.5
 																		advanced.rightNoDetectWidth = 0
 																	}
