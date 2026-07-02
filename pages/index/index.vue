@@ -327,12 +327,20 @@
 										}
 									})
 								},
-								fail() {
+								fail(res) {
 									uni.hideLoading()
 									uni.showModal({
 										title: that.$t("modal.openBleErr"),
+										content: JSON.stringify(res),
 										confirmText: that.$t("modal.confirmText"),
 										cancelText: that.$t("modal.cancelText"),
+										success(res) {
+											if (res.confirm) {
+												uni.reLaunch({
+													url: '/pages/index/index'
+												})
+											}
+										}
 									});
 								}
 							})

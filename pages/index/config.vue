@@ -104,7 +104,7 @@
 		
 		<view class="win" v-if="imageLeft">
 			<view class="content">
-				<view class="title">选择左固定</view>
+				<!-- <view class="title">选择左固定</view> -->
 				<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/left2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageLeft = false">确定</button>
 			</view>
@@ -112,7 +112,7 @@
 		
 		<view class="win" v-if="imageRight">
 			<view class="content">
-				<view class="title">选择右固定</view>
+				<!-- <view class="title">选择右固定</view> -->
 				<image mode="'aspectFit'" src="https://gitee.com/chuan0125/leida/raw/master/images/right2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageRight = false">确定</button>
 			</view>
@@ -398,7 +398,7 @@
           },
         })
       },
-			studyErr() {
+			async studyErr() {
 				this.studyStep.step1.enable = false;
 				this.studyStep.step2.enable = false; 
 				this.studyStep.step3.enable = false; 
@@ -473,11 +473,17 @@
 						this.studyStep.step5.enable = false; 
 						this.studyStep.stepFinish.enable = false; 
 						
+						const resStep1 = await studyStep1();
+						if (!resStep1) {
+							this.studyErr()
+							return;
+						}
+						
 						setTimeout(() => { 
 							this.studyStep.step2.btnEnable = false
 							this.studyStep.step3.btnEnable = true
               this.setStep(3)
-						}, 2000)
+						}, 5000)
 					break;
 					case 3:
 						this.studyStep.step1.enable = false;
@@ -506,16 +512,10 @@
 						this.studyStep.step5.enable = false; 
 						this.studyStep.stepFinish.enable = false; 
 						
-						const resStep1 = await studyStep1();
-						if (!resStep1) {
-							this.studyErr()
-							return;
-						}
-						
 						setTimeout(() => {
 							this.studyStep.step4.btnEnable = false
 							this.studyStep.step5.btnEnable = true
-						}, 5000)
+						}, 8000)
 					break;
 					case 5:
 						this.studyStep.step1.enable = false;
@@ -531,9 +531,48 @@
 							return;
 						}
 						
-						setTimeout(() => {
+						setTimeout(async () => {
 							this.studyStep.step5.btnEnable = false
 							this.studyStep.stepFinish.btnEnable = false
+							
+							let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
+							
+							const advanced = await advanced_read()
+							if (!advanced) return;
+							
+							clearTimeout(timer)
+							
+							if ((advanced.leftNoDetectWidth + advanced.rightNoDetectWidth) > 1.0) {
+								uni.showModal({
+									title: that.$t("config.studyEndNotice"),
+									confirmText: that.$t("modal.confirmText"),
+									cancelText: that.$t("modal.cancelText"),
+								});
+							}
+							
+							log_upload('read', advanced)
+							
+							console.log(that.pole_index)
+							
+							if (that.pole_index == 0 || that.pole_index == 1) {
+								if (that.pole_index == 0) {
+									advanced.leftNoDetectWidth = 0
+									advanced.rightNoDetectWidth = 0.5
+									console.log('w 0')
+								} else if (that.pole_index == 1) {
+									advanced.leftNoDetectWidth = 0.5
+									advanced.rightNoDetectWidth = 0
+									console.log('w 1')
+								}
+								
+								timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
+								
+								const advSave = await advanced_write(advanced)
+								if (!advSave) return;
+								
+								clearTimeout(timer)
+							}
+							
               this.setStep(0)
 						}, 5000)
 					break;
@@ -811,7 +850,6 @@
 					//   // }
 					// })
           uni.showToast({title: "保存成功"})
-					that.radar_read()
 				} else {
 					// uni.showModal({
 					//   title: that.$t("modal.notice"),
@@ -949,6 +987,7 @@
 																
 																log_upload('read', advanced)
 																
+																console.log(that.pole_index)
 																if (that.pole_index == 0 || that.pole_index == 1) {
 																	if (that.pole_index == 0) {
 																		advanced.leftNoDetectWidth = 0
