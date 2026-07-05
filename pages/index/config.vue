@@ -436,11 +436,11 @@
                 
                 log_upload('read', advanced)
                 
-                if (that.pole_value == 0 || that.pole_value == 1) {
-                  if (that.pole_value == 0) {
+                if (that.pole_index == 0 || that.pole_index == 1) {
+                  if (that.pole_index == 0) {
                     advanced.leftNoDetectWidth = 0
                     advanced.rightNoDetectWidth = 0.5
-                  } else if (that.pole_value == 1) {
+                  } else if (that.pole_index == 1) {
                     advanced.leftNoDetectWidth = 0.5
                     advanced.rightNoDetectWidth = 0
                   }
@@ -534,45 +534,6 @@
 						setTimeout(async () => {
 							this.studyStep.step5.btnEnable = false
 							this.studyStep.stepFinish.btnEnable = false
-							
-							let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
-							
-							const advanced = await advanced_read()
-							if (!advanced) return;
-							
-							clearTimeout(timer)
-							
-							if ((advanced.leftNoDetectWidth + advanced.rightNoDetectWidth) > 1.0) {
-								uni.showModal({
-									title: that.$t("config.studyEndNotice"),
-									confirmText: that.$t("modal.confirmText"),
-									cancelText: that.$t("modal.cancelText"),
-								});
-							}
-							
-							log_upload('read', advanced)
-							
-							console.log(that.pole_index)
-							
-							if (that.pole_index == 0 || that.pole_index == 1) {
-								if (that.pole_index == 0) {
-									advanced.leftNoDetectWidth = 0
-									advanced.rightNoDetectWidth = 0.5
-									console.log('w 0')
-								} else if (that.pole_index == 1) {
-									advanced.leftNoDetectWidth = 0.5
-									advanced.rightNoDetectWidth = 0
-									console.log('w 1')
-								}
-								
-								timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
-								
-								const advSave = await advanced_write(advanced)
-								if (!advSave) return;
-								
-								clearTimeout(timer)
-							}
-							
               this.setStep(0)
 						}, 5000)
 					break;
@@ -986,8 +947,7 @@
 																}
 																
 																log_upload('read', advanced)
-																
-																console.log(that.pole_index)
+
 																if (that.pole_index == 0 || that.pole_index == 1) {
 																	if (that.pole_index == 0) {
 																		advanced.leftNoDetectWidth = 0
@@ -996,6 +956,8 @@
 																		advanced.leftNoDetectWidth = 0.5
 																		advanced.rightNoDetectWidth = 0
 																	}
+																	
+																	console.log(advanced)
 																	
 																	const advSave = await advanced_write(advanced)
 																	if (!advSave) return;

@@ -283,7 +283,6 @@
 			//搜索蓝牙设备
 			ble_search() {
 				var that = this
-        that.showDialog = true
         that.ble_list = []
 				that.ble_name_list = []
 				that.ble_rssi_list = []
@@ -294,9 +293,8 @@
 					success() {
 						let timer = setTimeout(() => {
 							uni.hideLoading()
-							uni.showModal({
-							title: "搜索超时，暂未发现雷达设备，正在后台继续搜索"
-						})}, 5000)
+							// uni.showModal({title: "搜索超时，暂未发现雷达设备，正在后台继续搜索"})
+						}, 5000)
 						setTimeout(() => {
 							uni.openBluetoothAdapter({
 								success() {
@@ -310,6 +308,7 @@
 													uni.hideLoading()
 													clearTimeout(timer)
 													if (that.ble_list.indexOf(res.devices[0].deviceId) == -1) {
+														that.showDialog = true
 														//发现新的蓝牙设备,加入设备列表
 														that.ble_list.push(res.devices[0].deviceId)
 														// that.ble_name_list.push(res.devices[0].name)
