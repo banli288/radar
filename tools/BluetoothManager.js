@@ -249,7 +249,7 @@ class BluetoothManager {
               error: 'timeout'
             })
           }
-        }, 2000)
+        }, 5000)
       }
 
       var tmp = new Uint8Array(buffer.match(/[\da-f]{2}/gi).map(function (h) {

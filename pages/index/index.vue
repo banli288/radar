@@ -194,33 +194,25 @@
 
 			async read_product() {
 				const res = await get_production()
-				uni.hideLoading()
+				if (!res) return null;
+
+				this.product = res
+				this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
 				
-				if (res) {
-					this.product = res
-					uni.showToast({title: this.$t("modal.conSuccess")})
-					this.ble_con_state_list[this.ble_list.indexOf(store.state.device_info.deviceId)] = 'connected'
-					
-					store.commit('set_product', res)
-					
-					// wsManager.connect('ws://localhost/ws')
-					
-					log_upload('read', {
-						'product_type': store.state.product_info.type,
-						'product_SN': store.state.product_info.SN,
-						'product_hd': store.state.product_info.hd_ver,
-						'product_sf': store.state.product_info.sw_ver,
-						'MAC': store.state.device_info.deviceId,
-						'location': store.state.location
-					})
-				} else {
-					uni.showModal({
-					  title: this.$t("modal.notice"),
-					  confirmText: this.$t("modal.confirmText"),
-					  cancelText: this.$t("modal.cancelText"),
-					  content: this.$t("modal.readTineout"),
-					})
-				}
+				store.commit('set_product', res)
+				
+				// wsManager.connect('ws://localhost/ws')
+				
+				log_upload('read', {
+					'product_type': store.state.product_info.type,
+					'product_SN': store.state.product_info.SN,
+					'product_hd': store.state.product_info.hd_ver,
+					'product_sf': store.state.product_info.sw_ver,
+					'MAC': store.state.device_info.deviceId,
+					'location': store.state.location
+				})
+				
+				return {status:"success"}
 			},
 			closeDialog() {
 				this.showDialog = false
@@ -348,100 +340,112 @@
 				})
 			},
 			//连接设备
-			ble_connect(index) {
+			async ble_connect(index) {
 				let that = this
 				let deviceId = this.ble_list[index]
-				uni.showLoading({
-					title: that.$t("modal.connecting"),
-					mask: true,
-					success() {
-						uni.createBLEConnection({
-							deviceId: deviceId,
-							timeout: 10000,
-							success() {
-								setTimeout(() => {
-									uni.stopBluetoothDevicesDiscovery({
-										success() {
-											uni.getBLEDeviceServices({
-												deviceId: deviceId,
-												success(res) {
-													for (let item of res.services) {
-														if (item.isPrimary) {
-															let serviceId = item.uuid
-															if (item.uuid.indexOf('0000AE3') != -1) {
-																uni.getBLEDeviceCharacteristics({
-																	deviceId: deviceId,
-																	serviceId: serviceId,
-																	success(res) {
-																		for (let item of res.characteristics) {
-																			if (item.properties.notify) {
-																				let characteristicId = item.uuid;
-																				uni.notifyBLECharacteristicValueChange({
+				
+				let timer = setTimeout(() => { uni.showModal({content: "连接超时"}) }, 10000)
+				uni.showLoading({ title: that.$t("modal.connecting"), mask: true})
+				
+				uni.createBLEConnection({
+					deviceId: deviceId,
+					timeout: 10000,
+					async success() {
+						setTimeout(() => {
+							uni.stopBluetoothDevicesDiscovery({
+								async success() {
+									uni.getBLEDeviceServices({
+										deviceId: deviceId,
+										async success(res) {
+											for (let item of res.services) {
+												if (item.isPrimary) {
+													let serviceId = item.uuid
+													if (item.uuid.indexOf('0000AE3') != -1) {
+														uni.getBLEDeviceCharacteristics({
+															deviceId: deviceId,
+															serviceId: serviceId,
+															async success(res) {
+																for (let item of res.characteristics) {
+																	if (item.properties.notify) {
+																		let characteristicId = item.uuid;
+																		uni.notifyBLECharacteristicValueChange({
+																			deviceId: deviceId,
+																			serviceId: serviceId,
+																			characteristicId: characteristicId,
+																			state: true,
+																			async success() {
+																				that.showDialog = false
+							
+																				//存储ID信息
+																				let obj = {
 																					deviceId: deviceId,
 																					serviceId: serviceId,
-																					characteristicId: characteristicId,
-																					state: true,
-																					success() {
-																						that.showDialog = false
-									
-																						//存储ID信息
-																						let obj = {
-																							deviceId: deviceId,
-																							serviceId: serviceId,
-																							r_characteristicId: characteristicId
-																						}
-									
-																						//遍历查找写ID
-																						for (let item of res.characteristics) {
-																							if (item.properties.write) {
-																								obj.w_characteristicId = item.uuid
-																								store.commit('set_device_info', obj)
-																								// jlog('LOG', 'device_info:', store.state.device_info)
-																								
-																								//找到写ID，延时500ms通过写ID写入读取版本信息指令
-																								setTimeout(() => {
-																									that.read_product()
-																								}, 500)
+																					r_characteristicId: characteristicId
+																				}
+							
+																				//遍历查找写ID
+																				for (let item of res.characteristics) {
+																					if (item.properties.write) {
+																						obj.w_characteristicId = item.uuid
+																						store.commit('set_device_info', obj)
+																						// jlog('LOG', 'device_info:', store.state.device_info)
+																						
+																						//找到写ID，延时500ms通过写ID写入读取版本信息指令
+																						setTimeout(async () => {
+																							clearTimeout(timer)
+																							
+																							const res = await that.read_product()
+																							if (res != null) {
+																								uni.showToast({
+																									title: "连接成功"
+																								})
+																							} else {
+																								uni.showModal({
+																								  title: this.$t("modal.notice"),
+																								  confirmText: this.$t("modal.confirmText"),
+																								  cancelText: this.$t("modal.cancelText"),
+																								  content: this.$t("modal.readTineout"),
+																								})
 																							}
-																						}
+																						}, 500)
 																					}
-																				})
+																				}
 																			}
-																		}
-																	},
-																	fail() {
-																		jlog('read character fail')
+																		})
 																	}
-																})
+																}
+															},
+															fail() {
+																jlog('read character fail')
 															}
-														}
+														})
 													}
 												}
-											})
+											}
 										}
 									})
-								}, 2000)
-							},
-							fail(res) {
-								jlog(res)
-								uni.hideLoading()
-								if (store.state.connect_state == false) {
-									uni.showModal({
-										title: that.$t("modal.notice"),
-										content: that.$t("modal.connectErr"),
-										confirmText: that.$t("modal.confirmText"),
-										cancelText: that.$t("modal.cancelText"),
-									})
-								} else {
-									uni.showModal({
-										title: that.$t("modal.notice"),
-										content: that.$t("modal.Bleconnected"),
-										confirmText: that.$t("modal.confirmText"),
-										cancelText: that.$t("modal.cancelText"),
-									})
 								}
-							}
-						})
+							})
+						}, 2000)
+					},
+					fail(res) {
+						jlog(res)
+						uni.hideLoading()
+						if (store.state.connect_state == false) {
+							uni.showModal({
+								title: that.$t("modal.notice"),
+								content: that.$t("modal.connectErr"),
+								confirmText: that.$t("modal.confirmText"),
+								cancelText: that.$t("modal.cancelText"),
+							})
+						} else {
+							uni.showModal({
+								title: that.$t("modal.notice"),
+								content: that.$t("modal.Bleconnected"),
+								confirmText: that.$t("modal.confirmText"),
+								cancelText: that.$t("modal.cancelText"),
+							})
+						}
 					}
 				})
 			}

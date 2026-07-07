@@ -2,8 +2,8 @@
  <view class="page">
 		<view class="card title">
 			<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"/>
-			<view style="font-size: 20px;">{{toolInfo}}</view>
-			<view>{{prodInfo}}</view>
+			<!-- <view style="font-size: 20px;">{{toolInfo}}</view>
+			<view>{{prodInfo}}</view> -->
 		</view>
     <view class="_label">
       <view class="card label_item" v-for="(item,index) in pageList" :key="index" @tap="more_opa(index)">

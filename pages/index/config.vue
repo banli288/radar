@@ -104,16 +104,16 @@
 		
 		<view class="win" v-if="imageLeft">
 			<view class="content">
-				<!-- <view class="title">选择左固定</view> -->
-				<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/left2.jpg"/>
+				<view class="title">选择左固定</view>
+				<image mode="aspectFit" style="width: 100%;" src="https://gitee.com/chuan0125/leida/raw/master/images/left2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageLeft = false">确定</button>
 			</view>
 		</view>
 		
 		<view class="win" v-if="imageRight">
 			<view class="content">
-				<!-- <view class="title">选择右固定</view> -->
-				<image mode="'aspectFit'" src="https://gitee.com/chuan0125/leida/raw/master/images/right2.jpg"/>
+				<view class="title">选择右固定</view>
+				<image mode="aspectFit" style="width: 100%;" src="https://gitee.com/chuan0125/leida/raw/master/images/right2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageRight = false">确定</button>
 			</view>
 		</view>
@@ -622,84 +622,71 @@
 				}
 				this.img_url = this.imgs[image_index]
 			},
-			//读取参数接口，实质上就是根据协议向蓝牙写指令
-			async radar_read() {
-				let that = this
-				
-				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readfail")})}, 1000)
-				uni.showLoading({title: that.$t("modal.reading"), mask: true})
-				
+			async get_radar_param() {
 				let pole = 0
 				const config = await getConfig()
-				if (!config) return;
+				if (!config) return null;
 				
 				pole = config.pole
 				this.dect_range = +(config.range.toFixed(1))
-				// this.car_value = config.carType
 				
 				const advacned = await advanced_read()
-				if (!advacned) return;
+				if (!advacned) return null;
 				
 				this.param_list[0].value = advacned.leftDetectWidth
 				this.param_list[1].value = advacned.rightDetectWidth
 				this.param_list[2].value = advacned.delayDropTime
 				
-				pole % 2 == 0 ? that.fixation_value = 0 : that.fixation_value = 1; // 0: right 1: left
+				pole % 2 == 0 ? this.fixation_value = 0 : this.fixation_value = 1; // 0: right 1: left
 				
 				const ver = store.state.product_info.sw_ver.split('.').map(Number)
 				if (ver[0] > 1 || ver[1] > 6) {
 					const sensi = await get_radar_sensi()
-					if (sensi) {
-						clearTimeout(timer)
-						uni.showToast({title: this.$t("modal.readSuccess")})
-						
-						if (pole <= 1) {
-							that.pole_value = 0 // 直杆
-						} else if (pole <= 3) {
-							that.pole_value = 1 // 栅栏干
-						} else if (pole <= 5) {
-							sensi.pole == 0 ? that.pole_value = 2 : that.pole_value = 3 // byte 10: 0: 广告杆 1: 空降杆
-						} 
-						
-						if (pole < 4) {
-							this.pole_index = pole
-						} else if (pole == 4) {
-							if (sensi.pole == 0) this.pole_index = 4
-							else this.pole_index = 6
-						} else if (pole == 5) {
-							if (sensi.pole == 0) this.pole_index = 5
-							else this.pole_index = 7
-						}
-						
-						this.car_value = 	that.pole_value === 0 ? 0 : 1
-						
-						for (let i = 0; i < 9; i++) this.aera_sensi[i].value = sensi.sensi[i]
-						this.aera_sensi[9] = sensi.pole
-						
-						this.img_url = this.imgs[this.pole_index]
-						this.selectedValue = this.pole_index
-						
-						log_upload('read', {
-							'dect_range': this.dect_range,
-							'car_value': this.car_value,
-							'pole_value': pole,
-							'98020201': sensi
-						})
+					if (!sensi) return null
+					
+					if (pole <= 1) {
+						this.pole_value = 0 // 直杆
+					} else if (pole <= 3) {
+						this.pole_value = 1 // 栅栏干
+					} else if (pole <= 5) {
+						sensi.pole == 0 ? this.pole_value = 2 : this.pole_value = 3 // byte 10: 0: 广告杆 1: 空降杆
+					} 
+					
+					if (pole < 4) {
+						this.pole_index = pole
+					} else if (pole == 4) {
+						if (sensi.pole == 0) this.pole_index = 4
+						else this.pole_index = 6
+					} else if (pole == 5) {
+						if (sensi.pole == 0) this.pole_index = 5
+						else this.pole_index = 7
 					}
+					
+					this.car_value = 	this.pole_value === 0 ? 0 : 1
+					
+					for (let i = 0; i < 9; i++) this.aera_sensi[i].value = sensi.sensi[i]
+					this.aera_sensi[9] = sensi.pole
+					
+					this.img_url = this.imgs[this.pole_index]
+					this.selectedValue = this.pole_index
+					
+					log_upload('read', {
+						'dect_range': this.dect_range,
+						'car_value': this.car_value,
+						'pole_value': pole,
+						'98020201': sensi
+					})
 				} else {
 					this.pole_index = pole
 					this.img_url = this.imgs[this.pole_index]
 					
 					if (pole <= 1) {
-						that.pole_value = 0 // 直杆
+						this.pole_value = 0 // 直杆
 					} else if (pole <= 3) {
-						that.pole_value = 1 // 栅栏栏
+						this.pole_value = 1 // 栅栏栏
 					} else if (pole <= 5) {
-						that.pole_value = 2 // 广告杆
+						this.pole_value = 2 // 广告杆
 					} 
-					
-					clearTimeout(timer)
-					uni.showToast({title: this.$t("modal.readSuccess")})
 					
 					log_upload('read', {
 							'dect_range': this.dect_range,
@@ -707,287 +694,113 @@
 							'pole_value': pole
 					})
 				}
+				
+				return {status: "success"}
 			},
-			//保存参数接口
-			async radar_save() {
-				let that = this
+			async set_radar_param() {
 				let pole = 0
-
-				let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 1000)
-				uni.showLoading({title: that.$t("modal.saving"), mask: true})
-
 				// 0: right 1: left
-				if (that.fixation_value == 1) {
-					if (that.pole_value == 0) {
-						that.pole_index = 1 // 直杆
-					} else if (that.pole_value == 1) {
-						that.pole_index = 3 // 栅栏杆
-					} else if (that.pole_value == 2 || that.pole_value == 3) {
-						that.pole_index = 5 // 广告杆/空降杆
+				if (this.fixation_value == 1) {
+					if (this.pole_value == 0) {
+						this.pole_index = 1 // 直杆
+					} else if (this.pole_value == 1) {
+						this.pole_index = 3 // 栅栏杆
+					} else if (this.pole_value == 2 || this.pole_value == 3) {
+						this.pole_index = 5 // 广告杆/空降杆
 					}
 				} else {
-					if (that.pole_value == 0) {
-						that.pole_index = 0
-					} else if (that.pole_value == 1) {
-						that.pole_index = 2
-					} else if (that.pole_value == 2 || that.pole_value == 3) {
-						that.pole_index = 4
+					if (this.pole_value == 0) {
+						this.pole_index = 0
+					} else if (this.pole_value == 1) {
+						this.pole_index = 2
+					} else if (this.pole_value == 2 || this.pole_value == 3) {
+						this.pole_index = 4
 					}
 				}
-
-				if ((that.pole_index > 1) || (that.car_value !==0)) {
+				
+				if ((this.pole_index > 1) || (this.car_value !==0)) {
 					uni.showModal({content: "请设置直杆，不支持其他杆!!!"})
-					return
+					return null
 				}
-
+				
 				const advanced = await advanced_read()
-				advanced.leftDetectWidth = that.param_list[0].value
-				advanced.rightDetectWidth = that.param_list[1].value
-				advanced.delayDropTime = that.param_list[2].value
+				if (!advanced) return null;
+				
+				advanced.leftDetectWidth = this.param_list[0].value
+				advanced.rightDetectWidth = this.param_list[1].value
+				advanced.delayDropTime = this.param_list[2].value
 				
 				const resAdvSave = await advanced_write(advanced)
-				if (!resAdvSave) {
-					uni.showToast({title: that.$t("modal.savingTout")})
-				}
-
-				pole = that.pole_index
-
+				if (!resAdvSave) return null;
+				
+				pole = this.pole_index
+				
 				const param = {
 					pole: pole,
-					range: that.dect_range,
-					carType: that.car_value
+					range: this.dect_range,
+					carType: this.car_value
 				}
-
+				
 				const res_save = await setConfig(param)
-				if (!res_save) return;
-				
-				clearTimeout(timer)
-				uni.hideLoading()
-				
+				if (!res_save) return null;
+			
 				const ver = store.state.product_info.sw_ver.split('.').map(Number)
 				if (ver[0] > 1 || ver[1] > 6) {
-					timer = setTimeout(() => {uni.showToast({title: that.$t("modal.savingTout")})}, 3000)
-					uni.showLoading({title: that.$t("modal.saving"), mask: true})
-					
-					for (let i = 0; i < 9; i++) that.aera_sensi[i].value = 0x0A
+					for (let i = 0; i < 9; i++) this.aera_sensi[i].value = 0x0A
 					
 					// 2: 广告杆 3: 空降杆
-					if (that.pole_value == 2) {
-						that.aera_sensi[9].value = 0 
+					if (this.pole_value == 2) {
+						this.aera_sensi[9].value = 0 
 					}
-					else if(that.pole_value == 3)  {
-						that.aera_sensi[2].value = 0x2A
-						that.aera_sensi[9].value = 1
+					else if(this.pole_value == 3)  {
+						this.aera_sensi[2].value = 0x2A
+						this.aera_sensi[9].value = 1
 					}
 					
 					let sensi = []
-					for (let i = 0; i < 9; i++) sensi.push(that.aera_sensi[i].value)
+					for (let i = 0; i < 9; i++) sensi.push(this.aera_sensi[i].value)
 					
-					const res_sensi = await set_radar_sensi(sensi, that.aera_sensi[9].value)
-					if (!res_sensi) return;
+					const res_sensi = await set_radar_sensi(sensi, this.aera_sensi[9].value)
+					if (!res_sensi) return null;
 					
 					const res_getConfig = await getConfig()
-					if (!res_getConfig) return;
+					if (!res_getConfig) return null;
 					
 					const res_getSensi = await get_radar_sensi()
-					if (!res_getSensi) return;
-					
-					clearTimeout(timer)
-					uni.hideLoading()
+					if (!res_getSensi) return null;
 					
 					log_upload('read', { '77020201': res_getConfig, '98020201': res_getSensi})
-						
-					// uni.showModal({
-					//   title: that.$t("modal.notice"),
-					//   confirmText: that.$t("modal.confirmText"),
-					//   cancelText: that.$t("modal.cancelText"),
-					// 	content: "保存成功",
-					//   // content: that.$t("config.studyCont.text5"),
-					//   // success(res) {
-					//   //   if (res.confirm) {
-					// 		// 	that.radar_up_study()
-					// 		// 	that.study_entry = 1
-					// 		// }
-					//   // }
-					// })
-          uni.showToast({title: "保存成功"})
 				} else {
-					// uni.showModal({
-					//   title: that.$t("modal.notice"),
-					//   confirmText: that.$t("modal.confirmText"),
-					//   cancelText: that.$t("modal.cancelText"),
-					//   // content: that.$t("config.studyCont.text5"),
-					// 	content: "保存成功",
-					//   // success(res) {
-					//   //   if (res.confirm) {
-					//   //   	that.radar_up_study()
-					//   //   	that.study_entry = 1
-					//   //   }
-					//   // }
-					// })
-					
-          uni.showToast({title: "保存成功"})
-
 					log_upload('write', {
-					  'dect_range': that.dect_range * 10,
-					  'pole_value': that.pole_index,
-					  'car_value': that.car_value
+					  'dect_range': this.dect_range * 10,
+					  'pole_value': this.pole_index,
+					  'car_value': this.car_value
 					})
 				}
-				that.radar_read()
-			},
-			//抬杆学习
-			async radar_up_study() {
-				let that = this
-				uni.showModal({
-					title: that.$t("modal.notice"),
-					content: "按遥控器把道闸杆保持在落杆状态；注意：先将车道所有杂物移除，在雷达学习过程中，确保无车辆及行人等干扰目标！（雷达感应区左右两侧3米内）",
-					confirmText: "下一步",
-					cancelText: "取消",
-					async success(res) {
-						if (res.confirm) {
-							uni.showModal({
-								title: "第二步",
-								content: "正在学习关闸场景，请稍后.....",
-								confirmText: "下一步",
-								async success(res) {
-									if (res.confirm) {
-										let timer = setTimeout(() => {uni.showToast({title: that.$t("config.btnCont.btnUp")})}, 2000)
-										uni.showLoading({title: that.$t("config.studyCont.text3"), mask: true})
-										
-										const resStep1 = await studyStep1()
-										if (!resStep1) return;
-										
-										const resEnv = await param_env_read()
-										if (!resEnv) return;
-										
-										clearTimeout(timer)
-										uni.hideLoading()
-										
-										log_upload('read', {'type': 'env para', 'data': bytesToAsciiString(resEnv)})
-										
-										uni.showModal({
-											title: "动态学习",
-											content: "按遥控器把道闸杆起落各五次，操作完成后点击下一步！注意：确保无车辆及行人等干扰目标！（雷达感应区左右两侧三米内）",
-											cancelText: "下一步",
-											success(res) {
-												if (res.confirm) {
-													if (that.study_entry == 1) {
-														that.radar_down_study()
-														that.study_entry = 0
-													}
-												}
-											}
-										})
-									}
-								}
-							})
-						}
-					}
-				})
-			},
-			//落杆学习指令
-			async radar_down_study() {
-				let that = this
-				let timer = null
 				
-				that.study_entry = 0
+				if (!this.get_radar_param()) return null;
 				
-				uni.showModal({
-					title: "第四步",
-					content: "按遥控器把道闸杆保持在抬杆状态！操作完成后点击下一步",
-					confirmText: "下一步",
-					async success(res) {
-						if (res.confirm) {
-							timer = setTimeout(() => {uni.showToast({title: that.$t("config.studyCont.text11")})}, 1000)
-							uni.showLoading({title: that.$t("config.studyCont.text7"), mask: true})
-
-							const resStep2 = await studyStep2()
-							if (!resStep2) return;
-
-							clearTimeout(timer)
-							
-							setTimeout(() => {
-								uni.hideLoading()
-								uni.showModal({
-									title: "第五步",
-									content: "静态学习场景，请稍后....\n注意：雷达在学习过程中，确保无车辆及行人等干扰目标！（雷达感应区左右两侧三米内）",
-									confirmText: "下一步",
-									async success(res) {
-										if (res.confirm) {
-											uni.showLoading({title: that.$t("config.studyCont.text7")})
-											setTimeout(() => {
-												uni.hideLoading()
-												uni.showLoading({title: "学习中", mask: true})
-
-												// const resStep3 = await studyStep3()
-												// if (!resStep3) return;
-												
-												clearTimeout(timer)
-										
-												setTimeout(() => {
-													uni.hideLoading()
-													uni.showModal({
-														title: that.$t("modal.studyFinish"),
-														confirmText: that.$t("modal.confirmText"),
-														cancelText: that.$t("modal.cancelText"),
-														async success(res) {
-															if(res.confirm) {
-																let timer = setTimeout(() => {uni.showToast({title: that.$t("modal.readTineout")})}, 1000)
-																
-																const advanced = await advanced_read()
-																if (!advanced) return;
-																
-																if ((advanced.leftNoDetectWidth + advanced.rightNoDetectWidth) > 1.0) {
-																	uni.showModal({
-																		title: that.$t("config.studyEndNotice"),
-																		confirmText: that.$t("modal.confirmText"),
-																		cancelText: that.$t("modal.cancelText"),
-																	});
-																}
-																
-																log_upload('read', advanced)
-
-																if (that.pole_index == 0 || that.pole_index == 1) {
-																	if (that.pole_index == 0) {
-																		advanced.leftNoDetectWidth = 0
-																		advanced.rightNoDetectWidth = 0.5
-																	} else if (that.pole_index == 1) {
-																		advanced.leftNoDetectWidth = 0.5
-																		advanced.rightNoDetectWidth = 0
-																	}
-																	
-																	console.log(advanced)
-																	
-																	const advSave = await advanced_write(advanced)
-																	if (!advSave) return;
-																	
-																	clearTimeout(timer)
-																}
-															}
-														},
-													});
-												}, 2000)
-												// uni.showModal({
-												// 	title: that.$t("modal.notice"),
-												// 	content: that.$t("config.studyCont.text9"),
-												// 	confirmText: that.$t("modal.confirmText1"),
-												// 	cancelText: that.$t("modal.cancelText"),
-												// 	async success(res) {
-												// 		if (res.confirm) {
-												// 			let timer = setTimeout(() => {uni.showToast({title: that.$t("config.studyCont.text11")})}, 1000)
-															
-												// 		}
-												// 	}
-												// })
-											}, 2000)
-										}
-									}
-								})
-							}, 2000)
-						}
-					}
-				})
+				return {status: "success"}
+			},
+			async radar_read() {
+				let timer = setTimeout(() => {uni.showToast({title: this.$t("modal.readfail")})}, 2000)
+				uni.showLoading({title: this.$t("modal.reading"), mask: true})
+				
+				const res = await this.get_radar_param()
+				if (res != null) {
+					clearTimeout(timer)
+					uni.showToast({title: this.$t("modal.readSuccess")})
+				}
+			},
+			async radar_save() {
+				let timer = setTimeout(() => {uni.showToast({title: "保存失败"})}, 4000)
+				uni.showLoading({title: "保存中", mask: true})
+				
+				const res = await this.set_radar_param()
+				if (res != null) {
+					clearTimeout(timer)
+					uni.showToast({title: "保存成功"})
+				}
 			},
 			async radar_reset() {
 				let that = this
