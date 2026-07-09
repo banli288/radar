@@ -1,7 +1,7 @@
 <template> 
  <view class="page">
 		<view class="card title">
-			<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"/>
+			<image mode="aspectFit" src="@/static/index1.png"/>
 			<!-- <view style="font-size: 20px;">{{toolInfo}}</view>
 			<view>{{prodInfo}}</view> -->
 		</view>

@@ -105,7 +105,7 @@
 		<view class="win" v-if="imageLeft">
 			<view class="content">
 				<view class="title">选择左固定</view>
-				<image mode="aspectFit" style="width: 100%;" src="https://gitee.com/chuan0125/leida/raw/master/images/left2.jpg"/>
+				<image mode="aspectFit" style="width: 100%;" src="@/static/left2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageLeft = false">确定</button>
 			</view>
 		</view>
@@ -113,7 +113,7 @@
 		<view class="win" v-if="imageRight">
 			<view class="content">
 				<view class="title">选择右固定</view>
-				<image mode="aspectFit" style="width: 100%;" src="https://gitee.com/chuan0125/leida/raw/master/images/right2.jpg"/>
+				<image mode="aspectFit" style="width: 100%;" src="@/static/right2.jpg"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageRight = false">确定</button>
 			</view>
 		</view>
@@ -288,8 +288,10 @@
 			imgs() {
 				if (this.$i18n.locale === 'zh') {
 					return [
-						"https://gitee.com/chuan0125/leida/raw/master/images/right1.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/left1.jpg",
+						"/static/right1.jpg",
+						"/static/left1.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/right1.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/left1.jpg",
 						"https://gitee.com/chuan0125/leida/raw/master/images/6.jpg",
 						"https://gitee.com/chuan0125/leida/raw/master/images/5.jpg",
 						"https://gitee.com/chuan0125/leida/raw/master/images/4.jpg",
@@ -638,7 +640,14 @@
 				this.param_list[1].value = advacned.rightDetectWidth
 				this.param_list[2].value = advacned.delayDropTime
 				
-				pole % 2 == 0 ? this.fixation_value = 0 : this.fixation_value = 1; // 0: right 1: left
+				 // 0: right 1: left
+				if (pole % 2 == 0) {
+					this.fixation_value = 0
+					this.selectedValue = 0
+				} else {
+					this.fixation_value = 1
+					this.selectedValue = 1
+				}
 				
 				const ver = store.state.product_info.sw_ver.split('.').map(Number)
 				if (ver[0] > 1 || ver[1] > 6) {
@@ -663,17 +672,16 @@
 						else this.pole_index = 7
 					}
 					
-					this.car_value = 	this.pole_value === 0 ? 0 : 1
+					// this.car_value = 	this.pole_value === 0 ? 0 : 1
 					
 					for (let i = 0; i < 9; i++) this.aera_sensi[i].value = sensi.sensi[i]
-					this.aera_sensi[9] = sensi.pole
+					this.aera_sensi[9].value = sensi.pole
 					
 					this.img_url = this.imgs[this.pole_index]
-					this.selectedValue = this.pole_index
 					
 					log_upload('read', {
 						'dect_range': this.dect_range,
-						'car_value': this.car_value,
+						// 'car_value': this.car_value,
 						'pole_value': pole,
 						'98020201': sensi
 					})

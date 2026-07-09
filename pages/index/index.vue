@@ -1,7 +1,7 @@
 <template>
 	<view class="page">
 		<view class="card" style="display: flex; justify-content: center;">
-			<image mode="aspectFit" src="https://gitee.com/chuan0125/leida/raw/master/images/index1.png"/>
+			<image mode="aspectFit" src="@/static/index1.png"/>
 			<!-- <button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
 			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button> -->
 		</view>
