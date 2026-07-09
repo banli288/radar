@@ -7,7 +7,7 @@
 		<view class="col">
 			<view class="card row" style="height: 40px;">
 				<view class="_text" style="width: 40%; justify-content: space-between;">{{$t("config.text1")}}</view>
-				<uni-data-select style="width: 60%;" v-model="car_value_1" :localdata="car_type" :clear="false"
+				<uni-data-select style="width: 60%;" v-model="pole_value" :localdata="pole_type" :clear="false"
 					@change="change_car"></uni-data-select>
 			</view>
 			
@@ -311,7 +311,8 @@
 				}
 			},
 			pole_type() {
-				if (store.state.product_info.sf > 1.6) {
+				const ver = store.state.product_info.sw_ver.split('.').map(Number)
+				if (ver[0] > 1 || ver[1] > 6) {
 					return [
 					  {value: 0,text: this.$t("config.poleType.type0")},
 					  {value: 1,text: this.$t("config.poleType.type1")},
@@ -718,10 +719,10 @@
 					}
 				}
 				
-				if ((this.pole_index > 1) || (this.car_value !==0)) {
-					uni.showModal({content: "请设置直杆，不支持其他杆!!!"})
-					return null
-				}
+				// if ((this.pole_index > 1) || (this.car_value !==0)) {
+				// 	uni.showModal({content: "请设置直杆，不支持其他杆!!!"})
+				// 	return null
+				// }
 				
 				const advanced = await advanced_read()
 				if (!advanced) return null;
@@ -783,23 +784,27 @@
 				return {status: "success"}
 			},
 			async radar_read() {
-				let timer = setTimeout(() => {uni.showToast({title: this.$t("modal.readfail")})}, 2000)
-				uni.showLoading({title: this.$t("modal.reading"), mask: true})
+				let timer = setTimeout(() => {uni.showToast({title: "读取超时"})}, 10000)
+				uni.showLoading({title: "读取中", mask: true})
 				
 				const res = await this.get_radar_param()
+				clearTimeout(timer)
 				if (res != null) {
-					clearTimeout(timer)
-					uni.showToast({title: this.$t("modal.readSuccess")})
+					uni.showToast({title: "读取成功"})
+				} else {
+					uni.showToast({title: "读取失败"})
 				}
 			},
 			async radar_save() {
-				let timer = setTimeout(() => {uni.showToast({title: "保存失败"})}, 4000)
+				let timer = setTimeout(() => {uni.showToast({title: "保存超时"})}, 10000)
 				uni.showLoading({title: "保存中", mask: true})
 				
 				const res = await this.set_radar_param()
+				clearTimeout(timer)
 				if (res != null) {
-					clearTimeout(timer)
 					uni.showToast({title: "保存成功"})
+				} else {
+					uni.showToast({title: "保存失败"})
 				}
 			},
 			async radar_reset() {
