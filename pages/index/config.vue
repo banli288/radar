@@ -8,7 +8,7 @@
 			<view class="card row" style="height: 40px;">
 				<view class="_text" style="width: 40%; justify-content: space-between;">{{$t("config.text1")}}</view>
 				<uni-data-select style="width: 60%;" v-model="pole_value" :localdata="pole_type" :clear="false"
-					@change="change_car"></uni-data-select>
+					@change="change_pole"></uni-data-select>
 			</view>
 			
 			<view class="card row" style="height: 40px;">
@@ -260,8 +260,8 @@
 				polyType: {name: "杆长(米)", value: 0, min: 0, max: 6, step: 0.1},
 				
 				param_list: [
-					{name: "左侧检测范围(米)", value: 0.6, min: 0.0, max: 1.5, step: 0.1},
-					{name: "右侧检测范围(米)", value: 0.6, min: 0.0, max: 1.5, step: 0.1},
+					{name: "左侧检测范围(米)", value: 1.0, min: 0.0, max: 1.5, step: 0.1},
+					{name: "右侧检测范围(米)", value: 1.0, min: 0.0, max: 1.5, step: 0.1},
 					{name: "延时设置(秒)", value: 0.5, min: 0.0, max: 25.5, step: 0.5},
 				],
 	
@@ -288,16 +288,14 @@
 			imgs() {
 				if (this.$i18n.locale === 'zh') {
 					return [
-						"/static/right1.jpg",
-						"/static/left1.jpg",
-						// "https://gitee.com/chuan0125/leida/raw/master/images/right1.jpg",
-						// "https://gitee.com/chuan0125/leida/raw/master/images/left1.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/6.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/5.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/4.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/3.jpg",
-            "https://gitee.com/chuan0125/leida/raw/master/images/4.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/3.jpg"
+						"/static/r1.jpg",
+						"/static/l1.jpg",
+						"/static/r3.jpg",
+						"/static/l3.jpg",
+						"/static/r2.jpg",
+						"/static/l2.jpg",
+						"/static/r3.jpg",
+						"/static/l3.jpg",
 					];
 				} else {
 					return [

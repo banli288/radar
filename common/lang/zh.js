@@ -107,8 +107,8 @@ export default {
     fixation_right: "右固定",
 
     poleType: {
-      type0: "离地低于0.6米-直杆",
-      type1: "栅栏杆或离地高于0.6米",
+      type0: "直杆",
+      type1: "栅栏杆",
       type2: "广告杆",
       type3: "空降杆",
       // type0: "直杆右固定",

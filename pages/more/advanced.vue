@@ -84,8 +84,8 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 				radarSensitivity_level: 4,
 				cfg2_limit: [
 					{min: 0.0, max: 2.0, step: 0.1},
-					{min: 0.0, max: 25.5, step: 0.1},
-					{min: 0.0, max: 25.5, step: 0.1},
+					{min: 0.0, max: 1.5, step: 0.1},
+					{min: 0.0, max: 1.5, step: 0.1},
 					{min: 0.0, max: 25.5, step: 0.1},
 					{min: 0.5, max: 25.5, step: 0.1},
 					{min: 0.5, max: 25.5, step: 0.1},
@@ -119,23 +119,23 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 							value: 4,
 							limit: [
 								{
-									value: 5,
-									text: this.$t('aconfig2.items.radarSensitivity.limits.5')
-								},
-								{
-									value: 4,
-									text: this.$t('aconfig2.items.radarSensitivity.limits.4')
-								},
-								{
-									value: 3,
-									text: this.$t('aconfig2.items.radarSensitivity.limits.3')
+									value: 1,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.1')
 								},
 								{
 									value: 2,
 									text: this.$t('aconfig2.items.radarSensitivity.limits.2')
 								},
 								{
-									value: 1,
+									value: 3,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.3')
+								},
+								{
+									value: 4,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.4')
+								},
+								{
+									value: 5,
 									text: this.$t('aconfig2.items.radarSensitivity.limits.1')
 								},
 							]
@@ -150,24 +150,24 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 							value: 4,
 							limit: [
 								{
-									value: 5,
-									text: this.$t('aconfig2.items.radarSensitivity.limits.5')
-								},
-								{
-									value: 4,
-									text: this.$t('aconfig2.items.radarSensitivity.limits.4')
-								},
-								{
-									value: 3,
-									text: this.$t('aconfig2.items.radarSensitivity.limits.3')
+									value: 1,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.1')
 								},
 								{
 									value: 2,
 									text: this.$t('aconfig2.items.radarSensitivity.limits.2')
 								},
 								{
-									value: 1,
-									text: this.$t('aconfig2.items.radarSensitivity.limits.1')
+									value: 3,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.3')
+								},
+								{
+									value: 4,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.4')
+								},
+								{
+									value: 5,
+									text: this.$t('aconfig2.items.radarSensitivity.limits.5')
 								},
 								{
 									value: 10,
