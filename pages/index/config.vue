@@ -1,7 +1,7 @@
 <template>
 	<view class="page">
 		<view class="card img_box">
-			<image mode="'aspectFit'" :src="img_url"></image>
+			<image mode="aspectFit" :src="img_url"></image>
 		</view>
 
 		<view class="col">
@@ -55,6 +55,11 @@
 			<view class="card row" style="height: 40px;">
 				<view style="width: 40%; font-size: 14px;">雷达版本</view>
 				<view style="width: 60%; font-size: 14px; text-align: center;">{{radarSwVer}}</view>
+			</view>
+			
+			<view class="card row">
+				<view :style="dynamicFontStyle" class="_text" style="width: 40%; justify-content: space-between; ">雷达信息码</view>
+				<view style="width: 60%; font-size: 20rpx;">{{radarInfo}}</view>
 			</view>
 			
 			<!-- <view class="card row" style="height: 40px;">
@@ -356,6 +361,9 @@
 			},
 			radarSwVer() {
 				return store.state.product_info.sw_ver
+			},
+			radarInfo() {
+				return `${store.state.radar_info.version} ${store.state.radar_info.advanced}`
 			}
 		},
 		onLoad() {
@@ -423,7 +431,7 @@
               if (res.confirm) {
                 const advanced = await advanced_read()
                 if (!advanced) {
-                  this.studyErr()
+                  that.studyErr()
                   return
                 }
                 
@@ -448,10 +456,26 @@
                   
                   const advSave = await advanced_write(advanced)
                   if (!advSave) {
-                    this.studyErr()
+                    that.studyErr()
                     return
                   }
                 }
+								
+								const sensi = await get_radar_sensi();
+								if (!sensi) return;
+								
+								for (let i = 0; i < 9; i++) sensi.sensi[i] = 10;
+								
+								// 区域4、5的灵敏度从10设置为20，也就是0.8-2.2m的灵敏度调为现在的中低
+								sensi.sensi[3] = 20;
+								sensi.sensi[4] = 20;
+								
+								console.log(sensi)
+								
+								const sensi_wr_res = await set_radar_sensi(sensi.sensi, sensi.pole);
+								if (!sensi) return;
+								
+								that.radar_read(); // 学习完成回读参数
               }
             }})
             
@@ -650,7 +674,7 @@
 				const ver = store.state.product_info.sw_ver.split('.').map(Number)
 				if (ver[0] > 1 || ver[1] > 6) {
 					const sensi = await get_radar_sensi()
-					if (!sensi) return null
+					if (!sensi) return null;
 					
 					if (pole <= 1) {
 						this.pole_value = 0 // 直杆
