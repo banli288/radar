@@ -88,17 +88,17 @@
 
 		<view class="card col">
 			<view class="row" style="margin-bottom: 10rpx;">
-				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+				<button class="btn" hover-class="btn_hover" :disabled="!btn_en"
 					@tap="radar_read()">{{$t("config.btnRead")}}</button>
 				<!-- <button class="btn" hover-class="btn_hover" :disabled="!connect_state"
 					@tap="radar_up_study()">学习场景</button> -->
-					<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+					<button class="btn" hover-class="btn_hover" :disabled="!btn_en"
 						@tap="setStep(1)">学习场景</button>
 			</view>
 			<view class="row">
-				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+				<button class="btn" hover-class="btn_hover" :disabled="!btn_en"
 					@tap="radar_save()">{{$t("config.btnSave")}}</button>
-					<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
+					<button class="btn" hover-class="btn_hover" :disabled="!btn_en"
 						@tap="radar_reset">{{$t("aconfig.btnRestore")}}</button>
 			</view>
 		</view>
@@ -206,6 +206,8 @@
 		components: {userModal},
 		data() {
 			return {
+				win_status: true,
+				
 				imageLeft: false,
 				imageRight: false,
 				
@@ -290,6 +292,9 @@
 			isEnglish() {
 				return this.$i18n.locale === 'en'
 			},
+			btn_en() {
+				return this.win_status && this.connect_state
+			},
 			imgs() {
 				if (this.$i18n.locale === 'zh') {
 					return [
@@ -333,7 +338,7 @@
 					  {value: 0,text: this.$t("config.poleType.type0")},
 					  {value: 1,text: this.$t("config.poleType.type1")},
 					  {value: 2,text: this.$t("config.poleType.type2")},
-					  // {value: 3,text: this.$t("config.poleType.type3")},
+					  {value: 3,text: this.$t("config.poleType.type3")},
 					  // {value: 4,text: this.$t("config.poleType.type4")},
 					  // {value: 5,text: this.$t("config.poleType.type5")},
 					]
@@ -403,6 +408,8 @@
               else if (index == 3) that.studyStep.step3.enable = false
               else if (index == 4) that.studyStep.step4.enable = false
               else if (index == 5) that.studyStep.step5.enable = false
+							that.win_status = true;
+							uni.showTabBar()
             }
           },
         })
@@ -416,6 +423,9 @@
 				this.studyStep.stepFinish.enable = false; 
 				
 				uni.showModal({content: "学习失败，雷达无响应"})
+				
+				that.win_status = true;
+				uni.showTabBar()
 			},
 			async setStep(step) {
         let that = this
@@ -429,6 +439,9 @@
 						this.studyStep.stepFinish.enable = false; 
             uni.showModal({title: "雷达学习场景完成", showCancel: false, async success(res) {
               if (res.confirm) {
+								that.win_status = true;
+								uni.showTabBar()
+								
                 const advanced = await advanced_read()
                 if (!advanced) {
                   that.studyErr()
@@ -489,6 +502,9 @@
 						this.studyStep.stepFinish.enable = false; 
 						
 						this.studyStep.step2.btnEnable = true
+						
+						this.win_status = false
+						uni.hideTabBar()
 					break;
 					case 2:
 						this.studyStep.step1.enable = false;

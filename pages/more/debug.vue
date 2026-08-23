@@ -12,6 +12,11 @@
 			<scroll-view scroll-y="true" class="scroll_view1" :scroll-top="scrollTop">
 			  <text id="scrollContainer" selectable="true" class="view_text">{{recv_text}}</text>
 			</scroll-view>
+			<view class="row" style="margin-top: 10rpx;">
+				<view style="width: 75%;"></view>
+				<button class="btn" hover-class="btn_hov" style="width: 25%; font-size: 25rpx;" :disabled="!connect_state"
+					@tap="copyAll()">复制</button>
+			</view>
 		</view>
 
     <view class="card row" style="justify-content: space-around;">
@@ -95,8 +100,8 @@ import { get_radar_sensi, param_all_read, param_env_read, param_humcar_read, par
 
         debug_index: 0,
         debug_arr: [
-          {value: 0 ,text: this.$t("debug.cmd1")},
-          {value: 1 ,text: this.$t("debug.cmd2")},
+          {value: 0 ,text: this.$t("debug.cmd2")},
+          {value: 1 ,text: this.$t("debug.cmd1")},
           // {value: 2 ,text: this.$t("debug.cmd3")},
           // {value: 3 ,text: this.$t("debug.cmd4")},
           // {value: 4 ,text: this.$t("debug.cmd5")},
@@ -158,6 +163,12 @@ import { get_radar_sensi, param_all_read, param_env_read, param_humcar_read, par
 			},
 		},
 		methods: {
+			copyAll() {
+				uni.setClipboardData({
+					data: this.recv_text,
+					fail: () => {uni.showToast({title: '复制失败',icon: 'none'})}
+				})
+			},
       add_sensi(idx) {
         if (this.aera_sensi[idx].value < this.aera_sensi[idx].max) 
           this.aera_sensi[idx].value += this.aera_sensi[idx].step
@@ -210,7 +221,7 @@ import { get_radar_sensi, param_all_read, param_env_read, param_humcar_read, par
 			},
 
 			async send_btn() {
-        if (this.debug_index != 0) {
+        if (this.debug_index === 0) {
 					const res1 = await param_env_read();
 					if (res1) {
 						let env_param = bytesToAsciiString(res1.payload)

@@ -9,6 +9,11 @@
 			<scroll-view scroll-y="true" class="scroll_view1" :scroll-top="scrollTop">
 				<text id="scrollContainer" selectable="true" class="view_text">{{recv_text}}</text>
 			</scroll-view>
+			<view class="row" style="margin-top: 10rpx;">
+				<view style="width: 70%;"></view>
+				<button class="btn" hover-class="btn_hov" style="width: 30%; font-size: 25rpx;" :disabled="!connect_state"
+					@tap="copyAll()">复制</button>
+			</view>
 		</view>
 
 		<view class="card row" style="justify-content: space-between;">
@@ -133,6 +138,12 @@
 			...mapState(['connect_state']),
 		},
 		methods: {
+			copyAll() {
+				uni.setClipboardData({
+					data: this.recv_text,
+					fail: () => {uni.showToast({title: '复制失败',icon: 'none'})}
+				})
+			},
 			scrollToBottom() {
 				uni.createSelectorQuery()
 					.in(this)
