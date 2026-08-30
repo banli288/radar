@@ -269,7 +269,7 @@
 				param_list: [
 					{name: "左侧检测范围(米)", value: 1.0, min: 0.0, max: 1.5, step: 0.1},
 					{name: "右侧检测范围(米)", value: 1.0, min: 0.0, max: 1.5, step: 0.1},
-					{name: "延时设置(秒)", value: 0.5, min: 0.0, max: 25.5, step: 0.5},
+					{name: "延时设置(秒)", value: 0.0, min: 0.0, max: 25.5, step: 0.5},
 				],
 	
         aera_sensi: [

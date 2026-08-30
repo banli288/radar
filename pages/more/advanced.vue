@@ -80,7 +80,7 @@ import { advanced_read, advanced_write, close_ble_auto_poweroff, restart, restor
 		data() {
 			return {
 				cfg1_value: [5, 0, 0],
-				cfg2_value: [0.5, 0.1, 0.3, 0, 0.6, 0.6],
+				cfg2_value: [0.0, 0.0, 0.0, 0, 0.6, 0.6],
 				radarSensitivity_level: 4,
 				cfg2_limit: [
 					{min: 0.0, max: 2.0, step: 0.1},
