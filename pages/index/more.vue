@@ -100,7 +100,7 @@
         })
         //说明书的网址
         const fileUrl =
-          'https://gitee.com/chuan0125/leida/raw/master/MW60%20%E4%BA%A7%E5%93%81%E8%AF%B4%E6%98%8E%E4%B9%A62025-09-23A.pdf';
+          'https://p.zazg.tech/radar/60g/60g-0804.pdf';
         uni.downloadFile({
           url: fileUrl,
           success: (res) => {
