@@ -1,12 +1,12 @@
 <template>
 	<view class="col">
     <view class="row">
-      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(1)">环境参数</button>
-      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(2)">全部参数</button>
+      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(1)">{{$t("b_readEnvParam")}}</button>
+      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(2)">{{$t("b_readAllParam")}}</button>
     </view>
     <view class="row">
-      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(3)">人车区分</button>
-      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(4)">背景噪声</button>
+      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(3)">{{$t("b_readCarParam")}}</button>
+      <button class="btn" hover-class="btn_hov" :disabled="!connect_state" @tap="read(4)">{{$t("b_readBkgParam")}}</button>
     </view>
 	</view>
 </template>

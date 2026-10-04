@@ -11,6 +11,7 @@ export default {
     more: "More"
   },
 	index: {
+		text0: "",
 	  text1: "Remote Connection",
 	  text2: "Product Model",
 	  text3: "Product ID",
@@ -20,11 +21,27 @@ export default {
 	  text7: "Searching...",
 	  text8: "Refresh List",
 	  text9: "Turn off the radar Bluetooth and debug the next radar",
+		text10: "Version",
+		text11: "Info Code",
 	
 	  bleBtnName: {
 	    connect: "Connect Bluetooth",
 	    disconnect: "Disconnect Bluetooth",
-	  }
+	  },
+		
+		Notes: {
+			title: "Usage Precautions",
+			line1: "1: The radar must be powered by an independent power supply of 12V/2A or 24V/2A. Do not use the 12V output from the barrier gate control board for power supply;",
+			line2: "2: For small vehicle passage, install at a height of 55~65cm above the ground; for large vehicle passage, install at a height of 70~80cm above the ground;",
+			line3: "3: When installing the radar, the edge distance of the radar must be 15~22cm from the barrier gate arm to ensure usability. If it is a straight arm radar installed flush with or higher than the arm, or if an advertising board or warning light is installed on the arm, a fence arm (distinguishing left/right fixed) must be selected for use, and dynamic calibration must be performed;",
+			line4: "4: For single-lane mixed entry/exit scenarios, it is recommended to install one radar on each side of the gate to ensure safety;",
+			line5: "5: In scenarios where there is license plate recognition or other protruding objects in front of the radar, the radar must be installed separately using a column or bracket moved outward to ensure that radar performance is not interfered with by protruding objects;",
+			line6: "6: When the radar is used at the entrance/exit of a logistics park, if there are scenarios with small cars, medium/large vehicles, long large vehicles, or trailer trucks, one radar has a blind spot. It is recommended to install two radars, one at 60cm and one at 80cm, and set the vehicle passage delay gate lowering function to ensure vehicle passage safety;",
+			line7: "7: When the radar installation position, parameter settings, barrier arm deformation, or on-site scenario changes or is altered, the radar must be re-learned according to the radar mini-program scenario learning steps;",
+			line8: "8: The radar is not suitable for use in large corner entrance/exit scenarios (e.g., when vehicles turn in/out and form an angle greater than 30° in front of the radar, the vehicle passage risk is too high, and it is not recommended for use);",
+			line9: "9: During radar installation, if you have any questions or encounter special on-site scenarios, please contact the manufacturer promptly for confirmation.",
+			confirm: "I have confirmed and read",
+		},
 	},
   more: {
     advancedConfig: "Advanced Settings",
@@ -64,6 +81,7 @@ export default {
     confirmText: "Confirm",
     confirmText1: "Next",
     cancelText: "Cancel",
+		finished: "Finished",
     readTineout: "Read Timeout, Please Retry",
     conSuccess: "Connection Successful",
     disconBle: "Disconnect Bluetooth?",
@@ -89,6 +107,15 @@ export default {
 		fixation_text: "Fixed Type",
 		fixation_left: "Left Fixed",
 		fixation_right: "Right Fixed",
+
+		btnStudy: "Learn Scenario",
+		selLeft: "Select Left Fixed",
+		selRight: "Select Right Fixed",
+
+		t_poleLen: "Pole Length (m)",
+		t_leftDect: "Left Detection Range (m)",
+		t_rightDect: "Right Detection Range (m)",
+		t_delay: "Delay Setting (s)",
 
     poleType: {
 			type0: "Straight pole less than 0.6 meters above ground",
@@ -268,5 +295,35 @@ export default {
 			state0: "Disable start area",
 			state1: "Enable start area",
 		}
-	}
+	},
+	study: {
+		step1: "Step 1",
+		line1: "Use the remote control to keep the barrier gate arm in the lowered position; Note: First remove all obstacles from the lane. During the radar learning process, ensure there are no interfering targets such as vehicles and pedestrians! (Within 3 meters on both the left and right sides of the radar sensing area)",
+		head1: "Use the remote control to raise the barrier gate arm and keep it in the raised position!",
+		step2: "Step 2",
+		line2: "Learning the gate closing scenario, please wait.....",
+		head2: "Learning the gate opening scenario!",
+		step3: "Step 3",
+		line3: "Note: During the radar learning process, ensure that no vehicles, pedestrians, or other objects enter within 3 meters on the left/right sides of the radar sensing area to interfere with the radar learning scenario.",
+		head3: "Dynamic learning. Use the remote control to raise and lower the barrier gate arm 3 to 5 times!",
+		step4: "Step 4",
+		line4: "Note: During the radar learning process, ensure that no vehicles, pedestrians, or other objects enter within 3 meters on the left/right sides of the radar sensing area to interfere with the radar learning scenario.",
+		head4: "Use the remote control to lower the barrier gate arm and keep it in the lowered position!",
+		step5: "Step 5",
+		line5: "Note: During the radar learning process, ensure that no vehicles, pedestrians, or other objects enter within 3 meters on the left/right sides of the radar sensing area to interfere with the radar learning scenario.",
+		head5: "Learning the gate closing scenario!",
+		stepFinish: "Scenario learning completed",
+		lineFinish: "Congratulations, the radar learning is complete. Please use it!",
+	},
+	
+	copy: "Copy",
+	
+	b_readParam: "Read Parameters",
+	b_saveParam: "Save Parameters",
+	b_restore: "Restore Factory Settings",
+	
+	b_readEnvParam: "Environment Parameters",
+	b_readAllParam: "All Parameters",
+	b_readCarParam: "Pedestrian-Vehicle Distinction",
+	b_readBkgParam: "Background Noise",
 }

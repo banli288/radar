@@ -11,6 +11,7 @@ export default {
     more: "高级"
   },
   index: {
+		text0: "",
     text1: "远程连接",
     text2: "产品型号",
     text3: "产品编码",
@@ -20,6 +21,8 @@ export default {
     text7: "搜索中",
     text8: "刷新列表",
     text9: "关闭雷达蓝牙,调试下一个雷达",
+		text10: "雷达版本",
+		text11: "雷达信息码",
 
     Notes: {
       title: "使用注意事项",
@@ -79,6 +82,7 @@ export default {
     confirmText: "确定",
     confirmText1: "下一步",
     cancelText: "取消",
+		finished: "完成",
     readTineout: "读取超时",
     savingTout: "保存超时",
     conSuccess: "连接成功",
@@ -105,6 +109,15 @@ export default {
     fixation_text: "固定方向",
     fixation_left: "左固定",
     fixation_right: "右固定",
+		
+		btnStudy: "学习场景",
+		selLeft: "选择左固定",
+		selRight: "选择右固定",
+		
+		t_poleLen: "杆长(米)",
+		t_leftDect: "左侧检测范围(米)",
+		t_rightDect: "右侧检测范围(米)",
+		t_delay: "延时设置(秒)",
 
     poleType: {
       type0: "直杆",
@@ -287,4 +300,34 @@ export default {
       state1: "开启启动区域",
     }
   },
+	study: {
+		step1: "第一步",
+		line1: "按遥控器把道闸杆保持在落杆状态；注意：先将车道所有杂物移除，在雷达学习过程中，确保无车辆及行人等干扰目标！（雷达感应区左右两侧3米内）",
+		head1: "按遥控器把道闸杆抬杆，并保持抬杆状态！",
+		step2: "第二步",
+		line2: "正在学习关闸场景，请稍后.....",
+		head2: "正在学习开闸场景!",
+		step3: "第三步",
+		line3: "注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。",
+		head3: "动态学习，按遥控器起落道闸杆3到5次!",
+		step4: "第四步",
+		line4: "注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。",
+		head4: "按遥控器把道闸杆落下，并保持落杆状态!",
+		step5: "第五步",
+		line5: "注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。",
+		head5: "正在学习关闸场景!",
+		stepFinish: "场景学习完成",
+		lineFinish: "恭喜您，雷达学习完毕，请使用！",
+	},
+	
+	copy: "复制",
+	
+	b_readParam: "读取参数",
+	b_saveParam: "保存参数",
+	b_restore: "恢复出厂设置",
+	
+	b_readEnvParam: "环境参数",
+	b_readAllParam: "全部参数",
+	b_readCarParam: "人车区分",
+	b_readBkgParam: "背景噪声",
 }

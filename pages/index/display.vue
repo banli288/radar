@@ -12,7 +12,7 @@
 			<view class="row" style="margin-top: 10rpx;">
 				<view style="width: 70%;"></view>
 				<button class="btn" hover-class="btn_hov" style="width: 30%; font-size: 25rpx;" :disabled="!connect_state"
-					@tap="copyAll()">复制</button>
+					@tap="copyAll()">{{$t("copy")}}</button>
 			</view>
 		</view>
 

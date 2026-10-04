@@ -51,15 +51,15 @@
 		<view class="card col">
 			<view class="row" style="margin-bottom: 20rpx;">
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_read()">读取参数</button>
+					@tap="radar_read()">{{$t("b_readParam")}}</button>
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
 					@tap="radar_restart()">{{$t("aconfig.btnRestart")}}</button>
 			</view>
 			<view class="row">
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_save()">保存参数</button>
+					@tap="radar_save()">{{$t("b_saveParam")}}</button>
 				<button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_reset()">恢复出厂设置</button>
+					@tap="radar_reset()">{{$t("b_restore")}}</button>
 			</view>
 			<!-- <view class="card">
 				<button class="btn" hover-class="btn_hover" style="width: 100%;" :disabled="!connect_state"

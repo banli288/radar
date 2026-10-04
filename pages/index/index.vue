@@ -1,39 +1,25 @@
 <template>
 	<view class="page">
-		<view class="card" style="display: flex; justify-content: center;">
+		<view class="card img_box" style="margin-top: 20rpx;">
+			<!-- <image class="img_class" src="@/static/0.jpg"></image> -->
 			<image mode="aspectFit" src="@/static/index1.png"/>
+			<button class="zh_btn" :class="{ active: isZhActive }" @click="swLang('zh')">中文</button>
+			<button class="en_btn" :class="{ active: isEnActive }" @click="swLang('en')">English</button>
 		</view>
 		
 		<view class="card row info">
-			<view class="_row2_left">产品型号</view>
+			<view class="_row2_left">{{$t("index.text1")}}</view>
 			<view class="_row2_right">{{isConnected ? "ZRD-803" : " "}}</view>
 		</view>
 		<view class="card row info">
-			<view class="_row2_left">雷达类型</view>
-			<view class="_row2_right">{{isConnected ? "防砸雷达" : " "}}</view>
-		</view>
-		<view class="card row info">
-			<view class="_row2_left">产品编码</view>
-			<view class="_row2_right">{{isConnected ? prodSN : " "}}</view>
-		</view>
-		
-<!-- 		<view class="card row info">
 			<view class="_row2_left">{{$t("index.text2")}}</view>
-			<view class="_row2_right">MWS</view>
+			<view class="_row2_right">{{radarType}}</view>
 		</view>
 		<view class="card row info">
 			<view class="_row2_left">{{$t("index.text3")}}</view>
-			<view class="_row2_right">{{product.SN}}</view>
+			<view class="_row2_right">{{isConnected ? prodSN : " "}}</view>
 		</view>
-		<view class="card row info">
-			<view class="_row2_left">{{$t("index.text4")}}</view>
-			<view class="_row2_right">V{{product.hd_ver}}</view>
-		</view>
-		<view class="card row info">
-			<view class="_row2_left">{{$t("index.text5")}}</view>
-			<view class="_row2_right">V{{product.sw_ver}}</view>
-		</view> -->
-		
+				
 		<view class="_center" style="margin-top: 30rpx;">
 			<button class="btn" hover-class="btn_hover" @click="btn_press()">{{bleConName}}</button>
 		</view>
@@ -64,11 +50,9 @@
 				<view class="list_item">
 					<view class="card row" style="height: 75rpx; display: flex; justify-content: space-between;" v-for="(item, index) in ble_name_list" :key="index" @tap="ble_connect(index)">
 						<view>{{item}}</view>
-						<view>信号: {{ble_rssi_list[index]}}</view>
-						<!-- <view>{{ble_con_state_list[index]}}</view> -->
+						<view>{{ble_rssi_list[index]}}</view>
 					</view>
 				</view>
-				<!-- <view class="card" style="margin-bottom: 2px;">{{$t("index.text6")}}</view> -->
 				<view class="card">
 					<button style="width: 100%;" @tap="ble_list_refresh">{{$t("index.text8")}}</button>
 				</view>
@@ -156,6 +140,11 @@
 					return "disconnect"
 				else
 					return "connect"
+			},
+			radarType() {
+				if (this.isConnected) {
+					return this.$t("index.text0");
+				} else return " ";
 			},
 			notes() {
 				return [

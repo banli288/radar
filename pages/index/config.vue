@@ -5,13 +5,13 @@
 		</view>
 
 		<view class="col">
-			<view class="card row" style="height: 40px;">
+			<view class="card row" style="height: auto">
 				<view class="_text" style="width: 40%; justify-content: space-between;">{{$t("config.text1")}}</view>
 				<uni-data-select style="width: 60%;" v-model="pole_value" :localdata="pole_type" :clear="false"
 					@change="change_pole"></uni-data-select>
 			</view>
 			
-			<view class="card row" style="height: 40px;">
+			<view class="card row" style="height: auto;">
 				<view class="col" style="width: 40%; justify-content: space-between;">
 					<view class="_text">{{$t("config.text3_dis")}}</view>
 				</view>
@@ -22,7 +22,7 @@
 					<view class="view_btn" @tap="pole_add()">+</view>
 				</view>
 			</view>
-			<view class="card row" style="height: 40px;">
+			<view class="card row" style="height: auto;">
 				<view class="col" style="width: 40%; justify-content: space-between;">
 					<view class="_text">{{$t("config.fixation_text")}}</view>
 					<!-- <view class="_text" style="font-size: 22rpx;">{{$t("config.text2_dis")}}</view> -->
@@ -32,15 +32,6 @@
 					<view class="option-item" :class="{ active: selectedValue === 1 }" @click="change_fixation(1)">{{$t("config.fixation_left")}}</view>
 					<view class="option-item" :class="{ active: selectedValue === 0 }" @click="change_fixation(0)">{{$t("config.fixation_right")}}</view>
 				</view>
-				
-				<!-- <radio-group class="radio-row" @change="radioChange">
-					<label class="radio-item" style="margin-right: 20px;" v-for="item in fixation_items" :key="item.value">
-						<radio :value="item.value" :checked="item.value === fixation_value" color="#007AFF" />
-						<text class="radio-text">{{ item.name }}</text>
-					</label>
-				</radio-group> -->
-				<!-- <uni-data-select style="width: 60%;" v-model="fixation_value" :localdata="fixation" :clear="false"
-					@change="change_fixation"></uni-data-select> -->
 			</view>
 			
 			<view v-for="(item, index) in param_list" class="card row" style="justify-content: space-between; height: 40px;">
@@ -53,47 +44,21 @@
 			</view>
 			
 			<view class="card row" style="height: 40px;">
-				<view style="width: 40%; font-size: 14px;">雷达版本</view>
+				<view style="width: 40%; font-size: 14px;">{{$t("index.text10")}}</view>
 				<view style="width: 60%; font-size: 14px; text-align: center;">{{radarSwVer}}</view>
 			</view>
 			
 			<view class="card row">
-				<view :style="dynamicFontStyle" class="_text" style="width: 40%; justify-content: space-between; ">雷达信息码</view>
+				<view :style="dynamicFontStyle" class="_text" style="width: 40%; justify-content: space-between; ">{{$t("index.text11")}}</view>
 				<view style="width: 60%; font-size: 20rpx;">{{radarInfo}}</view>
 			</view>
-			
-			<!-- <view class="card row" style="height: 40px;">
-				<view class="col" style="width: 40%; justify-content: space-between;">
-					<view :style="dynamicFontStyle" class="_text">{{$t("config.text2")}}</view>
-				</view>
-				<uni-data-select style="width: 60%;" v-model="pole_value" :localdata="pole_type" :clear="false"
-					@change="change_pole"></uni-data-select>
-			</view> -->
-			
 		</view>
-
-<!--    <scroll-view scroll-y="true" style="height: 100px; margin-left: 35rpx;">
-      <view v-for="(item, index) in aera_sensi" style="display: flex;">
-          <view style="font-size: 16px; width: 40%;">区域{{index}}</view>
-          <uni-number-box style="" v-model="item.value" :min="item.min" :max="item.max" :step="item.step"></uni-number-box>
-      </view>
-    </scroll-view> -->
-
-<!--    <scroll-view scroll-y="true" style="padding: 35rpx;">
-      <view style="display: flex;">
-        <view style="font-size: 16px; width: 40%;">特殊杆子类型</view>
-        <uni-number-box style="" v-model="pole_type_1.value" :min="pole_type_1.min" :max="pole_type_1.max" :step="pole_type_1.step"></uni-number-box>
-      </view>
-    </scroll-view> -->
-
 		<view class="card col">
 			<view class="row" style="margin-bottom: 10rpx;">
 				<button class="btn" hover-class="btn_hover" :disabled="!btn_en"
 					@tap="radar_read()">{{$t("config.btnRead")}}</button>
-				<!-- <button class="btn" hover-class="btn_hover" :disabled="!connect_state"
-					@tap="radar_up_study()">学习场景</button> -->
 					<button class="btn" hover-class="btn_hover" :disabled="!btn_en"
-						@tap="setStep(1)">学习场景</button>
+						@tap="setStep(1)">{{$t("config.btnStudy")}}</button>
 			</view>
 			<view class="row">
 				<button class="btn" hover-class="btn_hover" :disabled="!btn_en"
@@ -102,32 +67,27 @@
 						@tap="radar_reset">{{$t("aconfig.btnRestore")}}</button>
 			</view>
 		</view>
-		
-		<!-- <view class="card">
-			<button class="btn" hover-class="btn_hover" style="width: 100%;" :disabled="!connect_state" @tap="radar_reset">{{$t("aconfig.btnRestore")}}</button>
-		</view> -->
-		
 		<view class="win" v-if="imageLeft">
 			<view class="content">
-				<view class="title">选择左固定</view>
+				<view class="title">{{$t("config.selLeft")}}</view>
 				<image mode="aspectFit" style="width: 100%;" src="@/static/left2.jpg"/>
-				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageLeft = false">确定</button>
+				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageLeft = false">{{$t("modal.confirmText")}}</button>
 			</view>
 		</view>
 		
 		<view class="win" v-if="imageRight">
 			<view class="content">
-				<view class="title">选择右固定</view>
+				<view class="title">{{$t("config.selRight")}}</view>
 				<image mode="aspectFit" style="width: 100%;" src="@/static/right2.jpg"/>
-				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageRight = false">确定</button>
+				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageRight = false">{{$t("modal.confirmText")}}</button>
 			</view>
 		</view>
 		
 		<view class="win" v-if="studyStep.step1.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step1.title}}</view>
-				<view class="head">按遥控器把道闸杆抬杆，并保持抬杆状态！</view>
-        <view class="winSize">注意：将车道内所有杂物移除，雷达学习过程中,确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+				<view class="head">{{studyStep.step1.head}}</view>
+        <view class="winSize">{{studyStep.step1.content}}</view>
 				<view class="row" style="width: 100%;">
 					<button class="discenter" style="height:80rpx; width: 50%;" @tap="setStep(2)">{{studyStep.nextStep}}</button>
 					<button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(1)">{{studyStep.cancel}}</button>
@@ -138,8 +98,8 @@
 		<view class="win" v-if="studyStep.step2.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step2.title}}</view>
-        <view class="head">正在学习开闸场景!</view>
-				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="head">{{studyStep.step2.head}}</view>
+				<view class="winSize">{{studyStep.step2.content}}</view>
         <view class="row" style="width: 100%;">
           <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step2.btnEnable" @tap="setStep(3)">{{studyStep.nextStep}}</button>
           <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(2)">{{studyStep.cancel}}</button>
@@ -150,8 +110,8 @@
 		<view class="win" v-if="studyStep.step3.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step3.title}}</view>
-        <view class="head">动态学习，按遥控器起落道闸杆3到5次!</view>
-				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="head">{{studyStep.step3.head}}</view>
+				<view class="winSize">{{studyStep.step3.content}}</view>
         <view class="row" style="width: 100%;">
 				  <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step3.btnEnable" @tap="setStep(4)">{{studyStep.nextStep}}</button>
           <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(3)">{{studyStep.cancel}}</button>
@@ -162,8 +122,8 @@
 		<view class="win" v-if="studyStep.step4.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step4.title}}</view>
-        <view class="head">按遥控器把道闸杆落下，并保持落杆状态!</view>
-				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="head">{{studyStep.step4.head}}</view>
+				<view class="winSize">{{studyStep.step4.content}}</view>
         <view class="row" style="width: 100%;">
 				  <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step4.btnEnable" @tap="setStep(5)">{{studyStep.nextStep}}</button>
           <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(4)">{{studyStep.cancel}}</button>
@@ -174,8 +134,8 @@
 		<view class="win" v-if="studyStep.step5.enable">
 			<view class="content">
 				<view class="title">{{studyStep.step5.title}}</view>
-        <view class="head">正在学习关闸场景!</view>
-				<view class="winSize">注意:雷达学习过程中，确保无车辆、行人或其它物体进入雷达感应区左/右两侧3米范围内干扰雷达学习场景。</view>
+        <view class="head">{{studyStep.step5.head}}</view>
+				<view class="winSize">{{studyStep.step5.content}}</view>
         <view class="row" style="width: 100%;">
 				  <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step5.btnEnable" @tap="setStep(6)">{{studyStep.nextStep}}</button>
           <button class="discenter" style="height:80rpx; width: 50%;" :disabled="studyStep.step1.btnEnable" @tap="studyStep1Cancel(5)">{{studyStep.cancel}}</button>
@@ -212,45 +172,50 @@
 				imageRight: false,
 				
 				studyStep: {
-					nextStep: "下一步",
-					cancel: "取消",
-					finished: "完成",
+					nextStep: this.$t("config.confirmText1"),
+					cancel: this.$t("config.cancelText"),
+					finished: this.$t("config.finished"),
 					
 					step1: {
 						enable: false,
 						btnEnable: false,
-						title: "第一步",
-						content: "按遥控器把道闸杆保持在落杆状态；注意：先将车道所有杂物移除，在雷达学习过程中，确保无车辆及行人等干扰目标！（雷达感应区左右两侧3米内）",
+						title: this.$t("study.step1"),
+						head: this.$t("study.head1"),
+						content: this.$t("study.line1"),
 					},
 					step2: {
 						enable: false,
 						btnEnable: true,
-						title: "第二步",
-						content: "正在学习关闸场景，请稍后.....",
+						title: this.$t("study.step2"),
+						head: this.$t("study.head2"),
+						content: this.$t("study.line2"),
 					},
 					step3: {
 						enable: false,
 						btnEnable: true,
-						title: "第三步",
-						content: "动态学习\n按遥控器把道闸杆起落各五次，操作完成后点击下一步！注意：确保无车辆及行人等干扰目标！（雷达感应区左右两侧三米内）",
+						title: this.$t("study.step3"),
+						head: this.$t("study.head3"),
+						content: this.$t("study.line3"),
 					},
 					step4: {
 						enable: false,
 						btnEnable: true,
-						title: "第四步",
-						content: "按遥控器把道闸杆保持在抬杆状态！操作完成后点击下一步",
+						title: this.$t("study.step4"),
+						head: this.$t("study.head4"),
+						content: this.$t("study.line4"),
 					},
 					step5: {
 						enable: false,
 						btnEnable: true,
-						title: "第五步",
-						content: "静态学习场景，请稍后....\n注意：雷达在学习过程中，确保无车辆及行人等干扰目标！（雷达感应区左右两侧三米内）",
+						title: this.$t("study.step5"),
+						head: this.$t("study.head5"),
+						content: this.$t("study.line5"),
 					},
 					stepFinish: {
 						enable: false,
 						btnEnable: false,
-						title: "场景学习完成",
-						content: "恭喜您，雷达学习完毕，请使用！",
+						title: this.$t("study.stepFinish"),
+						content: this.$t("study.lineFinish"),
 					},
 				},
 				
@@ -264,12 +229,12 @@
 				study_entry: 0,
 				fixation_value: 0,
 				
-				polyType: {name: "杆长(米)", value: 0, min: 0, max: 6, step: 0.1},
+				polyType: {name: this.$t("config.t_poleLen"), value: 0, min: 0, max: 6, step: 0.1},
 				
 				param_list: [
-					{name: "左侧检测范围(米)", value: 1.0, min: 0.0, max: 1.5, step: 0.1},
-					{name: "右侧检测范围(米)", value: 1.0, min: 0.0, max: 1.5, step: 0.1},
-					{name: "延时设置(秒)", value: 0.0, min: 0.0, max: 25.5, step: 0.5},
+					{name: this.$t("config.t_leftDect"), value: 1.0, min: 0.0, max: 1.5, step: 0.1},
+					{name: this.$t("config.t_rightDect"), value: 1.0, min: 0.0, max: 1.5, step: 0.1},
+					{name: this.$t("config.t_delay"), value: 0.0, min: 0.0, max: 25.5, step: 0.5},
 				],
 	
         aera_sensi: [
