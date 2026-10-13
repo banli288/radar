@@ -281,24 +281,34 @@
 					];
 				} else {
 					return [
-						"https://gitee.com/chuan0125/leida/raw/master/images/r1-en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/l1-en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/r3-en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/l3-en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/r2-en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/l2-en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/r3-en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/l3-en.jpg"
+						// "https://gitee.com/chuan0125/leida/raw/master/images/r1-en.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/l1-en.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/r3-en.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/l3-en.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/r2-en.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/l2-en.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/r3-en.jpg",
+						// "https://gitee.com/chuan0125/leida/raw/master/images/l3-en.jpg"
+						"/static/r1-en.jpg",
+						"/static/l1-en.jpg",
+						"/static/r3-en.jpg",
+						"/static/l3-en.jpg",
+						"/static/r2-en.jpg",
+						"/static/l2-en.jpg",
+						"/static/r3-en.jpg",
+						"/static/l3-en.jpg",
 					];
 				}
 			},
 			left_img() {
 				if (this.$i18n.locale === 'zh') return "/static/left2.jpg"
-				else return "https://gitee.com/chuan0125/leida/raw/master/images/left2-en.jpg"
+				// else return "https://gitee.com/chuan0125/leida/raw/master/images/left2-en.jpg"
+				else return "/static/left2-en.jpg"
 			},
 			right_img() {
 				if (this.$i18n.locale === 'zh') return "/static/right2.jpg"
-				else return "https://gitee.com/chuan0125/leida/raw/master/images/right2-en.jpg"
+				// else return "https://gitee.com/chuan0125/leida/raw/master/images/right2-en.jpg"
+				else return "/static/right2-en.jpg"
 			},
 			pole_type() {
 				const ver = store.state.product_info.sw_ver.split('.').map(Number)
