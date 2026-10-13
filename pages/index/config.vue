@@ -35,7 +35,7 @@
 			</view>
 			
 			<view v-for="(item, index) in param_list" class="card row" style="justify-content: space-between; height: 40px;">
-			  <view style="width: 40%; font-size: 14px;">{{item.name}}</view>
+			  <view style="width: 40%; font-size: 14px;">{{param_name_list[index]}}</view>
 			  <view class="row" style="width: 60%;">
 					<view class="view_btn" @tap="para_sub(index)">-</view>
 					<view style="text-align: center; flex: 1;">{{item.value.toFixed(1)}}</view>
@@ -70,7 +70,7 @@
 		<view class="win" v-if="imageLeft">
 			<view class="content">
 				<view class="title">{{$t("config.selLeft")}}</view>
-				<image mode="aspectFit" style="width: 100%;" src="@/static/left2.jpg"/>
+				<image mode="aspectFit" style="width: 100%;" :src="left_img"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageLeft = false">{{$t("modal.confirmText")}}</button>
 			</view>
 		</view>
@@ -78,7 +78,7 @@
 		<view class="win" v-if="imageRight">
 			<view class="content">
 				<view class="title">{{$t("config.selRight")}}</view>
-				<image mode="aspectFit" style="width: 100%;" src="@/static/right2.jpg"/>
+				<image mode="aspectFit" style="width: 100%;" :src="right_img"/>
 				<button class="discenter" style="height:80rpx; width: 100%;" @tap="imageRight = false">{{$t("modal.confirmText")}}</button>
 			</view>
 		</view>
@@ -260,6 +260,13 @@
 			btn_en() {
 				return this.win_status && this.connect_state
 			},
+			param_name_list() {
+				return [
+					this.$t("config.t_leftDect"),
+					this.$t("config.t_rightDect"),
+					this.$t("config.t_delay"),
+				]
+			},
 			imgs() {
 				if (this.$i18n.locale === 'zh') {
 					return [
@@ -274,16 +281,24 @@
 					];
 				} else {
 					return [
-						"https://gitee.com/chuan0125/leida/raw/master/images/2_en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/1_en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/6_en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/5_en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/4_en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/3_en.jpg",
-            "https://gitee.com/chuan0125/leida/raw/master/images/4_en.jpg",
-						"https://gitee.com/chuan0125/leida/raw/master/images/3_en.jpg"
+						"https://gitee.com/chuan0125/leida/raw/master/images/r1-en.jpg",
+						"https://gitee.com/chuan0125/leida/raw/master/images/l1-en.jpg",
+						"https://gitee.com/chuan0125/leida/raw/master/images/r3-en.jpg",
+						"https://gitee.com/chuan0125/leida/raw/master/images/l3-en.jpg",
+						"https://gitee.com/chuan0125/leida/raw/master/images/r2-en.jpg",
+						"https://gitee.com/chuan0125/leida/raw/master/images/l2-en.jpg",
+						"https://gitee.com/chuan0125/leida/raw/master/images/r3-en.jpg",
+						"https://gitee.com/chuan0125/leida/raw/master/images/l3-en.jpg"
 					];
 				}
+			},
+			left_img() {
+				if (this.$i18n.locale === 'zh') return "/static/left2.jpg"
+				else return "https://gitee.com/chuan0125/leida/raw/master/images/left2-en.jpg"
+			},
+			right_img() {
+				if (this.$i18n.locale === 'zh') return "/static/right2.jpg"
+				else return "https://gitee.com/chuan0125/leida/raw/master/images/right2-en.jpg"
 			},
 			pole_type() {
 				const ver = store.state.product_info.sw_ver.split('.').map(Number)
@@ -365,7 +380,7 @@
       studyStep1Cancel(index) {
         let that = this
         uni.showModal({
-          content:'确定要关闭雷达学习场景吗？一旦关闭雷达将终止学习功能',
+          content: that.$t("config.info1"),
           success:(res)=>{
             if (res.confirm) {
               if (index == 1) that.studyStep.step1.enable = false
@@ -387,7 +402,7 @@
 				this.studyStep.step5.enable = false; 
 				this.studyStep.stepFinish.enable = false; 
 				
-				uni.showModal({content: "学习失败，雷达无响应"})
+				uni.showModal({content: this.$t("config.info2")})
 				
 				that.win_status = true;
 				uni.showTabBar()
@@ -402,7 +417,7 @@
 						this.studyStep.step4.enable = false; 
 						this.studyStep.step5.enable = false; 
 						this.studyStep.stepFinish.enable = false; 
-            uni.showModal({title: "雷达学习场景完成", showCancel: false, async success(res) {
+            uni.showModal({title: that.$t("config.info3"), showCancel: false, async success(res) {
               if (res.confirm) {
 								that.win_status = true;
 								uni.showTabBar()
@@ -795,27 +810,27 @@
 				return {status: "success"}
 			},
 			async radar_read() {
-				let timer = setTimeout(() => {uni.showToast({title: "读取超时"})}, 10000)
-				uni.showLoading({title: "读取中", mask: true})
+				let timer = setTimeout(() => {uni.showToast({title: this.$t("modal.readTineout")})}, 10000)
+				uni.showLoading({title: this.$t("modal.reading"), mask: true})
 				
 				const res = await this.get_radar_param()
 				clearTimeout(timer)
 				if (res != null) {
-					uni.showToast({title: "读取成功"})
+					uni.showToast({title: this.$t("modal.readSuccess")})
 				} else {
-					uni.showToast({title: "读取失败"})
+					uni.showToast({title: this.$t("modal.readfail")})
 				}
 			},
 			async radar_save() {
-				let timer = setTimeout(() => {uni.showToast({title: "保存超时"})}, 10000)
-				uni.showLoading({title: "保存中", mask: true})
+				let timer = setTimeout(() => {uni.showToast({title: this.$t("modal.savingTout")})}, 10000)
+				uni.showLoading({title: this.$t("modal.saving"), mask: true})
 				
 				const res = await this.set_radar_param()
 				clearTimeout(timer)
 				if (res != null) {
-					uni.showToast({title: "保存成功"})
+					uni.showToast({title: this.$t("modal.saved")})
 				} else {
-					uni.showToast({title: "保存失败"})
+					uni.showToast({title: this.$t("modal.savingTout")})
 				}
 			},
 			async radar_reset() {

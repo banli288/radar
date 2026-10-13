@@ -11,7 +11,7 @@ export default {
     more: "高级"
   },
   index: {
-		text0: "",
+		text0: "ZRD-803",
     text1: "远程连接",
     text2: "产品型号",
     text3: "产品编码",
@@ -23,6 +23,7 @@ export default {
     text9: "关闭雷达蓝牙,调试下一个雷达",
 		text10: "雷达版本",
 		text11: "雷达信息码",
+		text12: "连接成功",
 
     Notes: {
       title: "使用注意事项",
@@ -109,6 +110,9 @@ export default {
     fixation_text: "固定方向",
     fixation_left: "左固定",
     fixation_right: "右固定",
+		confirmText1: '下一步',
+		cancelText: '取消',
+		finished: '完成',
 		
 		btnStudy: "学习场景",
 		selLeft: "选择左固定",
@@ -118,6 +122,10 @@ export default {
 		t_leftDect: "左侧检测范围(米)",
 		t_rightDect: "右侧检测范围(米)",
 		t_delay: "延时设置(秒)",
+
+		info1: "确定要关闭雷达学习场景吗？一旦关闭雷达将终止学习功能",
+		info2: "学习失败，雷达无响应",
+		info3: "雷达学习场景完成",
 
     poleType: {
       type0: "直杆",

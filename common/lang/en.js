@@ -11,7 +11,7 @@ export default {
     more: "More"
   },
 	index: {
-		text0: "",
+		text0: "ZRD-803",
 	  text1: "Remote Connection",
 	  text2: "Product Model",
 	  text3: "Product ID",
@@ -23,6 +23,7 @@ export default {
 	  text9: "Turn off the radar Bluetooth and debug the next radar",
 		text10: "Version",
 		text11: "Info Code",
+		text12: "Connect Sucess",
 	
 	  bleBtnName: {
 	    connect: "Connect Bluetooth",
@@ -107,6 +108,9 @@ export default {
 		fixation_text: "Fixed Type",
 		fixation_left: "Left Fixed",
 		fixation_right: "Right Fixed",
+		confirmText1: 'Next',
+		cancelText: 'Cancel',
+		finished: 'Finish',
 
 		btnStudy: "Learn Scenario",
 		selLeft: "Select Left Fixed",
@@ -117,11 +121,15 @@ export default {
 		t_rightDect: "Right Detection Range (m)",
 		t_delay: "Delay Setting (s)",
 
+		info1: "Are you sure you want to close the radar learning scene? Once closed, the radar will terminate the learning function",
+		info2: "Learning failed, radar not responding",
+		info3: "Radar learning scene completed",
+
     poleType: {
-			type0: "Straight pole less than 0.6 meters above ground",
-			type1: "Fence pole or pole more than 0.6 meters above ground",
-			type2: "Advertising pole",
-			type3: "Parachute pole",
+			type0: "Straight Bar",
+			type1: "Fence Bar",
+			type2: "Advertising Bar",
+			type3: "Parachute Bar",
       // type0: "Right-fixed straight pole",
       // type1: "Left-fixed straight pole",
       // type2: "Right-fixed railing pole",

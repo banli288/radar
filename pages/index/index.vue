@@ -19,7 +19,7 @@
 			<view class="_row2_left">{{$t("index.text3")}}</view>
 			<view class="_row2_right">{{isConnected ? prodSN : " "}}</view>
 		</view>
-				
+
 		<view class="_center" style="margin-top: 30rpx;">
 			<button class="btn" hover-class="btn_hover" @click="btn_press()">{{bleConName}}</button>
 		</view>
@@ -31,7 +31,7 @@
 		<view class="_center">
 			<view class="multiline-text">{{$t("index.text6")}}</view>
 		</view>
-		
+
 		<!-- 使用说明弹窗 -->
 		<view class="notes" v-if="showNotes">
 			<view class="notes_content" @click.stop="">
@@ -42,7 +42,7 @@
 				<button style="width: 100%; color: blue;" @tap="closeNotes">{{$t("index.Notes.confirm")}}</button>
 			</view>
 		</view>
-		
+
 		<!-- 扫描蓝牙弹窗 -->
 		<view class="dialog" v-if="showDialog" @click="closeDialog">
 			<view class="dialog_content" @click.stop="">
@@ -384,7 +384,7 @@
 																							const res = await that.read_product()
 																							if (res != null) {
 																								uni.showToast({
-																									title: "连接成功"
+																									title: that.$t("index.text12")
 																								})
 																							} else {
 																								uni.showModal({
