@@ -17,23 +17,23 @@ class BLEStateMachine {
     this.frame = []
     this.expectedLen = 0
     this.checkSum = 0
-    
+
     this.HEADER1 = 0x56
     this.HEADER2 = 0xab
-		this.ENDER1 = 0x5a
-		this.ENDER2 = 0xa5
+    this.ENDER1 = 0x5a
+    this.ENDER2 = 0xa5
   }
-  
+
   // 每收到一个字节就调用
   pushByte(byte) {
-    switch(this.state) {
+    switch (this.state) {
       case 'IDLE':
         if (byte === this.HEADER1) {
           this.state = 'HEADER'
           this.frame = [byte]
         }
         break
-        
+
       case 'HEADER':
         this.frame.push(byte)
         if (byte === this.HEADER2) {
@@ -42,50 +42,50 @@ class BLEStateMachine {
           this.state = 'IDLE'
         }
         break
-        
+
       case 'DATA':
         this.frame.push(byte)
-				if (byte === this.ENDER1)
-					this.state = 'END'
+        if (byte === this.ENDER1)
+          this.state = 'END'
         break
-        
-			case 'END':
-				this.frame.push(byte)
-				if (byte === this.ENDER2) { //check
-					if (1) {
-						if (this.verifyCheckSum()) {
-						  const frameData = this.parseFrame()
-						  this.onComplete(frameData)  // 触发回调
-						}
-						this.reset()
-					}
-				} else {
-					this.state = 'IDLE'
-				}
-				break;
+
+      case 'END':
+        this.frame.push(byte)
+        if (byte === this.ENDER2) { //check
+          if (1) {
+            if (this.verifyCheckSum()) {
+              const frameData = this.parseFrame()
+              this.onComplete(frameData)  // 触发回调
+            }
+            this.reset()
+          }
+        } else {
+          this.state = 'IDLE'
+        }
+        break;
     }
   }
-  
+
   verifyCheckSum() {
-    
+
   }
-  
+
   parseFrame() {
     // 提取数据部分
     return this.frame.slice(3, -1)  // 跳过帧头和校验
   }
-  
+
   onComplete(data) {
     // 通过事件总线发送解析好的数据
     uni.$emit('ble-frame-complete', data)
   }
-  
+
   reset() {
     this.state = 'IDLE'
     this.frame = []
     this.expectedLen = 0
   }
-  
+
   // 外部可调用的复位（超时保护）
   forceReset() {
     if (this.state !== 'IDLE') {
@@ -97,13 +97,16 @@ class BLEStateMachine {
 
 class BluetoothManager {
   constructor() {
-		this.byteQueue = []
-		this.isProcessing = false
-		
-		
+    this.byteQueue = []
+    this.isProcessing = false
+
+
     this.listeners = {} // { cmd: [callback1, callback2] }
-    this.pendingRequests = {} // 请求-响应映射 {reqId: resolve}
+    this.pendingRequests = {} // 请求-响应映射 {reqId: request}
+    this.requestQueue = []
+    this.currentRequest = null
     this.recvBuffer = new Uint8Array(0);
+
     this.recvTimer = null;
 
     this.RECV_TIMEOUT_MS = 100;
@@ -113,65 +116,62 @@ class BluetoothManager {
 
       // 追加数据
       this.recvBuffer = this.appendBuffer(this.recvBuffer, chunk);
-			
-			// jlog('BLE CHUNK', this.recvBuffer)
+
+      // jlog('BLE CHUNK', this.recvBuffer)
 
       // 重置超时定时器
       if (this.recvTimer) {
         clearTimeout(this.recvTimer);
       }
 
-			if (store.state.active_page === "display") {
-				// 如果是FF直接原数据返回，否则解析再返回
-				if (this.pendingRequests[0xFF]) {
-					this.pendingRequests[0xFF]({ reqId: 0xFF, payload: this.recvBuffer })
-					delete this.pendingRequests[0xFF]
-				} else {
-					let data = this.parsePacket(this.recvBuffer) // 正常解码
-					//jlog('decode', data)
-					if (data != null) {
-					// 如果是响应，先匹配请求
-					if (data.reqId && this.pendingRequests[data.reqId]) {
-						this.pendingRequests[data.reqId](data) // 触发 Promise resolve
-						delete this.pendingRequests[data.reqId]
-						this.notify(data.cmd, data) // 再分发到监听者
-					} else {
-						this._rawHandler?.(this.recvBuffer)
-					}
-					} else { this._rawHandler?.(this.recvBuffer) }
-				}
-				
-				this.recvBuffer = new Uint8Array(0); // 清空状态
-			} else {
-				// 超时，认为一包结束
-				this.recvTimer = setTimeout(() => {
-					// 如果是FF直接原数据返回，否则解析再返回
-					jlog('BLE', this.recvBuffer.length, bytesToHexString(this.recvBuffer))
-					
-					if (this.pendingRequests[0xFF]) {
-						this.pendingRequests[0xFF]({ reqId: 0xFF, payload: this.recvBuffer })
-						delete this.pendingRequests[0xFF]
-					} else {
-						let data = this.parsePacket(this.recvBuffer) // 正常解码
-						// jlog('DECODE', data)
-						if (data != null) {
-						// 如果是响应，先匹配请求
-						if (data.reqId && this.pendingRequests[data.reqId]) {
-							this.pendingRequests[data.reqId](data) // 触发 Promise resolve
-							delete this.pendingRequests[data.reqId]
-							//jlog('DEL ID', data)
-							this.notify(data.cmd, data) // 再分发到监听者
-						} else {
-							this._rawHandler?.(this.recvBuffer)
-						}
-						} else { this._rawHandler?.(this.recvBuffer) }
-					}
-					
-					this.recvBuffer = new Uint8Array(0); // 清空状态
-					
-					this.recvTimer = null;
-				}, this.RECV_TIMEOUT_MS);
-			}
+      if (store.state.active_page === "display") {
+        // 如果是FF直接原数据返回，否则解析再返回
+        if (this.pendingRequests[0xFF]) {
+          this.finishRequest(this.pendingRequests[0xFF], { reqId: 0xFF, payload: this.recvBuffer })
+        } else {
+          let data = this.parsePacket(this.recvBuffer) // 正常解码
+          //jlog('decode', data)
+          if (data != null) {
+            // 如果是响应，先匹配请求
+            if (data.reqId && this.pendingRequests[data.reqId]) {
+              this.finishRequest(this.pendingRequests[data.reqId], data) // 触发 Promise resolve
+              this.notify(data.cmd, data) // 再分发到监听者
+            } else {
+
+              this._rawHandler?.(this.recvBuffer)
+            }
+          } else { this._rawHandler?.(this.recvBuffer) }
+        }
+
+        this.recvBuffer = new Uint8Array(0); // 清空状态
+      } else {
+        // 超时，认为一包结束
+        this.recvTimer = setTimeout(() => {
+          // 如果是FF直接原数据返回，否则解析再返回
+          jlog('BLE', this.recvBuffer.length, bytesToHexString(this.recvBuffer))
+          if (this.pendingRequests[0xFF]) {
+            this.finishRequest(this.pendingRequests[0xFF], { reqId: 0xFF, payload: this.recvBuffer })
+          } else {
+            let data = this.parsePacket(this.recvBuffer) // 正常解码
+            // jlog('DECODE', data)
+            if (data != null) {
+              // 如果是响应，先匹配请求
+              if (data.reqId && this.pendingRequests[data.reqId]) {
+                this.finishRequest(this.pendingRequests[data.reqId], data) // 触发 Promise resolve
+                //jlog('DEL ID', data)
+                this.notify(data.cmd, data) // 再分发到监听者
+
+              } else {
+                this._rawHandler?.(this.recvBuffer)
+              }
+            } else { this._rawHandler?.(this.recvBuffer) }
+          }
+
+          this.recvBuffer = new Uint8Array(0); // 清空状态
+
+          this.recvTimer = null;
+        }, this.RECV_TIMEOUT_MS);
+      }
     })
   }
 
@@ -239,43 +239,90 @@ class BluetoothManager {
     waitResponse = true
   } = {}) {
     return new Promise((resolve) => {
-      let buffer = this.buildPacket(cmd)
-      if (waitResponse) {
-        this.pendingRequests[reqId] = resolve
-        setTimeout(() => {
-          if (this.pendingRequests[reqId]) {
-            delete this.pendingRequests[reqId]
-            resolve({
-              error: 'timeout'
-            })
-          }
-        }, 5000)
-      }
+      this.requestQueue.push({
+        cmd,
+        reqId,
+        waitResponse,
+        resolve,
+        timer: null,
+        settled: false
+      })
+      this.processNextRequest()
+    })
+  }
 
-      var tmp = new Uint8Array(buffer.match(/[\da-f]{2}/gi).map(function (h) {
+  processNextRequest() {
+    if (this.currentRequest || this.requestQueue.length === 0) return
+
+    const request = this.requestQueue.shift()
+    this.currentRequest = request
+
+    let tmp
+    try {
+      const buffer = this.buildPacket(request.cmd)
+      tmp = new Uint8Array(buffer.match(/[\da-f]{2}/gi).map(function (h) {
         return parseInt(h, 16)
-      }));
+      }))
+    } catch (err) {
+      console.error('BLE packet build failed:', err)
+      this.finishRequest(request, { error: 'send fail' })
+      return
+    }
 
-      jlog('SEND', bytesToHexString(tmp))
+    if (request.waitResponse) {
+      this.pendingRequests[request.reqId] = request
+    }
 
+    // 每个请求都有自己的定时器，超时后必定结束并继续执行队列。
+    request.timer = setTimeout(() => {
+      this.finishRequest(request, { error: 'timeout' })
+    }, 5000)
+
+    jlog('SEND', bytesToHexString(tmp))
+
+    try {
       uni.writeBLECharacteristicValue({
         deviceId: store.state.device_info.deviceId,
         serviceId: store.state.device_info.serviceId,
         characteristicId: store.state.device_info.w_characteristicId,
         value: tmp.buffer,
         success: (res) => {
-          if (!waitResponse) resolve({
-            ok: true
-          })
+          if (!request.waitResponse) {
+            this.finishRequest(request, { ok: true })
+          }
         },
         fail: (res) => {
-          resolve({
-            error: 'send fail'
-          })
+          this.finishRequest(request, { error: 'send fail' })
         },
       })
-    })
+    } catch (err) {
+      console.error('BLE write failed:', err)
+      this.finishRequest(request, { error: 'send fail' })
+    }
   }
+
+  finishRequest(request, result) {
+    if (!request || request.settled) return
+
+    request.settled = true
+    if (request.timer) {
+      clearTimeout(request.timer)
+      request.timer = null
+    }
+
+    if (this.pendingRequests[request.reqId] === request) {
+      delete this.pendingRequests[request.reqId]
+    }
+    if (this.currentRequest === request) {
+      this.currentRequest = null
+    }
+
+    request.resolve(result)
+
+    // 让当前请求的 await 回调先执行，再发送下一条蓝牙命令。
+    setTimeout(() => this.processNextRequest(), 0)
+  }
+
 
   send_data(data, type) {
     let tmp = null
