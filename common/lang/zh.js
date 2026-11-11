@@ -336,6 +336,9 @@ export default {
   b_saveParam: "保存参数",
   b_restore: "恢复出厂设置",
 
+  b_turnOffLight: '关闭识杆灭灯',
+  b_studyGateDown: '学习落杆',
+
   b_readEnvParam: "环境参数",
   b_readAllParam: "全部参数",
   b_readCarParam: "人车区分",

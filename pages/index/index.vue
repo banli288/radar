@@ -25,7 +25,7 @@
     </view>
     <view class="card row info">
       <view class="_row2_left">{{ $t("index.text2") }}</view>
-      <view class="_row2_right">{{ isConnected ? "防砸雷达" : " " }}</view>
+      <view class="_row2_right">{{ isConnected ? radarType : " " }}</view>
     </view>
     <view class="card row info">
       <view class="_row2_left">{{ $t("index.text3") }}</view>

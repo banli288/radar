@@ -332,6 +332,9 @@ export default {
   b_saveParam: "Save Parameters",
   b_restore: "Restore Factory Settings",
 
+  b_turnOffLight: 'Rurn Off Light',
+  b_studyGateDown: 'Study GateDown',
+
   b_readEnvParam: "Environment Parameters",
   b_readAllParam: "All Parameters",
   b_readCarParam: "Pedestrian-Vehicle Distinction",

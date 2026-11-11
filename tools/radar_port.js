@@ -48,6 +48,18 @@ export async function restart(enable) {
     return res;
 }
 
+export async function turnOffLight(enable) {
+    const res = await bt.send("66222201", 0x66);
+    if (res.error) return null;
+    return res;
+}
+
+export async function studyGateDown(enable) {
+    const res = await bt.send("66202001", 0x66);
+    if (res.error) return null;
+    return res;
+}
+
 export async function advanced_read() {
     const res = await bt.send("87020201", 0x87);
     if (res.error) return null;

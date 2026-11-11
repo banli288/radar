@@ -75,7 +75,7 @@
     </view>
 
     <view class="card col">
-      <view class="row" style="margin-bottom: 20rpx">
+      <view class="row" style="margin-bottom: 20rpx; margin-top: 15rpx">
         <button
           class="btn"
           hover-class="btn_hover"
@@ -93,7 +93,7 @@
           {{ $t("aconfig.btnRestart") }}
         </button>
       </view>
-      <view class="row">
+      <view class="row" style="margin-bottom: 20rpx">
         <button
           class="btn"
           hover-class="btn_hover"
@@ -111,6 +111,24 @@
           {{ $t("b_restore") }}
         </button>
       </view>
+      <!-- <view class="row" style="margin-bottom: 20rpx">
+        <button
+          class="btn"
+          hover-class="btn_hover"
+          :disabled="!connect_state"
+          @tap="radar_light()"
+        >
+          {{ $t("b_turnOffLight") }}
+        </button>
+        <button
+          class="btn"
+          hover-class="btn_hover"
+          :disabled="!connect_state"
+          @tap="radar_gateDown()"
+        >
+          {{ $t("b_studyGateDown") }}
+        </button>
+      </view> -->
       <!-- <view class="card">
 				<button class="btn" hover-class="btn_hover" style="width: 100%;" :disabled="!connect_state"
 					@tap="ble_dis_con()">{{$t("aconfig.btnBleAutoConnect")}}</button>
@@ -131,6 +149,8 @@ import {
   close_ble_auto_poweroff,
   restart,
   restore,
+  turnOffLight,
+  studyGateDown,
 } from "../../tools/radar_port";
 export default {
   data() {
@@ -549,6 +569,12 @@ export default {
           }
         },
       });
+    },
+    async radar_light() {
+      const res_turnOffLight = await turnOffLight();
+    },
+    async radar_gateDown() {
+      const res_studyGateDown = await studyGateDown();
     },
   },
 };

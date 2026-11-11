@@ -712,7 +712,13 @@ export default {
           this.studyStep.step5.enable = false;
           this.studyStep.stepFinish.enable = false;
 
+          // 复位所有按钮状态,防止上一遍学习遗留(否则第二遍起 step3/step5 会被错误解禁)
+          this.studyStep.step1.btnEnable = false;
           this.studyStep.step2.btnEnable = true;
+          this.studyStep.step3.btnEnable = true;
+          this.studyStep.step4.btnEnable = true;
+          this.studyStep.step5.btnEnable = true;
+          this.studyStep.stepFinish.btnEnable = false;
 
           this.win_status = false;
           uni.hideTabBar();
