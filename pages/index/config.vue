@@ -575,6 +575,8 @@ export default {
       let that = this;
       uni.showModal({
         content: that.$t("config.info1"),
+        confirmText: that.$t("aconfig.modal.confirm"),
+        cancelText: that.$t("aconfig.modal.cancel"),
         success: (res) => {
           if (res.confirm) {
             that.clearStudyTimers(); // 清理学习流程遗留的定时器，防止退出后后续步骤自动弹出
@@ -608,7 +610,11 @@ export default {
       this.studyStep.step5.enable = false;
       this.studyStep.stepFinish.enable = false;
 
-      uni.showModal({ content: this.$t("config.info2") });
+      uni.showModal({
+        content: this.$t("config.info2"),
+        confirmText: this.$t("modal.confirmText"),
+        cancelText: this.$t("modal.cancelText"),
+      });
 
       this.win_status = true;
       uni.showTabBar();
@@ -641,6 +647,7 @@ export default {
           uni.showModal({
             title: that.$t("config.info3"),
             showCancel: false,
+            confirmText: that.$t("modal.confirmText"),
             async success(res) {
               if (res.confirm) {
                 that.win_status = true;
@@ -1109,7 +1116,9 @@ export default {
             if (res_restore) {
               clearTimeout(timer);
               uni.showToast({ title: that.$t("aconfig.modal.restoresuccess") });
-              // that.radar_read();
+              // 等"恢复成功"提示完整显示后再开始回读
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+              await that.radar_read();
             }
           }
         },

@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <view class="col">
+    <view class="col fontSize">
       <view
         class="card row"
         v-for="(item, index) in config1"
@@ -26,7 +26,7 @@
       </view>
     </view>
 
-    <view class="card row">
+    <view class="card row fontSize">
       <view class="row" style="width: 65%">
         <view :style="dynamicFontStyle" style="width: 40%">{{
           radarSensitivity[0].name
@@ -48,7 +48,7 @@
       </view>
     </view>
 
-    <view class="col">
+    <view class="col fontSize">
       <view class="card row" v-for="(item, index) in config2" :key="index">
         <view class="row" style="width: 100vw">
           <view class="row" style="width: 65%">
@@ -181,7 +181,7 @@ export default {
     },
     dynamicFontStyle() {
       return {
-        fontSize: this.isEnglish ? "12px" : "18px",
+        fontSize: this.isEnglish ? "12px" : "17px",
         lineHeight: this.isEnglish ? "1.8" : "2.0",
       };
     },
@@ -582,7 +582,10 @@ export default {
 
 <style lang="scss">
 @import "../common.scss";
-
+//  字体大小调整
+// .fontSize {
+//   font-size: 17rpx !important;
+// }
 /* 外层容器整体高度 */
 .big-nb::v-deep .uni-numbox {
   height: 60rpx !important;

@@ -1,13 +1,18 @@
-<template> 
- <view class="page">
-		<view class="card title">
-			<image mode="aspectFit" src="@/static/index1.png"/>
-			<!-- <view style="font-size: 20px;">{{toolInfo}}</view>
+<template>
+  <view class="page">
+    <view class="card title">
+      <image mode="aspectFit" src="@/static/index1.png" />
+      <!-- <view style="font-size: 20px;">{{toolInfo}}</view>
 			<view>{{prodInfo}}</view> -->
-		</view>
+    </view>
     <view class="_label">
-      <view class="card label_item" v-for="(item,index) in pageList" :key="index" @tap="more_opa(index)">
-        <view class="label_title">{{item}}</view>
+      <view
+        class="card label_item"
+        v-for="(item, index) in pageList"
+        :key="index"
+        @tap="more_opa(index)"
+      >
+        <view class="label_title">{{ item }}</view>
         <image class="title_icon" src="@/static/threeangle.png"></image>
       </view>
     </view>
@@ -15,165 +20,160 @@
 </template>
 
 <script>
-  import {
-    updatePageTitle,
-    changeLanguage
-  } from '@/common/in18-helper.js'
-  import store from '@/store/index.js'
-  export default {
-    data() {
-      return {
-
+import { updatePageTitle, changeLanguage } from "@/common/in18-helper.js";
+import store from "@/store/index.js";
+export default {
+  data() {
+    return {};
+  },
+  computed: {
+    pageList() {
+      if (parseFloat(store.state.product_info.sw_ver) < 2.0) {
+        return [
+          this.$t("more.advancedConfig"),
+          this.$t("more.commamd"),
+          this.$t("more.userSheet"),
+        ];
+      } else {
+        return [
+          this.$t("more.advancedConfig"),
+          this.$t("more.commamd"),
+          this.$t("more.relay"),
+          this.$t("more.userSheet"),
+        ];
       }
     },
-    computed: {
-      pageList() {
-				if (parseFloat(store.state.product_info.sw_ver) < 2.0) {
-					return [
-					  this.$t("more.advancedConfig"),
-					  this.$t("more.commamd"),
-					  this.$t("more.userSheet"),
-					]
-				}
-				else {
-					return [
-					  this.$t("more.advancedConfig"),
-					  this.$t("more.commamd"),
-						this.$t("more.relay"),
-					  this.$t("more.userSheet"),
-					]
-				}
-      },
-      toolInfo() {
-        return this.$t("more.toolInfo")
-      },
-      prodInfo() {
-        return this.$t("more.prodInfo")
-      },
+    toolInfo() {
+      return this.$t("more.toolInfo");
     },
-    onLoad() {
-      updatePageTitle()
+    prodInfo() {
+      return this.$t("more.prodInfo");
     },
-    onShow() {
-      updatePageTitle()
+  },
+  onLoad() {
+    updatePageTitle();
+  },
+  onShow() {
+    updatePageTitle();
 
-      uni.setKeepScreenOn({
-        keepScreenOn: true,
-        success() {
-        }
-      })
-    },
-    methods: {
-      //点击对应的页面文字进行跳转
-      more_opa(index) {
-        let that = this
-        if (index == 0) {
-          uni.showModal({
-            title: this.$t("modal.notice"),
-            content: this.$t("more.advancedCont"),
-            confirmText: this.$t("modal.confirmText"),
-            cancelText: this.$t("modal.cancelText"),
-            success(res) {
-              if (res.confirm) {
-                that.$u.route({
-                  url: '/pages/more/advanced'
-                })
-              }
-            }
-          })
-        } else if (index == 1) {
-          that.$u.route({url: '/pages/more/debug'})
-        } else if (index == 2) {
-					if (parseFloat(store.state.product_info.sw_ver) < 2.0) {
-						this.downloadAndOpenPdf()
-					} else {
-						that.$u.route({url: '/pages/more/relay'})
-					}
-				 } else if (index == 3) {
-          this.downloadAndOpenPdf()
-        }
-      },
-      downloadAndOpenPdf() {
-        let that = this
-        uni.showLoading({
-          title: that.$t("more.download")
-        })
-        //说明书的网址
-        const fileUrl =
-          'https://p.zazg.tech/radar/60g/60g-0804.pdf';
-        uni.downloadFile({
-          url: fileUrl,
-          success: (res) => {
-            if (res.statusCode === 200) {
-              //下载成功后打开
-              uni.openDocument({
-                filePath: res.tempFilePath,
-                fileType: 'pdf',
-                success: () => {
-									uni.hideLoading()
-								},
-                fail: (err) => {
-									uni.hideLoading()
-									uni.showModal({
-										title: that.$t("modal.notice"),
-										content: that.$t("more.openfailed"),
-										confirmText: that.$t("modal.confirmText"),
-										cancelText: that.$t("modal.cancelText"),
-									})
-								}
+    uni.setKeepScreenOn({
+      keepScreenOn: true,
+      success() {},
+    });
+  },
+  methods: {
+    //点击对应的页面文字进行跳转
+    more_opa(index) {
+      let that = this;
+      if (index == 0) {
+        uni.showModal({
+          title: this.$t("modal.notice"),
+          content: this.$t("more.advancedCont"),
+          confirmText: this.$t("modal.confirmText"),
+          cancelText: this.$t("modal.cancelText"),
+          success(res) {
+            if (res.confirm) {
+              that.$u.route({
+                url: "/pages/more/advanced",
               });
-            } else {
-							uni.hideLoading()
-              uni.showModal({
-              	title: that.$t("modal.notice"),
-              	content: that.$t("more.downFailed"),
-              	confirmText: that.$t("modal.confirmText"),
-              	cancelText: that.$t("modal.cancelText"),
-              })
             }
           },
-          fail: (err) => {
-						uni.hideLoading()
-						uni.showModal({
-							title: that.$t("modal.notice"),
-							content: that.$t("more.downFailed"),
-							confirmText: that.$t("modal.confirmText"),
-							cancelText: that.$t("modal.cancelText"),
-						})
-					},
         });
+      } else if (index == 1) {
+        that.$u.route({ url: "/pages/more/debug" });
+      } else if (index == 2) {
+        if (parseFloat(store.state.product_info.sw_ver) < 2.0) {
+          this.downloadAndOpenPdf();
+        } else {
+          that.$u.route({ url: "/pages/more/relay" });
+        }
+      } else if (index == 3) {
+        this.downloadAndOpenPdf();
       }
-    }
-  }
+    },
+    downloadAndOpenPdf() {
+      let that = this;
+      uni.showLoading({
+        title: that.$t("more.download"),
+      });
+      //说明书的网址
+      const isEnglish = this.$i18n.locale === "en";
+      const fileUrl = isEnglish
+        ? "https://p.zazg.tech/radar/60g/60G-HZ-Millimeter-Wave-Radar.pdf"
+        : "https://p.zazg.tech/radar/60g/60g-0804.pdf";
+      uni.downloadFile({
+        url: fileUrl,
+        success: (res) => {
+          if (res.statusCode === 200) {
+            //下载成功后打开
+            uni.openDocument({
+              filePath: res.tempFilePath,
+              fileType: "pdf",
+              success: () => {
+                uni.hideLoading();
+              },
+              fail: (err) => {
+                uni.hideLoading();
+                uni.showModal({
+                  title: that.$t("modal.notice"),
+                  content: that.$t("more.openfailed"),
+                  confirmText: that.$t("modal.confirmText"),
+                  cancelText: that.$t("modal.cancelText"),
+                });
+              },
+            });
+          } else {
+            uni.hideLoading();
+            uni.showModal({
+              title: that.$t("modal.notice"),
+              content: that.$t("more.downFailed"),
+              confirmText: that.$t("modal.confirmText"),
+              cancelText: that.$t("modal.cancelText"),
+            });
+          }
+        },
+        fail: (err) => {
+          uni.hideLoading();
+          uni.showModal({
+            title: that.$t("modal.notice"),
+            content: that.$t("more.downFailed"),
+            confirmText: that.$t("modal.confirmText"),
+            cancelText: that.$t("modal.cancelText"),
+          });
+        },
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-	@import "../common.scss";
-	
-  .title {
-    padding: 2px 2px;
+@import "../common.scss";
+
+.title {
+  padding: 2px 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+._label {
+  .label_item {
+    font-size: 16px;
+    padding: 10px 10px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-  }
 
-  ._label {
-    .label_item {
-      font-size: 16px;
-      padding: 10px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .label_title {
+      padding: 0px;
+    }
 
-      .label_title {
-        padding: 0px;
-      }
-
-      .title_icon {
-        width: 40rpx;
-        height: 40rpx;
-      }
+    .title_icon {
+      width: 40rpx;
+      height: 40rpx;
     }
   }
+}
 </style>

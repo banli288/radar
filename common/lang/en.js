@@ -91,6 +91,8 @@ export default {
     connecting: "Connecting...",
     closeBle: "Disconnected",
     connectErr: "Connection Failed, Please Retry",
+    connectTimeout: "Connection Timeout",
+    disconnectFail: "Failed to Disconnect Bluetooth, Please Retry",
     Bleconnected: "Bluetooth Connected",
     CloseRadarBLE: "The current radar Bluetooth can only be used again after a power-off and restart. Do you want to turn it off?",
   },

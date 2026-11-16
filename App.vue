@@ -6,8 +6,8 @@
     onLaunch() {
 			reportOnline()
 			wsManager.connect('ws://localhost/ws')
-    },
-    onShow() {
+
+      // 连接状态监听只在启动时注册一次，避免每次 onShow 重复叠加监听器
       uni.onBLEConnectionStateChange(function(res) {
         let id = res.deviceId
         if (res.connected == false) {
@@ -19,10 +19,10 @@
         } else {
           store.commit('ble_con_state_update', true)
         }
-				
+
 				jlog('BLE', 'connect state', store.state.connect_state)
       })
-    }
+    },
   }
 </script>
 

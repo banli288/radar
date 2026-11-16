@@ -278,10 +278,19 @@ export default {
             if (res.confirm) {
               uni.closeBLEConnection({
                 deviceId: store.state.device_info.deviceId,
-                complete() {
+                success() {
                   store.commit("ble_con_state_update", false);
                   uni.showToast({
                     title: that.$t("modal.closeBle"),
+                  });
+                },
+                fail() {
+                  // 断开失败：保持连接状态不变，提示用户，避免页面谎报"已断开"
+                  uni.showModal({
+                    title: that.$t("modal.notice"),
+                    content: that.$t("modal.disconnectFail"),
+                    confirmText: that.$t("modal.confirmText"),
+                    cancelText: that.$t("modal.cancelText"),
                   });
                 },
               });
@@ -367,116 +376,146 @@ export default {
       let that = this;
       let deviceId = this.ble_list[index];
 
-      let timer = setTimeout(() => {
-        uni.showModal({ content: "连接超时" });
-      }, 10000);
+      let timer = null;
+      const startTimeoutTimer = () => {
+        timer = setTimeout(() => {
+          uni.showModal({
+            content: that.$t("modal.connectTimeout"),
+            confirmText: that.$t("modal.confirmText"),
+            cancelText: that.$t("modal.cancelText"),
+          });
+        }, 10000);
+      };
+      startTimeoutTimer();
       uni.showLoading({ title: that.$t("modal.connecting"), mask: true });
 
-      uni.createBLEConnection({
-        deviceId: deviceId,
-        timeout: 10000,
-        async success() {
-          setTimeout(() => {
-            uni.stopBluetoothDevicesDiscovery({
-              async success() {
-                uni.getBLEDeviceServices({
-                  deviceId: deviceId,
-                  async success(res) {
-                    for (let item of res.services) {
-                      if (item.isPrimary) {
-                        let serviceId = item.uuid;
-                        if (item.uuid.indexOf("0000AE3") != -1) {
-                          uni.getBLEDeviceCharacteristics({
-                            deviceId: deviceId,
-                            serviceId: serviceId,
-                            async success(res) {
-                              for (let item of res.characteristics) {
-                                if (item.properties.notify) {
-                                  let characteristicId = item.uuid;
-                                  uni.notifyBLECharacteristicValueChange({
-                                    deviceId: deviceId,
-                                    serviceId: serviceId,
-                                    characteristicId: characteristicId,
-                                    state: true,
-                                    async success() {
-                                      that.showDialog = false;
+      const connectDevice = (isRetry = false) => {
+        uni.createBLEConnection({
+          deviceId: deviceId,
+          timeout: 10000,
+          async success() {
+            // 连接已建立，清掉超时兜底和loading
+            clearTimeout(timer);
+            uni.hideLoading();
+            setTimeout(() => {
+              uni.stopBluetoothDevicesDiscovery({
+                async success() {
+                  uni.getBLEDeviceServices({
+                    deviceId: deviceId,
+                    async success(res) {
+                      for (let item of res.services) {
+                        if (item.isPrimary) {
+                          let serviceId = item.uuid;
+                          if (item.uuid.indexOf("0000AE3") != -1) {
+                            uni.getBLEDeviceCharacteristics({
+                              deviceId: deviceId,
+                              serviceId: serviceId,
+                              async success(res) {
+                                for (let item of res.characteristics) {
+                                  if (item.properties.notify) {
+                                    let characteristicId = item.uuid;
+                                    uni.notifyBLECharacteristicValueChange({
+                                      deviceId: deviceId,
+                                      serviceId: serviceId,
+                                      characteristicId: characteristicId,
+                                      state: true,
+                                      async success() {
+                                        that.showDialog = false;
 
-                                      //存储ID信息
-                                      let obj = {
-                                        deviceId: deviceId,
-                                        serviceId: serviceId,
-                                        r_characteristicId: characteristicId,
-                                      };
+                                        //存储ID信息
+                                        let obj = {
+                                          deviceId: deviceId,
+                                          serviceId: serviceId,
+                                          r_characteristicId: characteristicId,
+                                        };
 
-                                      //遍历查找写ID
-                                      for (let item of res.characteristics) {
-                                        if (item.properties.write) {
-                                          obj.w_characteristicId = item.uuid;
-                                          store.commit("set_device_info", obj);
-                                          // jlog('LOG', 'device_info:', store.state.device_info)
+                                        //遍历查找写ID
+                                        for (let item of res.characteristics) {
+                                          if (item.properties.write) {
+                                            obj.w_characteristicId = item.uuid;
+                                            store.commit("set_device_info", obj);
+                                            // jlog('LOG', 'device_info:', store.state.device_info)
 
-                                          //找到写ID，延时500ms通过写ID写入读取版本信息指令
-                                          setTimeout(async () => {
-                                            clearTimeout(timer);
+                                            //找到写ID，延时500ms通过写ID写入读取版本信息指令
+                                            setTimeout(async () => {
+                                              clearTimeout(timer);
 
-                                            const res =
-                                              await that.read_product();
-                                            if (res != null) {
-                                              uni.showToast({
-                                                title: that.$t("index.text12"),
-                                              });
-                                            } else {
-                                              uni.showModal({
-                                                title: this.$t("modal.notice"),
-                                                confirmText:
-                                                  this.$t("modal.confirmText"),
-                                                cancelText:
-                                                  this.$t("modal.cancelText"),
-                                                content:
-                                                  this.$t("modal.readTineout"),
-                                              });
-                                            }
-                                          }, 500);
+                                              const res =
+                                                await that.read_product();
+                                              if (res != null) {
+                                                uni.showToast({
+                                                  title: that.$t("index.text12"),
+                                                });
+                                              } else {
+                                                uni.showModal({
+                                                  title: that.$t("modal.notice"),
+                                                  confirmText:
+                                                    that.$t("modal.confirmText"),
+                                                  cancelText:
+                                                    that.$t("modal.cancelText"),
+                                                  content:
+                                                    that.$t("modal.readTineout"),
+                                                });
+                                              }
+                                            }, 500);
+                                          }
                                         }
-                                      }
-                                    },
-                                  });
+                                      },
+                                    });
+                                  }
                                 }
-                              }
-                            },
-                            fail() {
-                              jlog("read character fail");
-                            },
-                          });
+                              },
+                              fail(err) {
+                                clearTimeout(timer);
+                                uni.hideLoading();
+                                jlog("read character fail", err);
+                              },
+                            });
+                          }
                         }
                       }
-                    }
-                  },
-                });
-              },
-            });
-          }, 2000);
-        },
-        fail(res) {
-          jlog(res);
-          uni.hideLoading();
-          if (store.state.connect_state == false) {
-            uni.showModal({
-              title: that.$t("modal.notice"),
-              content: that.$t("modal.connectErr"),
-              confirmText: that.$t("modal.confirmText"),
-              cancelText: that.$t("modal.cancelText"),
-            });
-          } else {
-            uni.showModal({
-              title: that.$t("modal.notice"),
-              content: that.$t("modal.Bleconnected"),
-              confirmText: that.$t("modal.confirmText"),
-              cancelText: that.$t("modal.cancelText"),
-            });
-          }
-        },
-      });
+                    },
+                    fail(err) {
+                      clearTimeout(timer);
+                      uni.hideLoading();
+                      jlog("get services fail", err);
+                    },
+                  });
+                },
+              });
+            }, 2000);
+          },
+          fail(res) {
+            if (!isRetry) {
+              // 可能是系统层残留旧连接导致失败：先关闭残留连接，稍等片刻重试一次
+              uni.closeBLEConnection({ deviceId });
+              uni.showLoading({ title: that.$t("modal.connecting"), mask: true });
+              startTimeoutTimer();
+              setTimeout(() => connectDevice(true), 500);
+              return;
+            }
+            clearTimeout(timer);
+            uni.hideLoading();
+            jlog(res);
+            if (store.state.connect_state == false) {
+              uni.showModal({
+                title: that.$t("modal.notice"),
+                content: that.$t("modal.connectErr"),
+                confirmText: that.$t("modal.confirmText"),
+                cancelText: that.$t("modal.cancelText"),
+              });
+            } else {
+              uni.showModal({
+                title: that.$t("modal.notice"),
+                content: that.$t("modal.Bleconnected"),
+                confirmText: that.$t("modal.confirmText"),
+                cancelText: that.$t("modal.cancelText"),
+              });
+            }
+          },
+        });
+      };
+      connectDevice();
     },
   },
 };
