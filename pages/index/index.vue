@@ -277,7 +277,11 @@ export default {
           cancelText: that.$t("modal.cancelText"),
           success(res) {
             if (res.confirm) {
-              const deviceId = store.state.device_info.deviceId;
+              // device_info.deviceId 在连接建立时即写入；若仍为空（异常场景），
+              // 回退使用当前正在连接流程中的设备，保证断开能真正下发到设备
+              const deviceId =
+                store.state.device_info.deviceId || ble.getPendingDeviceId();
+              jlog("BLE", "btn disconnect confirm, deviceId=", deviceId);
               if (!deviceId) {
                 store.commit("ble_con_state_update", false);
                 return;
@@ -286,17 +290,14 @@ export default {
                 title: that.$t("modal.disconnecting"),
                 mask: true,
               });
-              // 以系统层的 connected:false 事件作为真正断开的判据，
-              // 不再在 closeBLEConnection 的 success 回调里直接置为已断开，
-              // 避免底层链路未真正断开时界面谎报状态
               ble.disconnectDevice(deviceId).then((confirmed) => {
+                jlog("BLE", "disconnectDevice resolved, confirmed=", confirmed);
                 uni.hideLoading();
                 if (confirmed) {
                   uni.showToast({
                     title: that.$t("modal.closeBle"),
                   });
                 } else {
-                  // 等待断开事件超时（已重试关闭），如实提示断开异常
                   uni.showModal({
                     title: that.$t("modal.notice"),
                     content: that.$t("modal.bleReset"),
@@ -397,12 +398,16 @@ export default {
     async ble_connect(index) {
       let that = this;
       let deviceId = this.ble_list[index];
+      // 每次发起连接生成新会话；断开或新连接都会使旧会话失效，
+      // 旧会话的所有后续回调（含延时回调）一律静默忽略
+      const session = ble.newConnectSession();
 
       let timer = null;
       const startTimeoutTimer = () => {
         // 重试时会再次启动计时器，先清掉旧的，避免旧计时器到点误弹"连接超时"
         clearTimeout(timer);
         timer = setTimeout(() => {
+          if (!ble.isSessionActive(session)) return;
           // 握手10s未完成：终止可能挂起的连接请求并复位状态
           uni.hideLoading();
           ble.clearPendingDeviceId(deviceId);
@@ -428,30 +433,55 @@ export default {
           cancelText: that.$t("modal.cancelText"),
         });
       };
-      // 握手某一步失败时的统一处理：清理状态并如实提示，避免"点了没反应"
+      // 握手某一步失败时的统一处理：清理状态并如实提示。
+      // 会话已失效（用户断开/重新连接）时静默忽略，避免误弹"连接失败"
       const handshakeFail = (tag, err) => {
         clearTimeout(timer);
         uni.hideLoading();
         ble.clearPendingDeviceId(deviceId);
         jlog(tag, err);
+        if (!ble.isSessionActive(session)) {
+          jlog("BLE", "ignore handshake fail, session expired");
+          return;
+        }
         showConnectFailModal();
       };
 
       const connectDevice = (isRetry = false) => {
+        if (!ble.isSessionActive(session)) return;
         uni.createBLEConnection({
           deviceId: deviceId,
           timeout: 10000,
           async success() {
-            // 连接已建立，隐藏loading；但保留10s超时兜底覆盖整个握手过程，
-            // 防止链路建立后随即失效（如设备端残留连接）时用户得不到任何提示
+            if (!ble.isSessionActive(session)) return;
+            // 链路建立即视为连接成功：立即关闭设备列表弹窗，后续服务发现/
+            // 握手在后台完成（失败仍会弹提示），避免用户对着"正在连接"等待。
+            // 成功提示由握手完成后的 read_product 统一给出，此处不再重复弹
             jlog("BLE", "createBLEConnection success");
+            // 立即记录 deviceId：主页按钮已随 connected:true 事件变为"已连接"，
+            // 用户可能在 2s 握手完成前就点断开，此时必须能拿到 deviceId 真正断开
+            store.commit("set_device_info", { deviceId });
+            // 连接已建立，清掉10s超时兜底（该兜底只覆盖"建立连接"阶段），
+            // 否则用户在握手期间点断开时，旧计时器到点会误弹"连接超时"
+            clearTimeout(timer);
             uni.hideLoading();
+            uni.stopBluetoothDevicesDiscovery({ complete() {} });
+            that.showDialog = false;
+            // 连接建立即提示成功（即时反馈），握手完成后不再重复弹
+            uni.showToast({
+              title: that.$t("index.text12"),
+              icon: "success",
+            });
+            // 部分机型上连接刚建立就查服务会失败，保留 2s 缓冲
             setTimeout(() => {
+              if (!ble.isSessionActive(session)) return;
               uni.stopBluetoothDevicesDiscovery({
-                async success() {
+                complete() {
+                  if (!ble.isSessionActive(session)) return;
                   uni.getBLEDeviceServices({
                     deviceId: deviceId,
                     async success(res) {
+                      if (!ble.isSessionActive(session)) return;
                       for (let item of res.services) {
                         if (item.isPrimary) {
                           let serviceId = item.uuid;
@@ -460,6 +490,7 @@ export default {
                               deviceId: deviceId,
                               serviceId: serviceId,
                               async success(res) {
+                                if (!ble.isSessionActive(session)) return;
                                 for (let item of res.characteristics) {
                                   if (item.properties.notify) {
                                     let characteristicId = item.uuid;
@@ -469,8 +500,8 @@ export default {
                                       characteristicId: characteristicId,
                                       state: true,
                                       async success() {
+                                        if (!ble.isSessionActive(session)) return;
                                         jlog("BLE", "notify ok, find write id");
-                                        that.showDialog = false;
 
                                         //存储ID信息
                                         let obj = {
@@ -490,14 +521,15 @@ export default {
 
                                             //找到写ID，延时500ms通过写ID写入读取版本信息指令
                                             setTimeout(async () => {
+                                              if (!ble.isSessionActive(session)) return;
                                               clearTimeout(timer);
 
                                               const res =
                                                 await that.read_product();
+                                              if (!ble.isSessionActive(session)) return;
                                               if (res != null) {
-                                                uni.showToast({
-                                                  title: that.$t("index.text12"),
-                                                });
+                                                // 成功提示已在连接建立时给出，此处仅记录
+                                                jlog("BLE", "read product ok");
                                               } else {
                                                 uni.showModal({
                                                   title: that.$t("modal.notice"),
@@ -540,6 +572,7 @@ export default {
             }, 2000);
           },
           fail(res) {
+            if (!ble.isSessionActive(session)) return;
             if (!isRetry) {
               // 可能是系统层残留旧连接导致失败：先关闭残留连接，稍等片刻重试一次
               jlog("BLE", "connect fail, close and retry", JSON.stringify(res));
@@ -553,21 +586,17 @@ export default {
             uni.hideLoading();
             ble.clearPendingDeviceId(deviceId);
             jlog(res);
-            if (store.state.connect_state == false) {
-              uni.showModal({
-                title: that.$t("modal.notice"),
-                content: that.$t("modal.connectErr"),
-                confirmText: that.$t("modal.confirmText"),
-                cancelText: that.$t("modal.cancelText"),
-              });
-            } else {
-              uni.showModal({
-                title: that.$t("modal.notice"),
-                content: that.$t("modal.Bleconnected"),
-                confirmText: that.$t("modal.confirmText"),
-                cancelText: that.$t("modal.cancelText"),
-              });
+            // 断开流程进行中时，迟到的连接失败回调不再弹窗，避免误导
+            if (ble.isDisconnecting()) {
+              jlog("BLE", "ignore connect fail during disconnect");
+              return;
             }
+            uni.showModal({
+              title: that.$t("modal.notice"),
+              content: that.$t("modal.connectErr"),
+              confirmText: that.$t("modal.confirmText"),
+              cancelText: that.$t("modal.cancelText"),
+            });
           },
         });
       };
