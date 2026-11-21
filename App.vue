@@ -2,26 +2,14 @@
   import store from './store'
 	import { log_upload, reportOnline, jlog } from './tools/send'
 	import wsManager from './tools/wsManager'
+	import { initBleListener } from './tools/bleManager'
   export default {
     onLaunch() {
 			reportOnline()
 			wsManager.connect('ws://localhost/ws')
 
       // 连接状态监听只在启动时注册一次，避免每次 onShow 重复叠加监听器
-      uni.onBLEConnectionStateChange(function(res) {
-        let id = res.deviceId
-        if (res.connected == false) {
-          uni.closeBLEConnection({
-            deviceId: id
-          })
-
-          store.commit('ble_con_state_update', false)
-        } else {
-          store.commit('ble_con_state_update', true)
-        }
-
-				jlog('BLE', 'connect state', store.state.connect_state)
-      })
+      initBleListener()
     },
   }
 </script>

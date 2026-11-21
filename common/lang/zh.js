@@ -95,6 +95,8 @@ export default {
     connectErr: "连接失败，请重试",
     connectTimeout: "连接超时",
     disconnectFail: "断开蓝牙失败，请重试",
+    disconnecting: "正在断开连接",
+    bleReset: "蓝牙断开状态异常，如无法重新连接，请重启手机蓝牙后重试",
     Bleconnected: "蓝牙已连接",
     CloseRadarBLE: "需要断电重启后，才能重新使用当前雷达蓝牙，是否关闭？",
   },

@@ -99,6 +99,7 @@ import {
 } from "../../common/in18-helper.js";
 import store from "@/store/index.js";
 import bt from "@/tools/BluetoothManager.js";
+import * as ble from "@/tools/bleManager.js";
 import eventBus from "../../tools/eventBus.js";
 import { jlog, log_upload } from "../../tools/send.js";
 import { get_production, close_ble } from "../../tools/radar_port.js";
@@ -276,23 +277,33 @@ export default {
           cancelText: that.$t("modal.cancelText"),
           success(res) {
             if (res.confirm) {
-              uni.closeBLEConnection({
-                deviceId: store.state.device_info.deviceId,
-                success() {
-                  store.commit("ble_con_state_update", false);
+              const deviceId = store.state.device_info.deviceId;
+              if (!deviceId) {
+                store.commit("ble_con_state_update", false);
+                return;
+              }
+              uni.showLoading({
+                title: that.$t("modal.disconnecting"),
+                mask: true,
+              });
+              // 以系统层的 connected:false 事件作为真正断开的判据，
+              // 不再在 closeBLEConnection 的 success 回调里直接置为已断开，
+              // 避免底层链路未真正断开时界面谎报状态
+              ble.disconnectDevice(deviceId).then((confirmed) => {
+                uni.hideLoading();
+                if (confirmed) {
                   uni.showToast({
                     title: that.$t("modal.closeBle"),
                   });
-                },
-                fail() {
-                  // 断开失败：保持连接状态不变，提示用户，避免页面谎报"已断开"
+                } else {
+                  // 等待断开事件超时（已重试关闭），如实提示断开异常
                   uni.showModal({
                     title: that.$t("modal.notice"),
-                    content: that.$t("modal.disconnectFail"),
+                    content: that.$t("modal.bleReset"),
                     confirmText: that.$t("modal.confirmText"),
                     cancelText: that.$t("modal.cancelText"),
                   });
-                },
+                }
               });
             }
           },
@@ -321,6 +332,17 @@ export default {
                   allowDuplicatesKey: true,
                   success() {
                     uni.onBluetoothDeviceFound(function (res) {
+                      // 诊断日志：打出所有收到的广播，便于区分
+                      // "设备没广播"(搜不到任何设备) 和 "名字过滤不匹配"
+                      try {
+                        jlog(
+                          "BLE",
+                          "found:",
+                          res.devices
+                            .map((d) => `${d.name || d.localName || "?"}(${d.RSSI})`)
+                            .join(", ")
+                        );
+                      } catch (e) {}
                       //根据名字匹配雷达设备
                       if (
                         res.devices[0].name.indexOf("XHJ") != -1 ||
@@ -378,7 +400,13 @@ export default {
 
       let timer = null;
       const startTimeoutTimer = () => {
+        // 重试时会再次启动计时器，先清掉旧的，避免旧计时器到点误弹"连接超时"
+        clearTimeout(timer);
         timer = setTimeout(() => {
+          // 握手10s未完成：终止可能挂起的连接请求并复位状态
+          uni.hideLoading();
+          ble.clearPendingDeviceId(deviceId);
+          uni.closeBLEConnection({ deviceId });
           uni.showModal({
             content: that.$t("modal.connectTimeout"),
             confirmText: that.$t("modal.confirmText"),
@@ -389,13 +417,34 @@ export default {
       startTimeoutTimer();
       uni.showLoading({ title: that.$t("modal.connecting"), mask: true });
 
+      // 标记当前连接流程中的设备，让全局状态监听能识别归属事件
+      ble.setPendingDeviceId(deviceId);
+
+      const showConnectFailModal = () => {
+        uni.showModal({
+          title: that.$t("modal.notice"),
+          content: that.$t("modal.connectErr"),
+          confirmText: that.$t("modal.confirmText"),
+          cancelText: that.$t("modal.cancelText"),
+        });
+      };
+      // 握手某一步失败时的统一处理：清理状态并如实提示，避免"点了没反应"
+      const handshakeFail = (tag, err) => {
+        clearTimeout(timer);
+        uni.hideLoading();
+        ble.clearPendingDeviceId(deviceId);
+        jlog(tag, err);
+        showConnectFailModal();
+      };
+
       const connectDevice = (isRetry = false) => {
         uni.createBLEConnection({
           deviceId: deviceId,
           timeout: 10000,
           async success() {
-            // 连接已建立，清掉超时兜底和loading
-            clearTimeout(timer);
+            // 连接已建立，隐藏loading；但保留10s超时兜底覆盖整个握手过程，
+            // 防止链路建立后随即失效（如设备端残留连接）时用户得不到任何提示
+            jlog("BLE", "createBLEConnection success");
             uni.hideLoading();
             setTimeout(() => {
               uni.stopBluetoothDevicesDiscovery({
@@ -420,6 +469,7 @@ export default {
                                       characteristicId: characteristicId,
                                       state: true,
                                       async success() {
+                                        jlog("BLE", "notify ok, find write id");
                                         that.showDialog = false;
 
                                         //存储ID信息
@@ -434,6 +484,8 @@ export default {
                                           if (item.properties.write) {
                                             obj.w_characteristicId = item.uuid;
                                             store.commit("set_device_info", obj);
+                                            ble.clearPendingDeviceId(deviceId);
+                                            jlog("BLE", "handshake done, read product");
                                             // jlog('LOG', 'device_info:', store.state.device_info)
 
                                             //找到写ID，延时500ms通过写ID写入读取版本信息指令
@@ -461,14 +513,18 @@ export default {
                                           }
                                         }
                                       },
+                                      fail(err) {
+                                        handshakeFail(
+                                          "notify fail",
+                                          err
+                                        );
+                                      },
                                     });
                                   }
                                 }
                               },
                               fail(err) {
-                                clearTimeout(timer);
-                                uni.hideLoading();
-                                jlog("read character fail", err);
+                                handshakeFail("read character fail", err);
                               },
                             });
                           }
@@ -476,9 +532,7 @@ export default {
                       }
                     },
                     fail(err) {
-                      clearTimeout(timer);
-                      uni.hideLoading();
-                      jlog("get services fail", err);
+                      handshakeFail("get services fail", err);
                     },
                   });
                 },
@@ -488,6 +542,7 @@ export default {
           fail(res) {
             if (!isRetry) {
               // 可能是系统层残留旧连接导致失败：先关闭残留连接，稍等片刻重试一次
+              jlog("BLE", "connect fail, close and retry", JSON.stringify(res));
               uni.closeBLEConnection({ deviceId });
               uni.showLoading({ title: that.$t("modal.connecting"), mask: true });
               startTimeoutTimer();
@@ -496,6 +551,7 @@ export default {
             }
             clearTimeout(timer);
             uni.hideLoading();
+            ble.clearPendingDeviceId(deviceId);
             jlog(res);
             if (store.state.connect_state == false) {
               uni.showModal({
@@ -515,6 +571,7 @@ export default {
           },
         });
       };
+
       connectDevice();
     },
   },
